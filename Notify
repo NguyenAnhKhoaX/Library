@@ -1,0 +1,194 @@
+-- Rayfield Notification System
+local NotificationService = {
+	Notifications = {},
+	Theme = {
+		Background = Color3.fromRGB(25, 25, 25),
+		Stroke = Color3.fromRGB(75, 75, 75),
+		Accent = Color3.fromRGB(0, 85, 255),
+		LightContrast = Color3.fromRGB(40, 40, 40),
+		DarkContrast = Color3.fromRGB(20, 20, 20), 
+		TextColor = Color3.fromRGB(255, 255, 255),
+		SubTextColor = Color3.fromRGB(175, 175, 175)
+	}
+}
+
+function NotificationService:SendNotification(Notification)
+	Notification.Duration = Notification.Duration or 5
+	
+	local NotificationFrame = Instance.new("Frame")
+	local NotificationFrameStroke = Instance.new("UIStroke")
+	local NotificationFrameCorner = Instance.new("UICorner")
+	local NotificationFrameShadow = Instance.new("ImageLabel")
+	local NotificationFrameLayout = Instance.new("UIListLayout")
+	local NotificationHeader = Instance.new("Frame")
+	local NotificationHeaderCorner = Instance.new("UICorner")
+	local NotificationHeaderLayout = Instance.new("UIListLayout")
+	local NotificationIcon = Instance.new("ImageLabel")
+	local NotificationTitle = Instance.new("TextLabel")
+	local NotificationClose = Instance.new("ImageButton")
+	local NotificationCloseCorner = Instance.new("UICorner")
+	local NotificationContent = Instance.new("TextLabel")
+	local NotificationBar = Instance.new("Frame")
+	local NotificationBarCorner = Instance.new("UICorner")
+	local NotificationBarFill = Instance.new("Frame")
+	local NotificationBarFillCorner = Instance.new("UICorner")
+
+	NotificationFrame.Name = "NotificationFrame"
+	NotificationFrame.Parent = Rayfield.Desktop.NotificationArea
+	NotificationFrame.BackgroundColor3 = self.Theme.Background
+	NotificationFrame.BorderSizePixel = 0
+	NotificationFrame.Size = UDim2.new(0, 300, 0, 0)
+	NotificationFrame.ClipsDescendants = true
+
+	NotificationFrameStroke.Name = "NotificationFrameStroke"
+	NotificationFrameStroke.Parent = NotificationFrame
+	NotificationFrameStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	NotificationFrameStroke.Color = self.Theme.Stroke
+	NotificationFrameStroke.LineJoinMode = Enum.LineJoinMode.Round
+	NotificationFrameStroke.Thickness = 1
+	NotificationFrameStroke.Transparency = 0
+
+	NotificationFrameCorner.Name = "NotificationFrameCorner"
+	NotificationFrameCorner.Parent = NotificationFrame
+	NotificationFrameCorner.CornerRadius = UDim.new(0, 6)
+
+	NotificationFrameShadow.Name = "NotificationFrameShadow"
+	NotificationFrameShadow.Parent = NotificationFrame
+	NotificationFrameShadow.AnchorPoint = Vector2.new(0.5, 0.5)
+	NotificationFrameShadow.BackgroundTransparency = 1
+	NotificationFrameShadow.Position = UDim2.new(0.5, 0, 0.5, 0)
+	NotificationFrameShadow.Size = UDim2.new(1, 14, 1, 14)
+	NotificationFrameShadow.ZIndex = -1
+	NotificationFrameShadow.Image = "rbxassetid://6014261993"
+	NotificationFrameShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
+	NotificationFrameShadow.ScaleType = Enum.ScaleType.Slice
+	NotificationFrameShadow.SliceCenter = Rect.new(49, 49, 450, 450)
+
+	NotificationFrameLayout.Name = "NotificationFrameLayout"
+	NotificationFrameLayout.Parent = NotificationFrame
+	NotificationFrameLayout.SortOrder = Enum.SortOrder.LayoutOrder
+	NotificationFrameLayout.Padding = UDim.new(0, 6)
+
+	NotificationHeader.Name = "NotificationHeader"
+	NotificationHeader.Parent = NotificationFrame
+	NotificationHeader.BackgroundColor3 = self.Theme.LightContrast
+	NotificationHeader.BorderSizePixel = 0
+	NotificationHeader.Size = UDim2.new(1, 0, 0, 35)
+
+	NotificationHeaderCorner.Name = "NotificationHeaderCorner"
+	NotificationHeaderCorner.Parent = NotificationHeader
+	NotificationHeaderCorner.CornerRadius = UDim.new(0, 6)
+
+	NotificationHeaderLayout.Name = "NotificationHeaderLayout"
+	NotificationHeaderLayout.Parent = NotificationHeader
+	NotificationHeaderLayout.FillDirection = Enum.FillDirection.Horizontal
+	NotificationHeaderLayout.SortOrder = Enum.SortOrder.LayoutOrder
+	NotificationHeaderLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+	NotificationHeaderLayout.Padding = UDim.new(0, 8)
+
+	NotificationIcon.Name = "NotificationIcon"
+	NotificationIcon.Parent = NotificationHeader
+	NotificationIcon.BackgroundTransparency = 1
+	NotificationIcon.LayoutOrder = 1
+	NotificationIcon.Size = UDim2.new(0, 20, 0, 20)
+	NotificationIcon.Image = "rbxassetid://10723381658"
+	NotificationIcon.ImageColor3 = self.Theme.Accent
+
+	NotificationTitle.Name = "NotificationTitle"
+	NotificationTitle.Parent = NotificationHeader
+	NotificationTitle.BackgroundTransparency = 1
+	NotificationTitle.LayoutOrder = 2
+	NotificationTitle.Size = UDim2.new(0.5, 0, 0, 20)
+	NotificationTitle.Font = Enum.Font.GothamSemibold
+	NotificationTitle.Text = Notification.Title
+	NotificationTitle.TextColor3 = self.Theme.TextColor
+	NotificationTitle.TextSize = 14.000
+	NotificationTitle.TextWrapped = true
+	NotificationTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+	NotificationClose.Name = "NotificationClose"
+	NotificationClose.Parent = NotificationHeader
+	NotificationClose.BackgroundColor3 = self.Theme.DarkContrast
+	NotificationClose.LayoutOrder = 4
+	NotificationClose.Position = UDim2.new(0.925, 0, 0.175, 0)
+	NotificationClose.Size = UDim2.new(0, 22, 0, 22)
+	NotificationClose.Image = "rbxassetid://10734853284"
+	NotificationClose.ImageColor3 = self.Theme.TextColor
+
+	NotificationCloseCorner.Name = "NotificationCloseCorner"
+	NotificationCloseCorner.Parent = NotificationClose
+	NotificationCloseCorner.CornerRadius = UDim.new(0, 6)
+
+	NotificationContent.Name = "NotificationContent"
+	NotificationContent.Parent = NotificationFrame
+	NotificationContent.BackgroundTransparency = 1
+	NotificationContent.Size = UDim2.new(1, -12, 0, 0)
+	NotificationContent.Font = Enum.Font.Gotham
+	NotificationContent.LineHeight = 1.150
+	NotificationContent.Text = Notification.Content
+	NotificationContent.TextColor3 = self.Theme.SubTextColor
+	NotificationContent.TextSize = 12.000
+	NotificationContent.TextWrapped = true
+	NotificationContent.TextXAlignment = Enum.TextXAlignment.Left
+	NotificationContent.TextYAlignment = Enum.TextYAlignment.Top
+	NotificationContent.AutomaticSize = Enum.AutomaticSize.Y
+
+	NotificationBar.Name = "NotificationBar"
+	NotificationBar.Parent = NotificationFrame
+	NotificationBar.BackgroundColor3 = self.Theme.DarkContrast
+	NotificationBar.BorderSizePixel = 0
+	NotificationBar.Size = UDim2.new(1, 0, 0, 4)
+
+	NotificationBarCorner.Name = "NotificationBarCorner"
+	NotificationBarCorner.Parent = NotificationBar
+	NotificationBarCorner.CornerRadius = UDim.new(0, 6)
+
+	NotificationBarFill.Name = "NotificationBarFill"
+	NotificationBarFill.Parent = NotificationBar
+	NotificationBarFill.BackgroundColor3 = self.Theme.Accent
+	NotificationBarFill.BorderSizePixel = 0
+	NotificationBarFill.Size = UDim2.new(1, 0, 1, 0)
+
+	NotificationBarFillCorner.Name = "NotificationBarFillCorner"
+	NotificationBarFillCorner.Parent = NotificationBarFill
+	NotificationBarFillCorner.CornerRadius = UDim.new(0, 6)
+
+	-- Auto-size notification
+	NotificationFrame.Size = UDim2.new(0, 300, 0, NotificationHeader.Size.Y.Offset + NotificationContent.TextBounds.Y + NotificationBar.Size.Y.Offset + 18)
+
+	-- Close button functionality
+	NotificationClose.MouseButton1Click:Connect(function()
+		NotificationFrame:Destroy()
+	end)
+
+	-- Duration progress bar
+	spawn(function()
+		local StartTime = tick()
+		local EndTime = StartTime + Notification.Duration
+		
+		while tick() < EndTime do
+			local Elapsed = tick() - StartTime
+			local Progress = Elapsed / Notification.Duration
+			
+			NotificationBarFill.Size = UDim2.new(1 - Progress, 0, 1, 0)
+			task.wait()
+		end
+		
+		NotificationFrame:Destroy()
+	end)
+
+	-- Add to notifications table
+	table.insert(self.Notifications, NotificationFrame)
+	
+	return NotificationFrame
+end
+
+-- Cách sử dụng Notification trong Rayfield:
+function Rayfield:Notify(NotificationOptions)
+	return NotificationService:SendNotification({
+		Title = NotificationOptions.Title or "Notification",
+		Content = NotificationOptions.Content or "",
+		Duration = NotificationOptions.Duration or 5,
+		Image = NotificationOptions.Image
+	})
+end
