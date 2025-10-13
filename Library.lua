@@ -1,8 +1,8 @@
 --[[
     NazuX Library - Windows 11 Style
-    Phiên bản: 2.5
+    Phiên bản: 2.7
     Kết hợp từ: WindUI, FluentPlus, Syde, Rayfield, Orion
-    Tính năng: Giao diện Windows 11 với loading logo và hiệu ứng hiện đại
+    Tính năng: Giao diện Windows 11 với tab trên cùng và hiệu ứng hiện đại
 --]]
 
 local NazuX = {}
@@ -189,7 +189,7 @@ local function CreateLoadingScreen(parent, title, subtitle)
     return loading
 end
 
--- Main Library Function
+-- Main Library Function - TAB TRÊN CÙNG
 function NazuX:CreateWindow(options)
     options = options or {}
     local windowTitle = options.Title or "NazuX Library"
@@ -218,20 +218,17 @@ function NazuX:CreateWindow(options)
         LoadingScreen = CreateLoadingScreen(ScreenGui, windowTitle, "Initializing")
     end
     
-    -- Main Frame - Ẩn ban đầu
+    -- Main Frame - HIỂN THỊ LUÔN
     local MainFrame = Create("Frame", {
         Name = "MainFrame",
         Size = size,
         Position = UDim2.new(0.5, -size.X.Offset/2, 0.5, -size.Y.Offset/2),
         BackgroundColor3 = Theme.Background,
-        BackgroundTransparency = 1,
+        BackgroundTransparency = 0.15,
         BorderSizePixel = 0,
         ClipsDescendants = true,
         Parent = ScreenGui
     })
-    
-    -- Ẩn main frame ban đầu
-    MainFrame.Visible = false
     
     Create("UICorner", {
         CornerRadius = UDim.new(0, 8),
@@ -245,10 +242,10 @@ function NazuX:CreateWindow(options)
         Parent = MainFrame
     })
     
-    -- Top Bar
+    -- Top Bar với Title
     local TopBar = Create("Frame", {
         Name = "TopBar",
-        Size = UDim2.new(1, 0, 0, 40),
+        Size = UDim2.new(1, 0, 0, 50), -- Cao hơn để chứa title
         BackgroundColor3 = Theme.Secondary,
         BackgroundTransparency = 0.3,
         BorderSizePixel = 0,
@@ -260,7 +257,7 @@ function NazuX:CreateWindow(options)
         Parent = TopBar
     })
     
-    -- Title và Subtitle
+    -- Title và Subtitle trong TopBar
     local TitleContainer = Create("Frame", {
         Name = "TitleContainer",
         Size = UDim2.new(0.6, 0, 1, 0),
@@ -271,21 +268,21 @@ function NazuX:CreateWindow(options)
     
     local Title = Create("TextLabel", {
         Name = "Title",
-        Size = UDim2.new(1, 0, 0, 20),
+        Size = UDim2.new(1, 0, 0, 25),
         Position = UDim2.new(0, 0, 0, 5),
         BackgroundTransparency = 1,
         Text = windowTitle,
         TextColor3 = Theme.Text,
-        TextSize = 16,
+        TextSize = 18,
         TextXAlignment = Enum.TextXAlignment.Left,
-        Font = Enum.Font.GothamSemibold,
+        Font = Enum.Font.GothamBold,
         Parent = TitleContainer
     })
     
     local Subtitle = Create("TextLabel", {
         Name = "Subtitle",
-        Size = UDim2.new(1, 0, 0, 15),
-        Position = UDim2.new(0, 0, 0, 22),
+        Size = UDim2.new(1, 0, 0, 20),
+        Position = UDim2.new(0, 0, 0, 25),
         BackgroundTransparency = 1,
         Text = subtitle,
         TextColor3 = Theme.TextSecondary,
@@ -328,11 +325,11 @@ function NazuX:CreateWindow(options)
         Parent = Controls
     })
     
-    -- Tab Container
+    -- Tab Container NẰM TRÊN CÙNG - DƯỚI TOPBAR
     local TabContainer = Create("Frame", {
         Name = "TabContainer",
-        Size = UDim2.new(0, 150, 1, -40),
-        Position = UDim2.new(0, 0, 0, 40),
+        Size = UDim2.new(1, 0, 0, 40), -- Chiều cao tab
+        Position = UDim2.new(0, 0, 0, 50), -- Dưới TopBar
         BackgroundColor3 = Theme.Secondary,
         BackgroundTransparency = 0.2,
         BorderSizePixel = 0,
@@ -341,23 +338,23 @@ function NazuX:CreateWindow(options)
     
     local TabListLayout = Create("UIListLayout", {
         Padding = UDim.new(0, 5),
-        HorizontalAlignment = Enum.HorizontalAlignment.Center,
+        HorizontalAlignment = Enum.HorizontalAlignment.Left, -- Căn trái
         SortOrder = Enum.SortOrder.LayoutOrder,
         Parent = TabContainer
     })
     
     Create("UIPadding", {
-        PaddingTop = UDim.new(0, 10),
-        PaddingLeft = UDim.new(0, 5),
-        PaddingRight = UDim.new(0, 5),
+        PaddingTop = UDim.new(0, 5),
+        PaddingLeft = UDim.new(0, 10),
+        PaddingRight = UDim.new(0, 10),
         Parent = TabContainer
     })
     
-    -- Content Container
+    -- Content Container - CHIẾM TOÀN BỘ KHÔNG GIAN CÒN LẠI
     local ContentContainer = Create("ScrollingFrame", {
         Name = "ContentContainer",
-        Size = UDim2.new(1, -150, 1, -40),
-        Position = UDim2.new(0, 150, 0, 40),
+        Size = UDim2.new(1, 0, 1, -90), -- Trừ đi TopBar và TabContainer
+        Position = UDim2.new(0, 0, 0, 90), -- Dưới TabContainer
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         ScrollBarThickness = 3,
@@ -392,9 +389,7 @@ function NazuX:CreateWindow(options)
             LoadingScreen:Complete()
         end
         
-        -- Hiển thị main frame với hiệu ứng
-        MainFrame.Visible = true
-        Tween(MainFrame, {BackgroundTransparency = 0.15}, 0.5)
+        -- Hiển thị blur effect
         Tween(Blur, {Size = 5}, 0.5)
     end
     
@@ -410,7 +405,7 @@ function NazuX:CreateWindow(options)
     MinimizeButton.MouseButton1Click:Connect(function()
         minimized = not minimized
         if minimized then
-            Tween(MainFrame, {Size = UDim2.new(0, MainFrame.Size.X.Offset, 0, 40)}, 0.3)
+            Tween(MainFrame, {Size = UDim2.new(0, MainFrame.Size.X.Offset, 0, 50)}, 0.3)
         else
             Tween(MainFrame, {Size = size}, 0.3)
         end
@@ -467,7 +462,7 @@ function NazuX:CreateWindow(options)
         end
     end)
     
-    -- Tab functions
+    -- Tab functions - TAB NẰM NGANG
     local function CreateTab(options)
         local tabOptions = typeof(options) == "table" and options or {Title = tostring(options)}
         local name = tabOptions.Title or "Tab"
@@ -475,35 +470,30 @@ function NazuX:CreateWindow(options)
         
         local tabButton = Create("TextButton", {
             Name = name .. "Tab",
-            Size = UDim2.new(1, -10, 0, 35),
+            Size = UDim2.new(0, 120, 0, 30), -- Tab nằm ngang
             BackgroundColor3 = Theme.Card,
             BackgroundTransparency = 0.5,
             Text = icon ~= "" and (icon .. " " .. name) or name,
             TextColor3 = Theme.TextSecondary,
-            TextSize = 14,
-            TextXAlignment = Enum.TextXAlignment.Left,
+            TextSize = 12,
+            TextXAlignment = Enum.TextXAlignment.Center,
             Font = Enum.Font.Gotham,
             Parent = TabContainer,
             LayoutOrder = #tabs + 1
         })
-    
+        
         Create("UICorner", {
             CornerRadius = UDim.new(0, 6),
             Parent = tabButton
         })
-    
+        
         Create("UIStroke", {
             Color = Theme.Accent,
             Transparency = 0.8,
             Thickness = 1,
             Parent = tabButton
         })
-    
-        Create("UIPadding", {
-            PaddingLeft = UDim.new(0, 10),
-            Parent = tabButton
-        })
-    
+        
         local tabContent = Create("Frame", {
             Name = name .. "Content",
             Size = UDim2.new(1, 0, 1, 0),
@@ -511,46 +501,46 @@ function NazuX:CreateWindow(options)
             Visible = false,
             Parent = ContentContainer
         })
-    
+        
         local tabContentLayout = Create("UIListLayout", {
             Padding = UDim.new(0, 10),
             HorizontalAlignment = Enum.HorizontalAlignment.Center,
             SortOrder = Enum.SortOrder.LayoutOrder,
             Parent = tabContent
         })
-    
+        
         Create("UIPadding", {
             PaddingTop = UDim.new(0, 5),
             PaddingLeft = UDim.new(0, 5),
             PaddingRight = UDim.new(0, 5),
             Parent = tabContent
         })
-    
+        
         local tab = {
             Button = tabButton,
             Content = tabContent,
             Name = name,
             Icon = icon
         }
-    
+        
         table.insert(tabs, tab)
-    
+        
         -- Hover effects
         tabButton.MouseEnter:Connect(function()
             if currentTab ~= tab then
                 Tween(tabButton, {BackgroundColor3 = Color3.fromRGB(50, 50, 50)}, 0.2)
             end
-        })
-    
+        end)
+        
         tabButton.MouseLeave:Connect(function()
             if currentTab ~= tab then
                 Tween(tabButton, {BackgroundColor3 = Theme.Card}, 0.2)
             end
-        })
-    
+        end)
+        
         tabButton.MouseButton1Click:Connect(function()
             CreateRippleEffect(tabButton)
-        
+            
             if currentTab then
                 currentTab.Content.Visible = false
                 Tween(currentTab.Button, {
@@ -558,15 +548,15 @@ function NazuX:CreateWindow(options)
                     TextColor3 = Theme.TextSecondary
                 }, 0.2)
             end
-        
+            
             currentTab = tab
             tab.Content.Visible = true
             Tween(tab.Button, {
                 BackgroundColor3 = Theme.Accent,
                 TextColor3 = Theme.Text
             }, 0.2)
-        })
-    
+        end)
+        
         -- Tự động chọn tab đầu tiên
         if #tabs == 1 then
             currentTab = tab
@@ -576,7 +566,7 @@ function NazuX:CreateWindow(options)
                 TextColor3 = Theme.Text
             }, 0.2)
         end
-    
+        
         return tab
     end
     
@@ -608,7 +598,7 @@ function NazuX:CreateWindow(options)
     
     function window:Minimize()
         minimized = true
-        Tween(MainFrame, {Size = UDim2.new(0, MainFrame.Size.X.Offset, 0, 40)}, 0.3)
+        Tween(MainFrame, {Size = UDim2.new(0, MainFrame.Size.X.Offset, 0, 50)}, 0.3)
     end
     
     function window:Maximize()
@@ -624,7 +614,7 @@ function NazuX:CreateWindow(options)
         return CreateLoadingScreen(ScreenGui, title, subtitle)
     end
     
-    -- TỰ ĐỘNG HIỂN THỊ UI SAU 1 GIÂY
+    -- TỰ ĐỘNG HIỂN THỊ BLUR SAU 1 GIÂY
     delay(1, function()
         ShowMainUI()
     end)
@@ -632,7 +622,7 @@ function NazuX:CreateWindow(options)
     return window
 end
 
--- Control functions
+-- Control functions (giữ nguyên)
 function NazuX:AddButton(tab, options)
     options = options or {}
     local name = options.Name or "Button"
