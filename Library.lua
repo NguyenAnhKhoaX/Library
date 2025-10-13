@@ -1,8 +1,8 @@
 --[[
     NazuX Library - Windows 11 Style
-    Phiên bản: 2.3
+    Phiên bản: 2.5
     Kết hợp từ: WindUI, FluentPlus, Syde, Rayfield, Orion
-    Tính năng: Giao diện Windows 11 với transparency, loading screen và hiệu ứng hiện đại
+    Tính năng: Giao diện Windows 11 với loading logo và hiệu ứng hiện đại
 --]]
 
 local NazuX = {}
@@ -79,7 +79,7 @@ local function CreateRippleEffect(button)
     game:GetService("Debris"):AddItem(Ripple, 0.5)
 end
 
--- Loading Screen (lấy cảm hứng từ Syde)
+-- Loading Screen với Logo
 local function CreateLoadingScreen(parent, title, subtitle)
     local LoadingScreen = Create("Frame", {
         Name = "LoadingScreen",
@@ -96,139 +96,104 @@ local function CreateLoadingScreen(parent, title, subtitle)
         Parent = LoadingScreen
     })
     
-    -- Loading Container
-    local LoadingContainer = Create("Frame", {
-        Name = "LoadingContainer",
-        Size = UDim2.new(0.6, 0, 0.4, 0),
-        Position = UDim2.new(0.2, 0, 0.3, 0),
+    -- Logo Container
+    local LogoContainer = Create("Frame", {
+        Name = "LogoContainer",
+        Size = UDim2.new(0, 120, 0, 120),
+        Position = UDim2.new(0.5, -60, 0.4, -60),
         BackgroundTransparency = 1,
         Parent = LoadingScreen
     })
     
-    -- Loading Icon/Spinner
-    local LoadingSpinner = Create("Frame", {
-        Name = "LoadingSpinner",
-        Size = UDim2.new(0, 80, 0, 80),
-        Position = UDim2.new(0.5, -40, 0, 0),
-        BackgroundTransparency = 1,
-        Parent = LoadingContainer
-    })
-    
-    -- Spinner Circle
-    local SpinnerCircle = Create("Frame", {
-        Name = "SpinnerCircle",
+    -- Logo chính (có thể thay bằng hình ảnh)
+    local Logo = Create("TextLabel", {
+        Name = "Logo",
         Size = UDim2.new(1, 0, 1, 0),
         BackgroundTransparency = 1,
-        Parent = LoadingSpinner
+        Text = "N",
+        TextColor3 = Theme.Accent,
+        TextSize = 48,
+        TextScaled = false,
+        Font = Enum.Font.GothamBold,
+        Parent = LogoContainer
+    })
+    
+    -- Logo Background Circle
+    local LogoCircle = Create("Frame", {
+        Name = "LogoCircle",
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundColor3 = Theme.Accent,
+        BackgroundTransparency = 0.9,
+        Parent = LogoContainer
     })
     
     Create("UICorner", {
         CornerRadius = UDim.new(1, 0),
-        Parent = SpinnerCircle
+        Parent = LogoCircle
     })
     
     Create("UIStroke", {
         Color = Theme.Accent,
-        Thickness = 3,
-        Transparency = 0.3,
-        Parent = SpinnerCircle
-    })
-    
-    -- Spinner Fill
-    local SpinnerFill = Create("Frame", {
-        Name = "SpinnerFill",
-        Size = UDim2.new(1, 0, 1, 0),
-        BackgroundTransparency = 1,
-        Parent = SpinnerCircle
-    })
-    
-    local UIGradient = Create("UIGradient", {
-        Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Theme.Accent),
-            ColorSequenceKeypoint.new(0.5, Theme.AccentLight),
-            ColorSequenceKeypoint.new(1, Theme.Accent)
-        }),
-        Rotation = 0,
-        Parent = SpinnerFill
-    })
-    
-    Create("UICorner", {
-        CornerRadius = UDim.new(1, 0),
-        Parent = SpinnerFill
-    })
-    
-    Create("UIStroke", {
-        Color = Theme.Accent,
-        Thickness = 3,
-        Parent = SpinnerFill
+        Thickness = 2,
+        Parent = LogoCircle
     })
     
     -- Loading Text
     local LoadingTitle = Create("TextLabel", {
         Name = "LoadingTitle",
         Size = UDim2.new(1, 0, 0, 40),
-        Position = UDim2.new(0, 0, 0.6, 0),
+        Position = UDim2.new(0, 0, 0.7, 0),
         BackgroundTransparency = 1,
         Text = title or "NazuX Library",
         TextColor3 = Theme.Text,
         TextSize = 24,
-        TextScaled = false,
         Font = Enum.Font.GothamBold,
-        Parent = LoadingContainer
+        Parent = LogoContainer
     })
     
     local LoadingSubtitle = Create("TextLabel", {
         Name = "LoadingSubtitle",
         Size = UDim2.new(1, 0, 0, 25),
-        Position = UDim2.new(0, 0, 0.8, 0),
+        Position = UDim2.new(0, 0, 0.85, 0),
         BackgroundTransparency = 1,
         Text = subtitle or "Loading...",
         TextColor3 = Theme.TextSecondary,
-        TextSize = 16,
+        TextSize = 14,
         Font = Enum.Font.Gotham,
-        Parent = LoadingContainer
+        Parent = LogoContainer
     })
     
-    -- Progress Bar
-    local ProgressBarContainer = Create("Frame", {
-        Name = "ProgressBarContainer",
-        Size = UDim2.new(1, 0, 0, 8),
-        Position = UDim2.new(0, 0, 0.9, 0),
-        BackgroundColor3 = Theme.Secondary,
-        Parent = LoadingContainer
-    })
-    
-    Create("UICorner", {
-        CornerRadius = UDim.new(1, 0),
-        Parent = ProgressBarContainer
-    })
-    
-    local ProgressBar = Create("Frame", {
-        Name = "ProgressBar",
-        Size = UDim2.new(0, 0, 1, 0),
-        BackgroundColor3 = Theme.Accent,
-        Parent = ProgressBarContainer
-    })
-    
-    Create("UICorner", {
-        CornerRadius = UDim.new(1, 0),
-        Parent = ProgressBar
-    })
-    
-    -- Animation
-    local spinConnection
-    local function StartSpinner()
-        local rotation = 0
-        spinConnection = RunService.RenderStepped:Connect(function(delta)
-            rotation = (rotation + 180 * delta) % 360
-            UIGradient.Rotation = rotation
+    -- Loading Dots Animation
+    local dots = "."
+    local dotConnection
+    local function StartDotAnimation()
+        dotConnection = RunService.Heartbeat:Connect(function()
+            dots = dots == "..." and "." or dots .. "."
+            LoadingSubtitle.Text = (subtitle or "Loading") .. dots
         end)
     end
     
-    local function StopSpinner()
-        if spinConnection then
-            spinConnection:Disconnect()
-            spinConnection = nil
+    local function StopDotAnimation()
+        if dotConnection then
+            dotConnection:Disconnect()
+            dotConnection = nil
+        end
+    end
+    
+    -- Logo Pulse Animation
+    local pulseConnection
+    local function StartLogoAnimation()
+        pulseConnection = RunService.Heartbeat:Connect(function()
+            local scale = 1 + math.sin(tick() * 5) * 0.1
+            LogoContainer.Size = UDim2.new(0, 120 * scale, 0, 120 * scale)
+            LogoContainer.Position = UDim2.new(0.5, -60 * scale, 0.4, -60 * scale)
+        end)
+    end
+    
+    local function StopLogoAnimation()
+        if pulseConnection then
+            pulseConnection:Disconnect()
+            pulseConnection = nil
         end
     end
     
@@ -236,8 +201,7 @@ local function CreateLoadingScreen(parent, title, subtitle)
     local loading = {}
     
     function loading:SetProgress(progress)
-        progress = math.clamp(progress, 0, 1)
-        Tween(ProgressBar, {Size = UDim2.new(progress, 0, 1, 0)}, 0.3)
+        -- Không cần progress bar cho loading nhanh
     end
     
     function loading:SetText(text)
@@ -245,34 +209,23 @@ local function CreateLoadingScreen(parent, title, subtitle)
     end
     
     function loading:Complete()
-        StopSpinner()
-        Tween(LoadingScreen, {BackgroundTransparency = 1}, 0.5)
-        Tween(LoadingContainer, {Size = UDim2.new(0, 0, 0, 0)}, 0.5)
-        wait(0.5)
+        StopDotAnimation()
+        StopLogoAnimation()
+        Tween(LoadingScreen, {BackgroundTransparency = 1}, 0.3)
+        Tween(LogoContainer, {Size = UDim2.new(0, 0, 0, 0)}, 0.3)
+        wait(0.3)
         LoadingScreen:Destroy()
     end
     
     function loading:Destroy()
-        StopSpinner()
+        StopDotAnimation()
+        StopLogoAnimation()
         LoadingScreen:Destroy()
     end
     
     -- Start animations
-    StartSpinner()
-    
-    -- Pulse animation for title
-    local pulseTitle = true
-    spawn(function()
-        while pulseTitle and LoadingTitle do
-            Tween(LoadingTitle, {TextTransparency = 0.3}, 0.8)
-            wait(0.8)
-            if not pulseTitle then break end
-            Tween(LoadingTitle, {TextTransparency = 0}, 0.8)
-            wait(0.8)
-        end
-    end)
-    
-    loading.SetProgress(0)
+    StartDotAnimation()
+    StartLogoAnimation()
     
     return loading
 end
@@ -300,37 +253,26 @@ function NazuX:CreateWindow(options)
         Parent = ScreenGui
     })
     
-    -- Loading Screen (thêm trước khi tạo main UI)
+    -- Loading Screen với Logo
     local LoadingScreen
     if showLoading then
-        LoadingScreen = CreateLoadingScreen(ScreenGui, windowTitle, "Initializing...")
-        
-        -- Simulate loading progress
-        spawn(function()
-            for i = 1, 5 do
-                LoadingScreen:SetProgress(i * 0.2)
-                LoadingScreen:SetText("Loading components... " .. i .. "/5")
-                wait(0.3)
-            end
-        end)
+        LoadingScreen = CreateLoadingScreen(ScreenGui, windowTitle, "Initializing")
     end
     
-    -- Main Frame
+    -- Main Frame - Ẩn ban đầu
     local MainFrame = Create("Frame", {
         Name = "MainFrame",
         Size = size,
         Position = UDim2.new(0.5, -size.X.Offset/2, 0.5, -size.Y.Offset/2),
         BackgroundColor3 = Theme.Background,
-        BackgroundTransparency = 0.15,
+        BackgroundTransparency = 1, -- Bắt đầu với transparent
         BorderSizePixel = 0,
         ClipsDescendants = true,
         Parent = ScreenGui
     })
     
-    -- Ẩn main frame ban đầu nếu có loading
-    if showLoading then
-        MainFrame.Visible = false
-    end
+    -- Ẩn main frame ban đầu
+    MainFrame.Visible = false
     
     Create("UICorner", {
         CornerRadius = UDim.new(0, 8),
@@ -484,18 +426,17 @@ function NazuX:CreateWindow(options)
     local currentTab = nil
     local minimized = false
     
-    -- Function để hiển thị UI sau khi loading
+    -- Function hiển thị UI sau loading
     local function ShowMainUI()
+        -- Ẩn loading screen
         if showLoading and LoadingScreen then
-            LoadingScreen:SetProgress(1)
-            LoadingScreen:SetText("Complete!")
-            wait(0.5)
             LoadingScreen:Complete()
         end
         
+        -- Hiển thị main frame với hiệu ứng
         MainFrame.Visible = true
+        Tween(MainFrame, {BackgroundTransparency = 0.15}, 0.5)
         Tween(Blur, {Size = 5}, 0.5)
-        Tween(MainFrame, {BackgroundTransparency = 0.15}, 0.3)
     end
     
     -- Close functionality
@@ -724,7 +665,7 @@ function NazuX:CreateWindow(options)
         return CreateLoadingScreen(ScreenGui, title, subtitle)
     end
     
-    -- Tự động hiển thị UI sau 1 giây (có thể custom)
+    -- TỰ ĐỘNG HIỂN THỊ UI SAU 1 GIÂY
     delay(1, function()
         ShowMainUI()
     end)
@@ -732,7 +673,7 @@ function NazuX:CreateWindow(options)
     return window
 end
 
--- Control functions (giữ nguyên từ trước)
+-- Control functions
 function NazuX:AddButton(tab, options)
     options = options or {}
     local name = options.Name or "Button"
