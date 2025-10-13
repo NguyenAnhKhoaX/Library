@@ -1,6 +1,6 @@
 --[[
     NazuX Library - Windows 11 Style
-    Phiên bản: 2.0
+    Phiên bản: 2.1
     Kết hợp từ: WindUI, FluentPlus, Syde, Rayfield, Orion
     Tính năng: Giao diện Windows 11 với transparency và hiệu ứng hiện đại
 --]]
@@ -14,6 +14,7 @@ local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
+local TextService = game:GetService("TextService")
 
 -- Colors - Windows 11 Mica Theme
 local Theme = {
@@ -295,7 +296,7 @@ function NazuX:CreateWindow(options)
     end)
     
     -- Dragging functionality (cải tiến từ Rayfield)
-    local dragging = true
+    local dragging = false
     local dragInput, dragStart, startPos
     
     local function Update(input)
@@ -345,14 +346,18 @@ function NazuX:CreateWindow(options)
         end
     end)
     
-    -- Tab functions (kết hợp từ nhiều nguồn)
-    local function CreateTab(name, icon)
+    -- Tab functions (CẬP NHẬT: hỗ trợ table parameters)
+    local function CreateTab(options)
+        local tabOptions = typeof(options) == "table" and options or {Title = tostring(options)}
+        local name = tabOptions.Title or "Tab"
+        local icon = tabOptions.Icon or ""
+        
         local tabButton = Create("TextButton", {
             Name = name .. "Tab",
             Size = UDim2.new(1, -10, 0, 35),
             BackgroundColor3 = Theme.Card,
             BackgroundTransparency = 0.5,
-            Text = "  " .. name,
+            Text = icon ~= "" and (" " .. icon .. " " .. name) or ("  " .. name),
             TextColor3 = Theme.TextSecondary,
             TextSize = 14,
             TextXAlignment = Enum.TextXAlignment.Left,
@@ -398,7 +403,8 @@ function NazuX:CreateWindow(options)
         local tab = {
             Button = tabButton,
             Content = tabContent,
-            Name = name
+            Name = name,
+            Icon = icon
         }
         
         table.insert(tabs, tab)
@@ -470,8 +476,8 @@ function NazuX:CreateWindow(options)
     -- Return window functions
     local window = {}
     
-    function window:AddTab(name, icon)
-        return CreateTab(name, icon)
+    function window:AddTab(options)
+        return CreateTab(options)
     end
     
     function window:Destroy()
@@ -660,10 +666,11 @@ function NazuX:AddSlider(tab, options)
     local default = options.Default or min
     local callback = options.Callback or function() end
     local precise = options.Precise or false
+    local suffix = options.Suffix or ""
     
     local SliderFrame = Create("Frame", {
         Name = name .. "Slider",
-        Size = UDim2.new(1, -10, 0, 60),
+        Size = UDim2.new(1, -10, 0, 70),
         BackgroundColor3 = Theme.Card,
         BackgroundTransparency = 0.3,
         Parent = tab.Content,
@@ -697,10 +704,10 @@ function NazuX:AddSlider(tab, options)
     
     local ValueLabel = Create("TextLabel", {
         Name = "ValueLabel",
-        Size = UDim2.new(0, 60, 0, 20),
-        Position = UDim2.new(1, -70, 0, 5),
+        Size = UDim2.new(0, 80, 0, 20),
+        Position = UDim2.new(1, -90, 0, 5),
         BackgroundTransparency = 1,
-        Text = tostring(default),
+        Text = tostring(default) .. suffix,
         TextColor3 = Theme.TextSecondary,
         TextSize = 14,
         TextXAlignment = Enum.TextXAlignment.Right,
@@ -711,7 +718,7 @@ function NazuX:AddSlider(tab, options)
     local SliderBackground = Create("Frame", {
         Name = "SliderBackground",
         Size = UDim2.new(1, -20, 0, 6),
-        Position = UDim2.new(0, 10, 1, -25),
+        Position = UDim2.new(0, 10, 1, -30),
         BackgroundColor3 = Theme.Secondary,
         Parent = SliderFrame
     })
@@ -736,6 +743,7 @@ function NazuX:AddSlider(tab, options)
     local SliderButton = Create("TextButton", {
         Name = "SliderButton",
         Size = UDim2.new(0, 20, 0, 20),
+        Position = UDim2.new((default - min) / (max - min), -10, 0.5, -10),
         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
         Text = "",
         Parent = SliderBackground
@@ -756,32 +764,59 @@ function NazuX:AddSlider(tab, options)
         
         Tween(SliderFill, {Size = UDim2.new(percentage, 0, 1, 0)}, 0.1)
         Tween(SliderButton, {Position = UDim2.new(percentage, -10, 0.5, -10)}, 0.1)
-        ValueLabel.Text = tostring(currentValue)
+        ValueLabel.Text = tostring(currentValue) .. suffix
         callback(currentValue)
     end
     
-    SliderButton.MouseButton1Down:Connect(function()
-        dragging = true
-    end)
+    -- FIXED: Slider dragging functionality
+    local function onInputBegan(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            
+            -- Update slider position based on mouse
+            local function updateSliderPosition()
+                while dragging do
+                    local mouse = UserInputService:GetMouseLocation()
+                    local sliderAbsPos = SliderBackground.AbsolutePosition
+                    local sliderAbsSize = SliderBackground.AbsoluteSize
+                    
+                    local relativeX = (mouse.X - sliderAbsPos.X) / sliderAbsSize.X
+                    relativeX = math.clamp(relativeX, 0, 1)
+                    
+                    local value = min + (max - min) * relativeX
+                    UpdateSlider(value)
+                    
+                    RunService.RenderStepped:Wait()
+                end
+            end
+            
+            spawn(updateSliderPosition)
+        end
+    end
     
-    UserInputService.InputEnded:Connect(function(input)
+    local function onInputEnded(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = false
         end
-    end)
+    end
     
-    UserInputService.InputChanged:Connect(function(input)
-        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-            local mousePos = UserInputService:GetMouseLocation()
-            local sliderAbsPos = SliderBackground.AbsolutePosition
-            local sliderAbsSize = SliderBackground.AbsoluteSize
-            
-            local relativeX = (mousePos.X - sliderAbsPos.X) / sliderAbsSize.X
-            relativeX = math.clamp(relativeX, 0, 1)
-            
-            local value = min + (max - min) * relativeX
-            UpdateSlider(value)
-        end
+    -- Connect events to both slider background and button
+    SliderBackground.InputBegan:Connect(onInputBegan)
+    SliderBackground.InputEnded:Connect(onInputEnded)
+    SliderButton.InputBegan:Connect(onInputBegan)
+    SliderButton.InputEnded:Connect(onInputEnded)
+    
+    -- Also allow clicking anywhere on the slider background
+    SliderBackground.MouseButton1Down:Connect(function()
+        local mouse = UserInputService:GetMouseLocation()
+        local sliderAbsPos = SliderBackground.AbsolutePosition
+        local sliderAbsSize = SliderBackground.AbsoluteSize
+        
+        local relativeX = (mouse.X - sliderAbsPos.X) / sliderAbsSize.X
+        relativeX = math.clamp(relativeX, 0, 1)
+        
+        local value = min + (max - min) * relativeX
+        UpdateSlider(value)
     end)
     
     UpdateSlider(default)
@@ -802,6 +837,7 @@ end
 function NazuX:AddLabel(tab, options)
     options = options or {}
     local text = options.Text or "Label"
+    local centered = options.Center or false
     
     local Label = Create("TextLabel", {
         Name = "Label",
@@ -810,7 +846,7 @@ function NazuX:AddLabel(tab, options)
         Text = text,
         TextColor3 = Theme.Text,
         TextSize = 14,
-        TextXAlignment = Enum.TextXAlignment.Left,
+        TextXAlignment = centered and Enum.TextXAlignment.Center or Enum.TextXAlignment.Left,
         Font = Enum.Font.Gotham,
         Parent = tab.Content,
         LayoutOrder = #tab.Content:GetChildren()
