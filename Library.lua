@@ -79,7 +79,7 @@ local function CreateRippleEffect(button)
     game:GetService("Debris"):AddItem(Ripple, 0.5)
 end
 
--- Loading Screen với Logo
+-- Loading Screen với Logo đơn giản
 local function CreateLoadingScreen(parent, title, subtitle)
     local LoadingScreen = Create("Frame", {
         Name = "LoadingScreen",
@@ -105,7 +105,7 @@ local function CreateLoadingScreen(parent, title, subtitle)
         Parent = LoadingScreen
     })
     
-    -- Logo chính (có thể thay bằng hình ảnh)
+    -- Logo chính
     local Logo = Create("TextLabel", {
         Name = "Logo",
         Size = UDim2.new(1, 0, 1, 0),
@@ -113,29 +113,8 @@ local function CreateLoadingScreen(parent, title, subtitle)
         Text = "N",
         TextColor3 = Theme.Accent,
         TextSize = 48,
-        TextScaled = false,
         Font = Enum.Font.GothamBold,
         Parent = LogoContainer
-    })
-    
-    -- Logo Background Circle
-    local LogoCircle = Create("Frame", {
-        Name = "LogoCircle",
-        Size = UDim2.new(1, 0, 1, 0),
-        BackgroundColor3 = Theme.Accent,
-        BackgroundTransparency = 0.9,
-        Parent = LogoContainer
-    })
-    
-    Create("UICorner", {
-        CornerRadius = UDim.new(1, 0),
-        Parent = LogoCircle
-    })
-    
-    Create("UIStroke", {
-        Color = Theme.Accent,
-        Thickness = 2,
-        Parent = LogoCircle
     })
     
     -- Loading Text
@@ -163,7 +142,7 @@ local function CreateLoadingScreen(parent, title, subtitle)
         Parent = LogoContainer
     })
     
-    -- Loading Dots Animation
+    -- Loading Dots Animation đơn giản
     local dots = "."
     local dotConnection
     local function StartDotAnimation()
@@ -180,28 +159,11 @@ local function CreateLoadingScreen(parent, title, subtitle)
         end
     end
     
-    -- Logo Pulse Animation
-    local pulseConnection
-    local function StartLogoAnimation()
-        pulseConnection = RunService.Heartbeat:Connect(function()
-            local scale = 1 + math.sin(tick() * 5) * 0.1
-            LogoContainer.Size = UDim2.new(0, 120 * scale, 0, 120 * scale)
-            LogoContainer.Position = UDim2.new(0.5, -60 * scale, 0.4, -60 * scale)
-        end)
-    end
-    
-    local function StopLogoAnimation()
-        if pulseConnection then
-            pulseConnection:Disconnect()
-            pulseConnection = nil
-        end
-    end
-    
     -- Progress functions
     local loading = {}
     
     function loading:SetProgress(progress)
-        -- Không cần progress bar cho loading nhanh
+        -- Không cần progress bar
     end
     
     function loading:SetText(text)
@@ -210,7 +172,6 @@ local function CreateLoadingScreen(parent, title, subtitle)
     
     function loading:Complete()
         StopDotAnimation()
-        StopLogoAnimation()
         Tween(LoadingScreen, {BackgroundTransparency = 1}, 0.3)
         Tween(LogoContainer, {Size = UDim2.new(0, 0, 0, 0)}, 0.3)
         wait(0.3)
@@ -219,13 +180,11 @@ local function CreateLoadingScreen(parent, title, subtitle)
     
     function loading:Destroy()
         StopDotAnimation()
-        StopLogoAnimation()
         LoadingScreen:Destroy()
     end
     
-    -- Start animations
+    -- Start animation
     StartDotAnimation()
-    StartLogoAnimation()
     
     return loading
 end
@@ -265,7 +224,7 @@ function NazuX:CreateWindow(options)
         Size = size,
         Position = UDim2.new(0.5, -size.X.Offset/2, 0.5, -size.Y.Offset/2),
         BackgroundColor3 = Theme.Background,
-        BackgroundTransparency = 1, -- Bắt đầu với transparent
+        BackgroundTransparency = 1,
         BorderSizePixel = 0,
         ClipsDescendants = true,
         Parent = ScreenGui
@@ -527,24 +486,24 @@ function NazuX:CreateWindow(options)
             Parent = TabContainer,
             LayoutOrder = #tabs + 1
         })
-        
+    
         Create("UICorner", {
             CornerRadius = UDim.new(0, 6),
             Parent = tabButton
         })
-        
+    
         Create("UIStroke", {
             Color = Theme.Accent,
             Transparency = 0.8,
             Thickness = 1,
             Parent = tabButton
         })
-        
+    
         Create("UIPadding", {
             PaddingLeft = UDim.new(0, 10),
             Parent = tabButton
         })
-        
+    
         local tabContent = Create("Frame", {
             Name = name .. "Content",
             Size = UDim2.new(1, 0, 1, 0),
@@ -552,46 +511,46 @@ function NazuX:CreateWindow(options)
             Visible = false,
             Parent = ContentContainer
         })
-        
+    
         local tabContentLayout = Create("UIListLayout", {
             Padding = UDim.new(0, 10),
             HorizontalAlignment = Enum.HorizontalAlignment.Center,
             SortOrder = Enum.SortOrder.LayoutOrder,
             Parent = tabContent
         })
-        
+    
         Create("UIPadding", {
             PaddingTop = UDim.new(0, 5),
             PaddingLeft = UDim.new(0, 5),
             PaddingRight = UDim.new(0, 5),
             Parent = tabContent
         })
-        
+    
         local tab = {
             Button = tabButton,
             Content = tabContent,
             Name = name,
             Icon = icon
         }
-        
+    
         table.insert(tabs, tab)
-        
+    
         -- Hover effects
         tabButton.MouseEnter:Connect(function()
             if currentTab ~= tab then
                 Tween(tabButton, {BackgroundColor3 = Color3.fromRGB(50, 50, 50)}, 0.2)
             end
-        end)
-        
+        })
+    
         tabButton.MouseLeave:Connect(function()
             if currentTab ~= tab then
                 Tween(tabButton, {BackgroundColor3 = Theme.Card}, 0.2)
             end
-        end)
-        
+        })
+    
         tabButton.MouseButton1Click:Connect(function()
             CreateRippleEffect(tabButton)
-            
+        
             if currentTab then
                 currentTab.Content.Visible = false
                 Tween(currentTab.Button, {
@@ -599,15 +558,15 @@ function NazuX:CreateWindow(options)
                     TextColor3 = Theme.TextSecondary
                 }, 0.2)
             end
-            
+        
             currentTab = tab
             tab.Content.Visible = true
             Tween(tab.Button, {
                 BackgroundColor3 = Theme.Accent,
                 TextColor3 = Theme.Text
             }, 0.2)
-        end)
-        
+        })
+    
         -- Tự động chọn tab đầu tiên
         if #tabs == 1 then
             currentTab = tab
@@ -617,7 +576,7 @@ function NazuX:CreateWindow(options)
                 TextColor3 = Theme.Text
             }, 0.2)
         end
-        
+    
         return tab
     end
     
