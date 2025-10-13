@@ -295,7 +295,7 @@ function NazuX:CreateWindow(options)
     end)
     
     -- Dragging functionality (cải tiến từ Rayfield)
-    local dragging = false
+    local dragging = true
     local dragInput, dragStart, startPos
     
     local function Update(input)
