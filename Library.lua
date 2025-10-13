@@ -170,7 +170,7 @@ function NazuX:CreateWindow(options)
     end)
     
     -- Dragging functionality
-    local dragging = false
+    local dragging = true
     local dragInput, dragStart, startPos
     
     local function Update(input)
