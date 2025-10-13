@@ -1,8 +1,8 @@
 --[[
     NazuX Library - Windows 11 Style
-    Phiên bản: 2.1
+    Phiên bản: 2.3
     Kết hợp từ: WindUI, FluentPlus, Syde, Rayfield, Orion
-    Tính năng: Giao diện Windows 11 với transparency và hiệu ứng hiện đại
+    Tính năng: Giao diện Windows 11 với transparency, loading screen và hiệu ứng hiện đại
 --]]
 
 local NazuX = {}
@@ -14,7 +14,6 @@ local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
-local TextService = game:GetService("TextService")
 
 -- Colors - Windows 11 Mica Theme
 local Theme = {
@@ -30,17 +29,11 @@ local Theme = {
     Card = Color3.fromRGB(45, 45, 45)
 }
 
--- Utility functions (kết hợp từ WindUI và Rayfield)
+-- Utility functions
 local function Create(class, properties)
     local obj = Instance.new(class)
     for prop, value in pairs(properties) do
-        if prop == "Parent" then
-            continue
-        end
         obj[prop] = value
-    end
-    if properties.Parent then
-        obj.Parent = properties.Parent
     end
     return obj
 end
@@ -55,7 +48,7 @@ local function Tween(object, goals, duration, style, direction)
     return tween
 end
 
--- Ripple effect (lấy cảm hứng từ FluentPlus)
+-- Ripple effect
 local function CreateRippleEffect(button)
     local Ripple = Create("Frame", {
         Name = "Ripple",
@@ -86,13 +79,212 @@ local function CreateRippleEffect(button)
     game:GetService("Debris"):AddItem(Ripple, 0.5)
 end
 
--- Main Library Function (kết hợp từ Rayfield và Orion)
+-- Loading Screen (lấy cảm hứng từ Syde)
+local function CreateLoadingScreen(parent, title, subtitle)
+    local LoadingScreen = Create("Frame", {
+        Name = "LoadingScreen",
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundColor3 = Theme.Background,
+        BackgroundTransparency = 0.1,
+        BorderSizePixel = 0,
+        Parent = parent,
+        ZIndex = 100
+    })
+    
+    Create("UICorner", {
+        CornerRadius = UDim.new(0, 8),
+        Parent = LoadingScreen
+    })
+    
+    -- Loading Container
+    local LoadingContainer = Create("Frame", {
+        Name = "LoadingContainer",
+        Size = UDim2.new(0.6, 0, 0.4, 0),
+        Position = UDim2.new(0.2, 0, 0.3, 0),
+        BackgroundTransparency = 1,
+        Parent = LoadingScreen
+    })
+    
+    -- Loading Icon/Spinner
+    local LoadingSpinner = Create("Frame", {
+        Name = "LoadingSpinner",
+        Size = UDim2.new(0, 80, 0, 80),
+        Position = UDim2.new(0.5, -40, 0, 0),
+        BackgroundTransparency = 1,
+        Parent = LoadingContainer
+    })
+    
+    -- Spinner Circle
+    local SpinnerCircle = Create("Frame", {
+        Name = "SpinnerCircle",
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundTransparency = 1,
+        Parent = LoadingSpinner
+    })
+    
+    Create("UICorner", {
+        CornerRadius = UDim.new(1, 0),
+        Parent = SpinnerCircle
+    })
+    
+    Create("UIStroke", {
+        Color = Theme.Accent,
+        Thickness = 3,
+        Transparency = 0.3,
+        Parent = SpinnerCircle
+    })
+    
+    -- Spinner Fill
+    local SpinnerFill = Create("Frame", {
+        Name = "SpinnerFill",
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundTransparency = 1,
+        Parent = SpinnerCircle
+    })
+    
+    local UIGradient = Create("UIGradient", {
+        Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Theme.Accent),
+            ColorSequenceKeypoint.new(0.5, Theme.AccentLight),
+            ColorSequenceKeypoint.new(1, Theme.Accent)
+        }),
+        Rotation = 0,
+        Parent = SpinnerFill
+    })
+    
+    Create("UICorner", {
+        CornerRadius = UDim.new(1, 0),
+        Parent = SpinnerFill
+    })
+    
+    Create("UIStroke", {
+        Color = Theme.Accent,
+        Thickness = 3,
+        Parent = SpinnerFill
+    })
+    
+    -- Loading Text
+    local LoadingTitle = Create("TextLabel", {
+        Name = "LoadingTitle",
+        Size = UDim2.new(1, 0, 0, 40),
+        Position = UDim2.new(0, 0, 0.6, 0),
+        BackgroundTransparency = 1,
+        Text = title or "NazuX Library",
+        TextColor3 = Theme.Text,
+        TextSize = 24,
+        TextScaled = false,
+        Font = Enum.Font.GothamBold,
+        Parent = LoadingContainer
+    })
+    
+    local LoadingSubtitle = Create("TextLabel", {
+        Name = "LoadingSubtitle",
+        Size = UDim2.new(1, 0, 0, 25),
+        Position = UDim2.new(0, 0, 0.8, 0),
+        BackgroundTransparency = 1,
+        Text = subtitle or "Loading...",
+        TextColor3 = Theme.TextSecondary,
+        TextSize = 16,
+        Font = Enum.Font.Gotham,
+        Parent = LoadingContainer
+    })
+    
+    -- Progress Bar
+    local ProgressBarContainer = Create("Frame", {
+        Name = "ProgressBarContainer",
+        Size = UDim2.new(1, 0, 0, 8),
+        Position = UDim2.new(0, 0, 0.9, 0),
+        BackgroundColor3 = Theme.Secondary,
+        Parent = LoadingContainer
+    })
+    
+    Create("UICorner", {
+        CornerRadius = UDim.new(1, 0),
+        Parent = ProgressBarContainer
+    })
+    
+    local ProgressBar = Create("Frame", {
+        Name = "ProgressBar",
+        Size = UDim2.new(0, 0, 1, 0),
+        BackgroundColor3 = Theme.Accent,
+        Parent = ProgressBarContainer
+    })
+    
+    Create("UICorner", {
+        CornerRadius = UDim.new(1, 0),
+        Parent = ProgressBar
+    })
+    
+    -- Animation
+    local spinConnection
+    local function StartSpinner()
+        local rotation = 0
+        spinConnection = RunService.RenderStepped:Connect(function(delta)
+            rotation = (rotation + 180 * delta) % 360
+            UIGradient.Rotation = rotation
+        end)
+    end
+    
+    local function StopSpinner()
+        if spinConnection then
+            spinConnection:Disconnect()
+            spinConnection = nil
+        end
+    end
+    
+    -- Progress functions
+    local loading = {}
+    
+    function loading:SetProgress(progress)
+        progress = math.clamp(progress, 0, 1)
+        Tween(ProgressBar, {Size = UDim2.new(progress, 0, 1, 0)}, 0.3)
+    end
+    
+    function loading:SetText(text)
+        LoadingSubtitle.Text = text
+    end
+    
+    function loading:Complete()
+        StopSpinner()
+        Tween(LoadingScreen, {BackgroundTransparency = 1}, 0.5)
+        Tween(LoadingContainer, {Size = UDim2.new(0, 0, 0, 0)}, 0.5)
+        wait(0.5)
+        LoadingScreen:Destroy()
+    end
+    
+    function loading:Destroy()
+        StopSpinner()
+        LoadingScreen:Destroy()
+    end
+    
+    -- Start animations
+    StartSpinner()
+    
+    -- Pulse animation for title
+    local pulseTitle = true
+    spawn(function()
+        while pulseTitle and LoadingTitle do
+            Tween(LoadingTitle, {TextTransparency = 0.3}, 0.8)
+            wait(0.8)
+            if not pulseTitle then break end
+            Tween(LoadingTitle, {TextTransparency = 0}, 0.8)
+            wait(0.8)
+        end
+    end)
+    
+    loading.SetProgress(0)
+    
+    return loading
+end
+
+-- Main Library Function
 function NazuX:CreateWindow(options)
     options = options or {}
     local windowTitle = options.Title or "NazuX Library"
     local subtitle = options.Subtitle or "Powered by NazuX"
     local toggleKey = options.ToggleKey or Enum.KeyCode.RightShift
     local size = options.Size or UDim2.new(0, 550, 0, 450)
+    local showLoading = options.ShowLoading ~= false
     
     -- Main ScreenGui
     local ScreenGui = Create("ScreenGui", {
@@ -101,32 +293,50 @@ function NazuX:CreateWindow(options)
         Parent = game.CoreGui or LocalPlayer:WaitForChild("PlayerGui")
     })
     
-    -- Background Blur (Windows 11 style)
+    -- Background Blur
     local Blur = Create("BlurEffect", {
         Name = "BackgroundBlur",
         Size = 0,
         Parent = ScreenGui
     })
     
-    -- Main Frame với Mica effect
+    -- Loading Screen (thêm trước khi tạo main UI)
+    local LoadingScreen
+    if showLoading then
+        LoadingScreen = CreateLoadingScreen(ScreenGui, windowTitle, "Initializing...")
+        
+        -- Simulate loading progress
+        spawn(function()
+            for i = 1, 5 do
+                LoadingScreen:SetProgress(i * 0.2)
+                LoadingScreen:SetText("Loading components... " .. i .. "/5")
+                wait(0.3)
+            end
+        end)
+    end
+    
+    -- Main Frame
     local MainFrame = Create("Frame", {
         Name = "MainFrame",
         Size = size,
         Position = UDim2.new(0.5, -size.X.Offset/2, 0.5, -size.Y.Offset/2),
         BackgroundColor3 = Theme.Background,
-        BackgroundTransparency = 0.15, -- Transparency effect
+        BackgroundTransparency = 0.15,
         BorderSizePixel = 0,
         ClipsDescendants = true,
         Parent = ScreenGui
     })
     
-    -- Corner với border radius nhẹ (Windows 11 style)
+    -- Ẩn main frame ban đầu nếu có loading
+    if showLoading then
+        MainFrame.Visible = false
+    end
+    
     Create("UICorner", {
         CornerRadius = UDim.new(0, 8),
         Parent = MainFrame
     })
     
-    -- Stroke mỏng
     Create("UIStroke", {
         Color = Color3.fromRGB(255, 255, 255),
         Transparency = 0.9,
@@ -134,7 +344,7 @@ function NazuX:CreateWindow(options)
         Parent = MainFrame
     })
     
-    -- Top Bar với gradient (lấy cảm hứng từ WindUI)
+    -- Top Bar
     local TopBar = Create("Frame", {
         Name = "TopBar",
         Size = UDim2.new(1, 0, 0, 40),
@@ -149,7 +359,7 @@ function NazuX:CreateWindow(options)
         Parent = TopBar
     })
     
-    -- Title và Subtitle (Windows 11 style)
+    -- Title và Subtitle
     local TitleContainer = Create("Frame", {
         Name = "TitleContainer",
         Size = UDim2.new(0.6, 0, 1, 0),
@@ -184,7 +394,7 @@ function NazuX:CreateWindow(options)
         Parent = TitleContainer
     })
     
-    -- Window Controls (lấy cảm hứng từ Windows 11)
+    -- Window Controls
     local Controls = Create("Frame", {
         Name = "Controls",
         Size = UDim2.new(0, 120, 1, 0),
@@ -217,21 +427,18 @@ function NazuX:CreateWindow(options)
         Parent = Controls
     })
     
-    -- Tab Container với style Windows 11
-    local TabContainer = Create("ScrollingFrame", {
+    -- Tab Container
+    local TabContainer = Create("Frame", {
         Name = "TabContainer",
         Size = UDim2.new(0, 150, 1, -40),
         Position = UDim2.new(0, 0, 0, 40),
         BackgroundColor3 = Theme.Secondary,
         BackgroundTransparency = 0.2,
         BorderSizePixel = 0,
-        ScrollBarThickness = 3,
-        ScrollBarImageColor3 = Theme.Accent,
-        CanvasSize = UDim2.new(0, 0, 0, 0),
         Parent = MainFrame
     })
     
-    Create("UIListLayout", {
+    local TabListLayout = Create("UIListLayout", {
         Padding = UDim.new(0, 5),
         HorizontalAlignment = Enum.HorizontalAlignment.Center,
         SortOrder = Enum.SortOrder.LayoutOrder,
@@ -258,7 +465,7 @@ function NazuX:CreateWindow(options)
         Parent = MainFrame
     })
     
-    Create("UIListLayout", {
+    local ContentListLayout = Create("UIListLayout", {
         Padding = UDim.new(0, 10),
         HorizontalAlignment = Enum.HorizontalAlignment.Center,
         SortOrder = Enum.SortOrder.LayoutOrder,
@@ -276,6 +483,20 @@ function NazuX:CreateWindow(options)
     local tabs = {}
     local currentTab = nil
     local minimized = false
+    
+    -- Function để hiển thị UI sau khi loading
+    local function ShowMainUI()
+        if showLoading and LoadingScreen then
+            LoadingScreen:SetProgress(1)
+            LoadingScreen:SetText("Complete!")
+            wait(0.5)
+            LoadingScreen:Complete()
+        end
+        
+        MainFrame.Visible = true
+        Tween(Blur, {Size = 5}, 0.5)
+        Tween(MainFrame, {BackgroundTransparency = 0.15}, 0.3)
+    end
     
     -- Close functionality
     CloseButton.MouseButton1Click:Connect(function()
@@ -295,7 +516,7 @@ function NazuX:CreateWindow(options)
         end
     end)
     
-    -- Dragging functionality (cải tiến từ Rayfield)
+    -- Dragging functionality
     local dragging = false
     local dragInput, dragStart, startPos
     
@@ -346,7 +567,7 @@ function NazuX:CreateWindow(options)
         end
     end)
     
-    -- Tab functions (CẬP NHẬT: hỗ trợ table parameters)
+    -- Tab functions
     local function CreateTab(options)
         local tabOptions = typeof(options) == "table" and options or {Title = tostring(options)}
         local name = tabOptions.Title or "Tab"
@@ -357,7 +578,7 @@ function NazuX:CreateWindow(options)
             Size = UDim2.new(1, -10, 0, 35),
             BackgroundColor3 = Theme.Card,
             BackgroundTransparency = 0.5,
-            Text = icon ~= "" and (" " .. icon .. " " .. name) or ("  " .. name),
+            Text = icon ~= "" and (icon .. " " .. name) or name,
             TextColor3 = Theme.TextSecondary,
             TextSize = 14,
             TextXAlignment = Enum.TextXAlignment.Left,
@@ -378,6 +599,11 @@ function NazuX:CreateWindow(options)
             Parent = tabButton
         })
         
+        Create("UIPadding", {
+            PaddingLeft = UDim.new(0, 10),
+            Parent = tabButton
+        })
+        
         local tabContent = Create("Frame", {
             Name = name .. "Content",
             Size = UDim2.new(1, 0, 1, 0),
@@ -386,7 +612,7 @@ function NazuX:CreateWindow(options)
             Parent = ContentContainer
         })
         
-        Create("UIListLayout", {
+        local tabContentLayout = Create("UIListLayout", {
             Padding = UDim.new(0, 10),
             HorizontalAlignment = Enum.HorizontalAlignment.Center,
             SortOrder = Enum.SortOrder.LayoutOrder,
@@ -441,6 +667,7 @@ function NazuX:CreateWindow(options)
             }, 0.2)
         end)
         
+        -- Tự động chọn tab đầu tiên
         if #tabs == 1 then
             currentTab = tab
             tab.Content.Visible = true
@@ -449,9 +676,6 @@ function NazuX:CreateWindow(options)
                 TextColor3 = Theme.Text
             }, 0.2)
         end
-        
-        -- Update tab container size
-        TabContainer.CanvasSize = UDim2.new(0, 0, 0, (#tabs * 40) + 20)
         
         return tab
     end
@@ -468,10 +692,8 @@ function NazuX:CreateWindow(options)
         end
     end
     
+    -- Kết nối sự kiện update kích thước
     RunService.Heartbeat:Connect(UpdateContentSize)
-    
-    -- Initial blur effect
-    Tween(Blur, {Size = 5}, 0.5)
     
     -- Return window functions
     local window = {}
@@ -494,10 +716,23 @@ function NazuX:CreateWindow(options)
         Tween(MainFrame, {Size = size}, 0.3)
     end
     
+    function window:Show()
+        ShowMainUI()
+    end
+    
+    function window:CreateLoading(title, subtitle)
+        return CreateLoadingScreen(ScreenGui, title, subtitle)
+    end
+    
+    -- Tự động hiển thị UI sau 1 giây (có thể custom)
+    delay(1, function()
+        ShowMainUI()
+    end)
+    
     return window
 end
 
--- Control functions (kết hợp từ FluentPlus và WindUI)
+-- Control functions (giữ nguyên từ trước)
 function NazuX:AddButton(tab, options)
     options = options or {}
     local name = options.Name or "Button"
@@ -768,12 +1003,11 @@ function NazuX:AddSlider(tab, options)
         callback(currentValue)
     end
     
-    -- FIXED: Slider dragging functionality
+    -- Slider dragging functionality
     local function onInputBegan(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = true
             
-            -- Update slider position based on mouse
             local function updateSliderPosition()
                 while dragging do
                     local mouse = UserInputService:GetMouseLocation()
@@ -800,13 +1034,13 @@ function NazuX:AddSlider(tab, options)
         end
     end
     
-    -- Connect events to both slider background and button
+    -- Connect events
     SliderBackground.InputBegan:Connect(onInputBegan)
     SliderBackground.InputEnded:Connect(onInputEnded)
     SliderButton.InputBegan:Connect(onInputBegan)
     SliderButton.InputEnded:Connect(onInputEnded)
     
-    -- Also allow clicking anywhere on the slider background
+    -- Click to set value
     SliderBackground.MouseButton1Down:Connect(function()
         local mouse = UserInputService:GetMouseLocation()
         local sliderAbsPos = SliderBackground.AbsolutePosition
@@ -902,183 +1136,6 @@ function NazuX:AddSeparator(tab, options)
     end
     
     return SeparatorFrame
-end
-
-function NazuX:AddDropdown(tab, options)
-    options = options or {}
-    local name = options.Name or "Dropdown"
-    local list = options.List or {}
-    local default = options.Default or list[1]
-    local callback = options.Callback or function() end
-    
-    local DropdownFrame = Create("Frame", {
-        Name = name .. "Dropdown",
-        Size = UDim2.new(1, -10, 0, 40),
-        BackgroundColor3 = Theme.Card,
-        BackgroundTransparency = 0.3,
-        Parent = tab.Content,
-        LayoutOrder = #tab.Content:GetChildren()
-    })
-    
-    Create("UICorner", {
-        CornerRadius = UDim.new(0, 6),
-        Parent = DropdownFrame
-    })
-    
-    Create("UIStroke", {
-        Color = Theme.Accent,
-        Transparency = 0.7,
-        Thickness = 1,
-        Parent = DropdownFrame
-    })
-    
-    local Label = Create("TextLabel", {
-        Name = "Label",
-        Size = UDim2.new(0.7, 0, 1, 0),
-        BackgroundTransparency = 1,
-        Text = name,
-        TextColor3 = Theme.Text,
-        TextSize = 14,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        Font = Enum.Font.Gotham,
-        Parent = DropdownFrame
-    })
-    
-    Create("UIPadding", {
-        PaddingLeft = UDim.new(0, 15),
-        Parent = Label
-    })
-    
-    local CurrentValue = Create("TextLabel", {
-        Name = "CurrentValue",
-        Size = UDim2.new(0.2, 0, 1, 0),
-        Position = UDim2.new(0.8, 0, 0, 0),
-        BackgroundTransparency = 1,
-        Text = default or "Select",
-        TextColor3 = Theme.TextSecondary,
-        TextSize = 12,
-        TextXAlignment = Enum.TextXAlignment.Right,
-        Font = Enum.Font.Gotham,
-        Parent = DropdownFrame
-    })
-    
-    Create("UIPadding", {
-        PaddingRight = UDim.new(0, 25),
-        Parent = CurrentValue
-    })
-    
-    local DropdownButton = Create("TextButton", {
-        Name = "DropdownButton",
-        Size = UDim2.new(1, 0, 1, 0),
-        BackgroundTransparency = 1,
-        Text = "",
-        Parent = DropdownFrame
-    })
-    
-    local DropdownOpen = false
-    local DropdownList
-    
-    local function ToggleDropdown()
-        DropdownOpen = not DropdownOpen
-        
-        if DropdownOpen then
-            DropdownList = Create("Frame", {
-                Name = "DropdownList",
-                Size = UDim2.new(1, 0, 0, #list * 30),
-                Position = UDim2.new(0, 0, 1, 5),
-                BackgroundColor3 = Theme.Card,
-                BackgroundTransparency = 0.1,
-                Parent = DropdownFrame,
-                ZIndex = 20
-            })
-            
-            Create("UICorner", {
-                CornerRadius = UDim.new(0, 6),
-                Parent = DropdownList
-            })
-            
-            Create("UIStroke", {
-                Color = Theme.Accent,
-                Thickness = 1,
-                Parent = DropdownList
-            })
-            
-            Create("UIListLayout", {
-                SortOrder = Enum.SortOrder.LayoutOrder,
-                Parent = DropdownList
-            })
-            
-            for i, option in ipairs(list) do
-                local OptionButton = Create("TextButton", {
-                    Name = option .. "Option",
-                    Size = UDim2.new(1, 0, 0, 30),
-                    BackgroundTransparency = 1,
-                    Text = option,
-                    TextColor3 = Theme.Text,
-                    TextSize = 12,
-                    Font = Enum.Font.Gotham,
-                    Parent = DropdownList,
-                    LayoutOrder = i,
-                    ZIndex = 21
-                })
-                
-                OptionButton.MouseEnter:Connect(function()
-                    Tween(OptionButton, {BackgroundColor3 = Theme.Secondary}, 0.2)
-                end)
-                
-                OptionButton.MouseLeave:Connect(function()
-                    Tween(OptionButton, {BackgroundTransparency = 1}, 0.2)
-                end)
-                
-                OptionButton.MouseButton1Click:Connect(function()
-                    CurrentValue.Text = option
-                    callback(option)
-                    Tween(DropdownList, {Size = UDim2.new(1, 0, 0, 0)}, 0.2)
-                    wait(0.2)
-                    DropdownList:Destroy()
-                    DropdownOpen = false
-                end)
-            end
-            
-            DropdownList.Size = UDim2.new(1, 0, 0, 0)
-            Tween(DropdownList, {Size = UDim2.new(1, 0, 0, #list * 30)}, 0.2)
-        else
-            if DropdownList then
-                Tween(DropdownList, {Size = UDim2.new(1, 0, 0, 0)}, 0.2)
-                wait(0.2)
-                DropdownList:Destroy()
-            end
-        end
-    end
-    
-    DropdownButton.MouseButton1Click:Connect(function()
-        CreateRippleEffect(DropdownButton)
-        ToggleDropdown()
-    end)
-    
-    local dropdown = {}
-    
-    function dropdown:Set(value)
-        if table.find(list, value) then
-            CurrentValue.Text = value
-            callback(value)
-        end
-    end
-    
-    function dropdown:Get()
-        return CurrentValue.Text
-    end
-    
-    function dropdown:Refresh(newList)
-        list = newList
-        if DropdownOpen then
-            ToggleDropdown()
-            wait(0.25)
-            ToggleDropdown()
-        end
-    end
-    
-    return dropdown
 end
 
 return NazuX
