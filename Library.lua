@@ -1,7 +1,7 @@
 --[[
     🔥 NAZUX LIBRARY - Ultimate Windows 11 UI
     Combined features from all libraries with Win11 design
-    Version: 2.0.0
+    Version: 2.1.0
 ]]
 
 local NazuX = {}
@@ -50,6 +50,7 @@ function NazuX:CreateWindow(config)
     config = config or {}
     local Window = {
         Title = config.Title or "NazuX Library",
+        Subtitle = config.Subtitle or "Premium Script Hub",
         Size = config.Size or UDim2.new(0, 600, 0, 450),
         Theme = config.Theme or "Dark",
         Acrylic = config.Acrylic or false
@@ -109,41 +110,93 @@ function NazuX:CreateWindow(config)
         Parent = TitleBar
     })
     
-    -- Title Text
+    -- Title and Subtitle
+    local TitleContainer = CreateInstance("Frame", {
+        Name = "TitleContainer",
+        Size = UDim2.new(1, -120, 1, 0),
+        Position = UDim2.new(0, 15, 0, 0),
+        BackgroundTransparency = 1,
+        Parent = TitleBar
+    })
+    
     CreateInstance("TextLabel", {
         Name = "Title",
-        Size = UDim2.new(1, -100, 1, 0),
-        Position = UDim2.new(0, 15, 0, 0),
+        Size = UDim2.new(1, 0, 0, 20),
+        Position = UDim2.new(0, 0, 0, 2),
         BackgroundTransparency = 1,
         Text = Window.Title,
         TextColor3 = NazuXColors.Text,
         TextSize = 16,
         TextXAlignment = Enum.TextXAlignment.Left,
         Font = Enum.Font.GothamSemibold,
+        Parent = TitleContainer
+    })
+    
+    CreateInstance("TextLabel", {
+        Name = "Subtitle",
+        Size = UDim2.new(1, 0, 0, 14),
+        Position = UDim2.new(0, 0, 0, 22),
+        BackgroundTransparency = 1,
+        Text = Window.Subtitle,
+        TextColor3 = NazuXColors.SubText,
+        TextSize = 11,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Font = Enum.Font.Gotham,
+        Parent = TitleContainer
+    })
+    
+    -- Window Controls
+    local ControlsFrame = CreateInstance("Frame", {
+        Name = "Controls",
+        Size = UDim2.new(0, 80, 1, 0),
+        Position = UDim2.new(1, -80, 0, 0),
+        BackgroundTransparency = 1,
         Parent = TitleBar
+    })
+    
+    -- Minimize Button
+    local MinimizeButton = CreateInstance("TextButton", {
+        Name = "MinimizeButton",
+        Size = UDim2.new(0, 40, 1, 0),
+        Position = UDim2.new(0, 0, 0, 0),
+        BackgroundTransparency = 1,
+        Text = "_",
+        TextColor3 = NazuXColors.Text,
+        TextSize = 16,
+        Font = Enum.Font.GothamBold,
+        Parent = ControlsFrame
     })
     
     -- Close Button
     local CloseButton = CreateInstance("TextButton", {
         Name = "CloseButton",
-        Size = UDim2.new(0, 40, 0, 40),
+        Size = UDim2.new(0, 40, 1, 0),
         Position = UDim2.new(1, -40, 0, 0),
         BackgroundTransparency = 1,
         Text = "×",
         TextColor3 = NazuXColors.Text,
         TextSize = 20,
         Font = Enum.Font.GothamBold,
-        Parent = TitleBar
+        Parent = ControlsFrame
+    })
+    
+    -- Content Area (will be minimized)
+    local ContentArea = CreateInstance("Frame", {
+        Name = "ContentArea",
+        Size = UDim2.new(1, 0, 1, -40),
+        Position = UDim2.new(0, 0, 0, 40),
+        BackgroundTransparency = 1,
+        Parent = MainFrame
     })
     
     -- User Info Section
     local UserInfoFrame = CreateInstance("Frame", {
         Name = "UserInfo",
         Size = UDim2.new(0, 180, 0, 80),
-        Position = UDim2.new(0, 15, 0, 50),
+        Position = UDim2.new(0, 15, 0, 10),
         BackgroundColor3 = NazuXColors.Card,
         BorderSizePixel = 0,
-        Parent = MainFrame
+        Parent = ContentArea
     })
     
     CreateInstance("UICorner", {
@@ -199,10 +252,10 @@ function NazuX:CreateWindow(config)
     local SearchFrame = CreateInstance("Frame", {
         Name = "SearchBar",
         Size = UDim2.new(0, 180, 0, 35),
-        Position = UDim2.new(0, 15, 0, 140),
+        Position = UDim2.new(0, 15, 0, 100),
         BackgroundColor3 = NazuXColors.Surface,
         BorderSizePixel = 0,
-        Parent = MainFrame
+        Parent = ContentArea
     })
     
     CreateInstance("UICorner", {
@@ -240,14 +293,14 @@ function NazuX:CreateWindow(config)
     -- Tab Container (Left Side)
     local TabContainer = CreateInstance("ScrollingFrame", {
         Name = "TabContainer",
-        Size = UDim2.new(0, 180, 1, -190),
-        Position = UDim2.new(0, 15, 0, 185),
+        Size = UDim2.new(0, 180, 1, -150),
+        Position = UDim2.new(0, 15, 0, 145),
         BackgroundColor3 = NazuXColors.Card,
         BorderSizePixel = 0,
         ScrollBarThickness = 3,
         ScrollBarImageColor3 = NazuXColors.Primary,
         CanvasSize = UDim2.new(0, 0, 0, 0),
-        Parent = MainFrame
+        Parent = ContentArea
     })
     
     CreateInstance("UICorner", {
@@ -264,14 +317,14 @@ function NazuX:CreateWindow(config)
     -- Content Container (Right Side)
     local ContentContainer = CreateInstance("ScrollingFrame", {
         Name = "ContentContainer",
-        Size = UDim2.new(1, -210, 1, -60),
-        Position = UDim2.new(0, 210, 0, 50),
+        Size = UDim2.new(1, -210, 1, -20),
+        Position = UDim2.new(0, 210, 0, 10),
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         ScrollBarThickness = 3,
         ScrollBarImageColor3 = NazuXColors.Primary,
         CanvasSize = UDim2.new(0, 0, 0, 0),
-        Parent = MainFrame
+        Parent = ContentArea
     })
     
     local ContentLayout = CreateInstance("UIListLayout", {
@@ -283,6 +336,28 @@ function NazuX:CreateWindow(config)
     ContentLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
         ContentContainer.CanvasSize = UDim2.new(0, 0, 0, ContentLayout.AbsoluteContentSize.Y + 20)
     end)
+    
+    -- Window State Management
+    local IsMinimized = false
+    local OriginalSize = Window.Size
+    local OriginalPosition = MainFrame.Position
+    
+    -- Minimize Functionality
+    local function ToggleMinimize()
+        IsMinimized = not IsMinimized
+        
+        if IsMinimized then
+            -- Minimize to title bar only
+            TweenObject(ContentArea, {Size = UDim2.new(1, 0, 0, 0)}, 0.3)
+            TweenObject(MainFrame, {Size = UDim2.new(OriginalSize.X.Scale, OriginalSize.X.Offset, 0, 40)}, 0.3)
+            TweenObject(MinimizeButton, {TextColor3 = NazuXColors.Primary}, 0.2)
+        else
+            -- Restore to original size
+            TweenObject(ContentArea, {Size = UDim2.new(1, 0, 1, -40)}, 0.3)
+            TweenObject(MainFrame, {Size = OriginalSize}, 0.3)
+            TweenObject(MinimizeButton, {TextColor3 = NazuXColors.Text}, 0.2)
+        end
+    end
     
     -- Window Dragging
     local dragging, dragInput, dragStart, startPos
@@ -313,7 +388,19 @@ function NazuX:CreateWindow(config)
         end
     end)
     
-    -- Close Button Functionality
+    -- Control Button Functionality
+    MinimizeButton.MouseButton1Click:Connect(ToggleMinimize)
+    
+    MinimizeButton.MouseEnter:Connect(function()
+        TweenObject(MinimizeButton, {BackgroundColor3 = NazuXColors.Surface}, 0.2)
+    end)
+    
+    MinimizeButton.MouseLeave:Connect(function()
+        if not IsMinimized then
+            TweenObject(MinimizeButton, {BackgroundColor3 = Color3.fromRGB(0, 0, 0, 0)}, 0.2)
+        end
+    end)
+    
     CloseButton.MouseButton1Click:Connect(function()
         ScreenGui:Destroy()
     end)
@@ -330,12 +417,15 @@ function NazuX:CreateWindow(config)
     local function PerformSearch(query)
         for _, tab in pairs(Window.Tabs or {}) do
             for _, element in pairs(tab.Elements or {}) do
-                if element:IsA("TextLabel") or element:IsA("TextButton") then
-                    local text = element.Text:lower()
-                    if text:find(query:lower(), 1, true) then
-                        TweenObject(element, {TextColor3 = NazuXColors.Accent}, 0.3)
-                    else
-                        TweenObject(element, {TextColor3 = NazuXColors.Text}, 0.3)
+                if element:IsA("TextLabel") or element:IsA("TextButton") or element:FindFirstChild("ButtonText") then
+                    local textElement = element:IsA("TextLabel") and element or element:FindFirstChild("ButtonText")
+                    if textElement and textElement.Text then
+                        local text = textElement.Text:lower()
+                        if text:find(query:lower(), 1, true) then
+                            TweenObject(textElement, {TextColor3 = NazuXColors.Accent}, 0.3)
+                        else
+                            TweenObject(textElement, {TextColor3 = NazuXColors.Text}, 0.3)
+                        end
                     end
                 end
             end
@@ -349,10 +439,12 @@ function NazuX:CreateWindow(config)
     -- Store Window Data
     Window.GUI = ScreenGui
     Window.MainFrame = MainFrame
+    Window.ContentArea = ContentArea
     Window.TabContainer = TabContainer
     Window.ContentContainer = ContentContainer
     Window.Tabs = {}
     Window.CurrentTab = nil
+    Window.IsMinimized = false
     
     -- Tab Creation Method
     function Window:CreateTab(tabName, tabIcon)
@@ -875,6 +967,22 @@ function NazuX:CreateWindow(config)
                 return Selected
             end
         }
+    end
+    
+    -- Window Control Methods
+    function Window:Minimize()
+        ToggleMinimize()
+    end
+    
+    function Window:Maximize()
+        if IsMinimized then
+            ToggleMinimize()
+        end
+    end
+    
+    function Window:SetTitle(title, subtitle)
+        TitleContainer.Title.Text = title or Window.Title
+        TitleContainer.Subtitle.Text = subtitle or Window.Subtitle
     end
     
     -- Show Window
