@@ -139,6 +139,54 @@ local function Tween(Object, Goals, Duration, Style, Direction)
     return Tween
 end
 
+-- Function to create triangle icon
+local function CreateTriangleIcon(parent, size, position, color)
+    local TriangleFrame = Create("Frame", {
+        Name = "TriangleIcon",
+        BackgroundTransparency = 1,
+        Position = position,
+        Size = size,
+        Parent = parent
+    })
+    
+    local Triangle = Create("UIStroke", {
+        Name = "TriangleStroke",
+        ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+        Color = color,
+        LineJoinMode = Enum.LineJoinMode.Miter,
+        Thickness = 2,
+        Parent = TriangleFrame
+    })
+    
+    -- Tạo hình tam giác bằng cách sử dụng UIStroke với các điểm
+    local function UpdateTriangle()
+        -- Tạo các điểm cho hình tam giác
+        local points = {
+            Vector2.new(size.X.Offset/2, 2), -- Đỉnh trên
+            Vector2.new(2, size.Y.Offset - 2), -- Góc trái dưới
+            Vector2.new(size.X.Offset - 2, size.Y.Offset - 2) -- Góc phải dưới
+        }
+        
+        -- Đặt các điểm cho UIStroke (cần convert sang table phù hợp)
+        Triangle:SetAttribute("PointA", points[1])
+        Triangle:SetAttribute("PointB", points[2])
+        Triangle:SetAttribute("PointC", points[3])
+    end
+    
+    -- Alternative method: Sử dụng ImageLabel với hình tam giác
+    local TriangleImage = Create("ImageLabel", {
+        Name = "TriangleImage",
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, 0, 0, 0),
+        Size = UDim2.new(1, 0, 1, 0),
+        Image = "rbxassetid://11988293630", -- ID hình tam giác (có thể thay đổi)
+        ImageColor3 = color,
+        Parent = TriangleFrame
+    })
+    
+    return TriangleFrame
+end
+
 -- Main Library Function
 function NazuX:CreateWindow(options)
     options = options or {}
@@ -189,11 +237,45 @@ function NazuX:CreateWindow(options)
         Parent = TopFrame
     })
     
+    -- TRIANGLE ICON (Bên trái title)
+    local TriangleIcon = Create("Frame", {
+        Name = "TriangleIcon",
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, 8, 0, 10),
+        Size = UDim2.new(0, 20, 0, 20),
+        Parent = TopFrame
+    })
+    
+    -- Tạo hình tam giác bằng UIStroke
+    local TriangleStroke = Create("UIStroke", {
+        Name = "TriangleStroke",
+        ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+        Color = AccentColor,
+        LineJoinMode = Enum.LineJoinMode.Miter,
+        Thickness = 2,
+        Parent = TriangleIcon
+    })
+    
+    -- Tạo hình tam giác bằng Polygon
+    local TrianglePolygon = Create("UIPolygon", {
+        Name = "TrianglePolygon",
+        BackgroundTransparency = 1,
+        Size = UDim2.new(1, 0, 1, 0),
+        Parent = TriangleIcon
+    })
+    
+    -- Đặt các điểm cho hình tam giác
+    TrianglePolygon.Vertices = {
+        Vector2.new(10, 2),    -- Đỉnh trên
+        Vector2.new(2, 18),    -- Góc trái dưới
+        Vector2.new(18, 18)    -- Góc phải dưới
+    }
+    
     local Title = Create("TextLabel", {
         Name = "Title",
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 15, 0, 5),
-        Size = UDim2.new(0, 200, 0, 18),
+        Position = UDim2.new(0, 35, 0, 5), -- Dịch sang phải để tránh icon
+        Size = UDim2.new(0, 180, 0, 18),
         Font = Enum.Font.GothamBold,
         Text = WindowName,
         TextColor3 = CurrentTheme.Text,
@@ -205,8 +287,8 @@ function NazuX:CreateWindow(options)
     local Subtitle = Create("TextLabel", {
         Name = "Subtitle",
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 15, 0, 22),
-        Size = UDim2.new(0, 200, 0, 14),
+        Position = UDim2.new(0, 35, 0, 22), -- Dịch sang phải để tránh icon
+        Size = UDim2.new(0, 180, 0, 14),
         Font = Enum.Font.Gotham,
         Text = SubtitleText,
         TextColor3 = CurrentTheme.SubText,
@@ -315,6 +397,15 @@ function NazuX:CreateWindow(options)
         Tween(Title, {TextColor3 = CurrentTheme.Text}, 0.3)
         Tween(Subtitle, {TextColor3 = CurrentTheme.SubText}, 0.3)
         
+        -- Update Triangle Icon color based on theme
+        if CurrentTheme.Name == "Cyber" then
+            TriangleStroke.Color = Color3.fromRGB(0, 255, 255)
+        elseif CurrentTheme.Name == "Matrix" then
+            TriangleStroke.Color = Color3.fromRGB(0, 255, 0)
+        else
+            TriangleStroke.Color = AccentColor
+        end
+        
         -- Update Theme Button Text
         ThemeButton.Text = "Theme: " .. CurrentTheme.Name
         
@@ -327,6 +418,28 @@ function NazuX:CreateWindow(options)
             end
         end
     end
+    
+    -- THÊM HIỆU ỨNG CHO ICON TAM GIÁC
+    TriangleIcon.MouseEnter:Connect(function()
+        Tween(TriangleStroke, {Color = Color3.fromRGB(255, 255, 255)}, 0.2)
+    end)
+    
+    TriangleIcon.MouseLeave:Connect(function()
+        if CurrentTheme.Name == "Cyber" then
+            Tween(TriangleStroke, {Color = Color3.fromRGB(0, 255, 255)}, 0.2)
+        elseif CurrentTheme.Name == "Matrix" then
+            Tween(TriangleStroke, {Color = Color3.fromRGB(0, 255, 0)}, 0.2)
+        else
+            Tween(TriangleStroke, {Color = AccentColor}, 0.2)
+        end
+    end)
+    
+    TriangleIcon.MouseButton1Click:Connect(function()
+        -- Hiệu ứng click cho icon
+        Tween(TriangleIcon, {Rotation = 360}, 0.5)
+        wait(0.5)
+        Tween(TriangleIcon, {Rotation = 0}, 0)
+    end)
     
     -- THEME BUTTON EVENT
     ThemeButton.MouseButton1Click:Connect(function()
