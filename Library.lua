@@ -1,5 +1,5 @@
 -- NazuX Library - Windows 11 Style UI
--- Fixed Minimize - All Elements Move Together
+-- Added Theme Change Button
 
 local NazuX = {}
 NazuX.__index = NazuX
@@ -20,6 +20,16 @@ local DarkTheme = {
     Text = Color3.fromRGB(255, 255, 255),
     SubText = Color3.fromRGB(200, 200, 200)
 }
+
+local LightTheme = {
+    Background = Color3.fromRGB(240, 240, 240),
+    Secondary = Color3.fromRGB(220, 220, 220),
+    Tertiary = Color3.fromRGB(200, 200, 200),
+    Text = Color3.fromRGB(0, 0, 0),
+    SubText = Color3.fromRGB(80, 80, 80)
+}
+
+local CurrentTheme = DarkTheme
 
 -- Utility Functions
 local function Create(class, properties)
@@ -64,7 +74,7 @@ function NazuX:CreateWindow(options)
     -- Main Container (Hiển thị ngay)
     local MainFrame = Create("Frame", {
         Name = "MainFrame",
-        BackgroundColor3 = DarkTheme.Background,
+        BackgroundColor3 = CurrentTheme.Background,
         BorderSizePixel = 0,
         Position = Position,
         Size = Size,
@@ -104,7 +114,7 @@ function NazuX:CreateWindow(options)
     
     local LoadingContainer = Create("Frame", {
         Name = "LoadingContainer",
-        BackgroundColor3 = DarkTheme.Background,
+        BackgroundColor3 = CurrentTheme.Background,
         BackgroundTransparency = 0.3,
         BorderSizePixel = 0,
         AnchorPoint = Vector2.new(0.5, 0.5),
@@ -150,7 +160,7 @@ function NazuX:CreateWindow(options)
     -- Title Bar
     local TitleBar = Create("Frame", {
         Name = "TitleBar",
-        BackgroundColor3 = DarkTheme.Secondary,
+        BackgroundColor3 = CurrentTheme.Secondary,
         BorderSizePixel = 0,
         Size = UDim2.new(1, 0, 0, 40),
         Parent = MainFrame
@@ -168,7 +178,7 @@ function NazuX:CreateWindow(options)
         Size = UDim2.new(0, 200, 0, 18),
         Font = Enum.Font.GothamSemibold,
         Text = WindowName,
-        TextColor3 = DarkTheme.Text,
+        TextColor3 = CurrentTheme.Text,
         TextSize = 14,
         TextXAlignment = Enum.TextXAlignment.Left,
         Parent = TitleBar
@@ -181,31 +191,32 @@ function NazuX:CreateWindow(options)
         Size = UDim2.new(0, 200, 0, 14),
         Font = Enum.Font.Gotham,
         Text = SubtitleText,
-        TextColor3 = DarkTheme.SubText,
+        TextColor3 = CurrentTheme.SubText,
         TextSize = 10,
         TextXAlignment = Enum.TextXAlignment.Left,
         Parent = TitleBar
     })
     
-    -- Window Control Buttons
-    local MinimizeButton = Create("TextButton", {
-        Name = "MinimizeButton",
-        BackgroundColor3 = Color3.fromRGB(255, 196, 0),
+    -- Theme Change Button (ở giữa titlebar)
+    local ThemeButton = Create("TextButton", {
+        Name = "ThemeButton",
+        BackgroundColor3 = AccentColor,
         BorderSizePixel = 0,
-        Position = UDim2.new(1, -60, 0, 10),
-        Size = UDim2.new(0, 20, 0, 20),
-        Font = Enum.Font.GothamBold,
-        Text = "_",
+        Position = UDim2.new(0.5, -40, 0, 10),
+        Size = UDim2.new(0, 80, 0, 20),
+        Font = Enum.Font.Gotham,
+        Text = "Dark Theme",
         TextColor3 = Color3.fromRGB(255, 255, 255),
-        TextSize = 14,
+        TextSize = 11,
         Parent = TitleBar
     })
     
-    local MinimizeButtonUICorner = Create("UICorner", {
+    local ThemeButtonUICorner = Create("UICorner", {
         CornerRadius = UDim.new(0, 4),
-        Parent = MinimizeButton
+        Parent = ThemeButton
     })
     
+    -- Close Button
     local CloseButton = Create("TextButton", {
         Name = "CloseButton",
         BackgroundColor3 = Color3.fromRGB(232, 17, 35),
@@ -224,23 +235,23 @@ function NazuX:CreateWindow(options)
         Parent = CloseButton
     })
     
-    -- MAIN CONTENT CONTAINER (TẤT CẢ NỘI DUNG TRONG NÀY SẼ DI CHUYỂN CÙNG NHAU)
-    local MainContentContainer = Create("Frame", {
-        Name = "MainContentContainer",
+    -- Content Area
+    local ContentArea = Create("Frame", {
+        Name = "ContentArea",
         BackgroundTransparency = 1,
         Position = UDim2.new(0, 0, 0, 40),
         Size = UDim2.new(1, 0, 1, -40),
         Parent = MainFrame
     })
     
-    -- Left Sidebar (Tabs) - GIỜ NẰM TRONG MAIN CONTENT CONTAINER
+    -- Left Sidebar (Tabs)
     local LeftSidebar = Create("Frame", {
         Name = "LeftSidebar",
-        BackgroundColor3 = DarkTheme.Secondary,
+        BackgroundColor3 = CurrentTheme.Secondary,
         BackgroundTransparency = 0.3, -- Trong suốt
         BorderSizePixel = 0,
         Size = UDim2.new(0, 180, 1, 0),
-        Parent = MainContentContainer
+        Parent = ContentArea
     })
     
     local SidebarUICorner = Create("UICorner", {
@@ -248,10 +259,10 @@ function NazuX:CreateWindow(options)
         Parent = LeftSidebar
     })
     
-    -- User Info Section - GIỜ NẰM TRONG LEFT SIDEBAR
+    -- User Info Section
     local UserInfoFrame = Create("Frame", {
         Name = "UserInfoFrame",
-        BackgroundColor3 = DarkTheme.Tertiary,
+        BackgroundColor3 = CurrentTheme.Tertiary,
         BackgroundTransparency = 0.2,
         BorderSizePixel = 0,
         Size = UDim2.new(1, -10, 0, 80),
@@ -266,7 +277,7 @@ function NazuX:CreateWindow(options)
     
     local Avatar = Create("ImageLabel", {
         Name = "Avatar",
-        BackgroundColor3 = DarkTheme.Secondary,
+        BackgroundColor3 = CurrentTheme.Secondary,
         BorderSizePixel = 0,
         Position = UDim2.new(0, 10, 0, 10),
         Size = UDim2.new(0, 40, 0, 40),
@@ -285,7 +296,7 @@ function NazuX:CreateWindow(options)
         Size = UDim2.new(1, -65, 0, 20),
         Font = Enum.Font.GothamSemibold,
         Text = LocalPlayer.Name,
-        TextColor3 = DarkTheme.Text,
+        TextColor3 = CurrentTheme.Text,
         TextSize = 12,
         TextXAlignment = Enum.TextXAlignment.Left,
         TextTruncate = Enum.TextTruncate.AtEnd
@@ -298,7 +309,7 @@ function NazuX:CreateWindow(options)
         Size = UDim2.new(1, -65, 0, 15),
         Font = Enum.Font.Gotham,
         Text = "ID: "..LocalPlayer.UserId,
-        TextColor3 = DarkTheme.SubText,
+        TextColor3 = CurrentTheme.SubText,
         TextSize = 10,
         TextXAlignment = Enum.TextXAlignment.Left
     })
@@ -307,10 +318,10 @@ function NazuX:CreateWindow(options)
     UsernameLabel.Parent = UserInfoFrame
     UserIdLabel.Parent = UserInfoFrame
     
-    -- Search Bar - GIỜ NẰM TRONG LEFT SIDEBAR
+    -- Search Bar
     local SearchContainer = Create("Frame", {
         Name = "SearchContainer",
-        BackgroundColor3 = DarkTheme.Tertiary,
+        BackgroundColor3 = CurrentTheme.Tertiary,
         BackgroundTransparency = 0.2,
         BorderSizePixel = 0,
         Size = UDim2.new(1, -10, 0, 35),
@@ -330,9 +341,9 @@ function NazuX:CreateWindow(options)
         Size = UDim2.new(1, -40, 1, 0),
         Font = Enum.Font.Gotham,
         PlaceholderText = "Search...",
-        PlaceholderColor3 = DarkTheme.SubText,
+        PlaceholderColor3 = CurrentTheme.SubText,
         Text = "",
-        TextColor3 = DarkTheme.Text,
+        TextColor3 = CurrentTheme.Text,
         TextSize = 12,
         TextXAlignment = Enum.TextXAlignment.Left
     })
@@ -343,7 +354,7 @@ function NazuX:CreateWindow(options)
         Position = UDim2.new(1, -25, 0, 7),
         Size = UDim2.new(0, 20, 0, 20),
         Image = "rbxassetid://3926305904",
-        ImageColor3 = DarkTheme.SubText,
+        ImageColor3 = CurrentTheme.SubText,
         ImageRectOffset = Vector2.new(964, 324),
         ImageRectSize = Vector2.new(36, 36)
     })
@@ -351,7 +362,7 @@ function NazuX:CreateWindow(options)
     SearchBox.Parent = SearchContainer
     SearchIcon.Parent = SearchContainer
     
-    -- Tabs Container - GIỜ NẰM TRONG LEFT SIDEBAR
+    -- Tabs Container
     local TabsContainer = Create("ScrollingFrame", {
         Name = "TabsContainer",
         BackgroundTransparency = 1,
@@ -359,7 +370,7 @@ function NazuX:CreateWindow(options)
         Size = UDim2.new(1, -10, 1, -135),
         CanvasSize = UDim2.new(0, 0, 0, 0),
         ScrollBarThickness = 3,
-        ScrollBarImageColor3 = DarkTheme.Tertiary,
+        ScrollBarImageColor3 = CurrentTheme.Tertiary,
         Parent = LeftSidebar
     })
     
@@ -368,13 +379,13 @@ function NazuX:CreateWindow(options)
         Parent = TabsContainer
     })
     
-    -- Right Content Area - GIỜ NẰM TRONG MAIN CONTENT CONTAINER
+    -- Right Content Area
     local RightContent = Create("Frame", {
         Name = "RightContent",
         BackgroundTransparency = 1,
         Position = UDim2.new(0, 185, 0, 0),
         Size = UDim2.new(1, -185, 1, 0),
-        Parent = MainContentContainer
+        Parent = ContentArea
     })
     
     -- Animation for loading spinner
@@ -384,38 +395,49 @@ function NazuX:CreateWindow(options)
         LoadingSpinner.Rotation = LoadingRotation
     end)
 
-    -- Minimize State
-    local IsMinimized = false
-    local OriginalSize = Size
-    local ContentHeight = MainContentContainer.Size.Y.Offset
+    -- Theme Management
+    local function UpdateTheme()
+        -- Update Main Frame
+        Tween(MainFrame, {BackgroundColor3 = CurrentTheme.Background}, 0.3)
+        Tween(TitleBar, {BackgroundColor3 = CurrentTheme.Secondary}, 0.3)
+        Tween(LeftSidebar, {BackgroundColor3 = CurrentTheme.Secondary}, 0.3)
+        
+        -- Update Text Colors
+        Tween(TitleLabel, {TextColor3 = CurrentTheme.Text}, 0.3)
+        Tween(SubtitleLabel, {TextColor3 = CurrentTheme.SubText}, 0.3)
+        Tween(UsernameLabel, {TextColor3 = CurrentTheme.Text}, 0.3)
+        Tween(UserIdLabel, {TextColor3 = CurrentTheme.SubText}, 0.3)
+        Tween(SearchBox, {TextColor3 = CurrentTheme.Text, PlaceholderColor3 = CurrentTheme.SubText}, 0.3)
+        Tween(SearchIcon, {ImageColor3 = CurrentTheme.SubText}, 0.3)
+        
+        -- Update Containers
+        Tween(UserInfoFrame, {BackgroundColor3 = CurrentTheme.Tertiary}, 0.3)
+        Tween(SearchContainer, {BackgroundColor3 = CurrentTheme.Tertiary}, 0.3)
+        Tween(Avatar, {BackgroundColor3 = CurrentTheme.Secondary}, 0.3)
+        
+        -- Update Loading Screen
+        Tween(LoadingContainer, {BackgroundColor3 = CurrentTheme.Background}, 0.3)
+        
+        -- Update Theme Button Text
+        if CurrentTheme == DarkTheme then
+            ThemeButton.Text = "Light Theme"
+        else
+            ThemeButton.Text = "Dark Theme"
+        end
+    end
 
     -- Functions
     function NazuXLibrary:ToggleUI()
         MainFrame.Visible = not MainFrame.Visible
     end
     
-    function NazuXLibrary:Minimize()
-        IsMinimized = not IsMinimized
-        
-        if IsMinimized then
-            -- Thu nhỏ: di chuyển TOÀN BỘ MainContentContainer lên trên
-            Tween(MainContentContainer, {
-                Position = UDim2.new(0, 0, 0, -ContentHeight)
-            }, 0.3)
-            
-            Tween(MainFrame, {
-                Size = UDim2.new(OriginalSize.X.Scale, OriginalSize.X.Offset, 0, 40)
-            }, 0.3)
+    function NazuXLibrary:ToggleTheme()
+        if CurrentTheme == DarkTheme then
+            CurrentTheme = LightTheme
         else
-            -- Mở rộng: di chuyển TOÀN BỘ MainContentContainer về vị trí cũ
-            Tween(MainContentContainer, {
-                Position = UDim2.new(0, 0, 0, 40)
-            }, 0.3)
-            
-            Tween(MainFrame, {
-                Size = OriginalSize
-            }, 0.3)
+            CurrentTheme = DarkTheme
         end
+        UpdateTheme()
     end
     
     function NazuXLibrary:ShowLoading(duration, text)
@@ -451,17 +473,17 @@ function NazuX:CreateWindow(options)
         Tween(CloseButton, {BackgroundColor3 = Color3.fromRGB(232, 17, 35)}, 0.2)
     end)
     
-    -- Minimize Button Event
-    MinimizeButton.MouseButton1Click:Connect(function()
-        NazuXLibrary:Minimize()
+    -- Theme Button Event
+    ThemeButton.MouseButton1Click:Connect(function()
+        NazuXLibrary:ToggleTheme()
     end)
     
-    MinimizeButton.MouseEnter:Connect(function()
-        Tween(MinimizeButton, {BackgroundColor3 = Color3.fromRGB(255, 213, 0)}, 0.2)
+    ThemeButton.MouseEnter:Connect(function()
+        Tween(ThemeButton, {BackgroundColor3 = Color3.fromRGB(0, 140, 255)}, 0.2)
     end)
     
-    MinimizeButton.MouseLeave:Connect(function()
-        Tween(MinimizeButton, {BackgroundColor3 = Color3.fromRGB(255, 196, 0)}, 0.2)
+    ThemeButton.MouseLeave:Connect(function()
+        Tween(ThemeButton, {BackgroundColor3 = AccentColor}, 0.2)
     end)
     
     -- Search Functionality
@@ -489,13 +511,13 @@ function NazuX:CreateWindow(options)
     function NazuXLibrary:CreateTab(TabName)
         local TabButton = Create("TextButton", {
             Name = TabName .. "TabButton",
-            BackgroundColor3 = DarkTheme.Tertiary,
+            BackgroundColor3 = CurrentTheme.Tertiary,
             BackgroundTransparency = 0.2,
             BorderSizePixel = 0,
             Size = UDim2.new(1, 0, 0, 35),
             Font = Enum.Font.Gotham,
             Text = TabName,
-            TextColor3 = DarkTheme.SubText,
+            TextColor3 = CurrentTheme.SubText,
             TextSize = 12,
             AutoButtonColor = false
         })
@@ -511,7 +533,7 @@ function NazuX:CreateWindow(options)
             Size = UDim2.new(1, 0, 1, 0),
             CanvasSize = UDim2.new(0, 0, 0, 0),
             ScrollBarThickness = 3,
-            ScrollBarImageColor3 = DarkTheme.Tertiary,
+            ScrollBarImageColor3 = CurrentTheme.Tertiary,
             Visible = false
         })
         
@@ -536,7 +558,7 @@ function NazuX:CreateWindow(options)
                 -- Reset all tab buttons
                 for _, btn in pairs(TabsContainer:GetChildren()) do
                     if btn:IsA("TextButton") then
-                        Tween(btn, {BackgroundColor3 = DarkTheme.Tertiary, TextColor3 = DarkTheme.SubText}, 0.2)
+                        Tween(btn, {BackgroundColor3 = CurrentTheme.Tertiary, TextColor3 = CurrentTheme.SubText}, 0.2)
                     end
                 end
             end
@@ -554,7 +576,7 @@ function NazuX:CreateWindow(options)
         
         TabButton.MouseLeave:Connect(function()
             if CurrentTab ~= TabContent then
-                Tween(TabButton, {BackgroundColor3 = DarkTheme.Tertiary}, 0.2)
+                Tween(TabButton, {BackgroundColor3 = CurrentTheme.Tertiary}, 0.2)
             end
         end)
         
@@ -568,7 +590,7 @@ function NazuX:CreateWindow(options)
             
             local ButtonContainer = Create("Frame", {
                 Name = ButtonName .. "Container",
-                BackgroundColor3 = DarkTheme.Secondary,
+                BackgroundColor3 = CurrentTheme.Secondary,
                 BackgroundTransparency = 0.2,
                 BorderSizePixel = 0,
                 Size = UDim2.new(1, -20, 0, 35),
@@ -586,7 +608,7 @@ function NazuX:CreateWindow(options)
                 Size = UDim2.new(1, 0, 1, 0),
                 Font = Enum.Font.Gotham,
                 Text = ButtonName,
-                TextColor3 = DarkTheme.Text,
+                TextColor3 = CurrentTheme.Text,
                 TextSize = 12,
                 Parent = ButtonContainer
             })
@@ -595,7 +617,7 @@ function NazuX:CreateWindow(options)
                 Callback()
                 Tween(ButtonContainer, {BackgroundColor3 = AccentColor}, 0.1)
                 wait(0.1)
-                Tween(ButtonContainer, {BackgroundColor3 = DarkTheme.Secondary}, 0.1)
+                Tween(ButtonContainer, {BackgroundColor3 = CurrentTheme.Secondary}, 0.1)
             end)
             
             Button.MouseEnter:Connect(function()
@@ -603,13 +625,13 @@ function NazuX:CreateWindow(options)
             end)
             
             Button.MouseLeave:Connect(function()
-                Tween(ButtonContainer, {BackgroundColor3 = DarkTheme.Secondary}, 0.2)
+                Tween(ButtonContainer, {BackgroundColor3 = CurrentTheme.Secondary}, 0.2)
             end)
             
             return ButtonContainer
         end
         
-        -- AddToggle Function (FIXED)
+        -- AddToggle Function
         function TabFunctions:AddToggle(ToggleConfig)
             ToggleConfig = ToggleConfig or {}
             local ToggleName = ToggleConfig.Name or "Toggle"
@@ -620,7 +642,7 @@ function NazuX:CreateWindow(options)
             
             local ToggleContainer = Create("Frame", {
                 Name = ToggleName .. "Container",
-                BackgroundColor3 = DarkTheme.Secondary,
+                BackgroundColor3 = CurrentTheme.Secondary,
                 BackgroundTransparency = 0.2,
                 BorderSizePixel = 0,
                 Size = UDim2.new(1, -20, 0, 35),
@@ -639,7 +661,7 @@ function NazuX:CreateWindow(options)
                 Size = UDim2.new(0.7, -10, 1, 0),
                 Font = Enum.Font.Gotham,
                 Text = ToggleName,
-                TextColor3 = DarkTheme.Text,
+                TextColor3 = CurrentTheme.Text,
                 TextSize = 12,
                 TextXAlignment = Enum.TextXAlignment.Left,
                 Parent = ToggleContainer
