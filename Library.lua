@@ -387,6 +387,7 @@ function NazuX:CreateWindow(options)
     -- Minimize State
     local IsMinimized = false
     local OriginalSize = Size
+    local ContentHeight = MainContentContainer.Size.Y.Offset
 
     -- Functions
     function NazuXLibrary:ToggleUI()
@@ -399,7 +400,7 @@ function NazuX:CreateWindow(options)
         if IsMinimized then
             -- Thu nhỏ: di chuyển TOÀN BỘ MainContentContainer lên trên
             Tween(MainContentContainer, {
-                Position = UDim2.new(0, 0, 0, -MainContentContainer.Size.Y.Offset)
+                Position = UDim2.new(0, 0, 0, -ContentHeight)
             }, 0.3)
             
             Tween(MainFrame, {
