@@ -1,4 +1,4 @@
--- NazuX Library - Enhanced with Subtitle, Size, Logo, Keybind, Flame Loading
+-- NazuX Library - With Special Themes
 local NazuX = {}
 NazuX.__index = NazuX
 
@@ -9,7 +9,118 @@ local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
--- Colors
+-- Theme Colors với themes đặc biệt
+local Themes = {
+    Dark = {
+        Name = "Dark",
+        Background = Color3.fromRGB(25, 25, 25),
+        Secondary = Color3.fromRGB(30, 30, 30),
+        Tertiary = Color3.fromRGB(35, 35, 35),
+        Text = Color3.fromRGB(255, 255, 255),
+        SubText = Color3.fromRGB(200, 200, 200)
+    },
+    Light = {
+        Name = "Light", 
+        Background = Color3.fromRGB(240, 240, 240),
+        Secondary = Color3.fromRGB(220, 220, 220),
+        Tertiary = Color3.fromRGB(200, 200, 200),
+        Text = Color3.fromRGB(0, 0, 0),
+        SubText = Color3.fromRGB(80, 80, 80)
+    },
+    Blue = {
+        Name = "Blue",
+        Background = Color3.fromRGB(25, 35, 60),
+        Secondary = Color3.fromRGB(35, 45, 70),
+        Tertiary = Color3.fromRGB(45, 55, 80),
+        Text = Color3.fromRGB(255, 255, 255),
+        SubText = Color3.fromRGB(180, 200, 255)
+    },
+    Purple = {
+        Name = "Purple",
+        Background = Color3.fromRGB(40, 25, 60),
+        Secondary = Color3.fromRGB(50, 35, 70),
+        Tertiary = Color3.fromRGB(60, 45, 80),
+        Text = Color3.fromRGB(255, 255, 255),
+        SubText = Color3.fromRGB(220, 180, 255)
+    },
+    -- THEMES ĐẶC BIỆT
+    AMOLED = {
+        Name = "AMOLED",
+        Background = Color3.fromRGB(0, 0, 0),
+        Secondary = Color3.fromRGB(5, 5, 5),
+        Tertiary = Color3.fromRGB(10, 10, 10),
+        Text = Color3.fromRGB(255, 255, 255),
+        SubText = Color3.fromRGB(100, 100, 100)
+    },
+    Rose = {
+        Name = "Rose",
+        Background = Color3.fromRGB(60, 25, 45),
+        Secondary = Color3.fromRGB(70, 35, 55),
+        Tertiary = Color3.fromRGB(80, 45, 65),
+        Text = Color3.fromRGB(255, 255, 255),
+        SubText = Color3.fromRGB(255, 200, 220)
+    },
+    Cyber = {
+        Name = "Cyber",
+        Background = Color3.fromRGB(10, 15, 30),
+        Secondary = Color3.fromRGB(20, 25, 40),
+        Tertiary = Color3.fromRGB(30, 35, 50),
+        Text = Color3.fromRGB(0, 255, 255),
+        SubText = Color3.fromRGB(0, 200, 200)
+    },
+    Sunset = {
+        Name = "Sunset",
+        Background = Color3.fromRGB(80, 25, 45),
+        Secondary = Color3.fromRGB(90, 35, 55),
+        Tertiary = Color3.fromRGB(100, 45, 65),
+        Text = Color3.fromRGB(255, 255, 200),
+        SubText = Color3.fromRGB(255, 200, 150)
+    },
+    Ocean = {
+        Name = "Ocean",
+        Background = Color3.fromRGB(20, 40, 60),
+        Secondary = Color3.fromRGB(30, 50, 70),
+        Tertiary = Color3.fromRGB(40, 60, 80),
+        Text = Color3.fromRGB(200, 240, 255),
+        SubText = Color3.fromRGB(150, 200, 230)
+    },
+    Forest = {
+        Name = "Forest",
+        Background = Color3.fromRGB(20, 40, 25),
+        Secondary = Color3.fromRGB(30, 50, 35),
+        Tertiary = Color3.fromRGB(40, 60, 45),
+        Text = Color3.fromRGB(220, 255, 220),
+        SubText = Color3.fromRGB(180, 230, 180)
+    },
+    Gold = {
+        Name = "Gold",
+        Background = Color3.fromRGB(60, 50, 20),
+        Secondary = Color3.fromRGB(70, 60, 30),
+        Tertiary = Color3.fromRGB(80, 70, 40),
+        Text = Color3.fromRGB(255, 255, 200),
+        SubText = Color3.fromRGB(255, 230, 150)
+    },
+    Matrix = {
+        Name = "Matrix",
+        Background = Color3.fromRGB(0, 20, 0),
+        Secondary = Color3.fromRGB(0, 30, 0),
+        Tertiary = Color3.fromRGB(0, 40, 0),
+        Text = Color3.fromRGB(0, 255, 0),
+        SubText = Color3.fromRGB(0, 200, 0)
+    },
+    Blood = {
+        Name = "Blood",
+        Background = Color3.fromRGB(40, 0, 0),
+        Secondary = Color3.fromRGB(60, 0, 0),
+        Tertiary = Color3.fromRGB(80, 0, 0),
+        Text = Color3.fromRGB(255, 200, 200),
+        SubText = Color3.fromRGB(255, 150, 150)
+    }
+}
+
+local CurrentTheme = Themes.Dark
+local ThemeIndex = 1
+local ThemeNames = {"Dark", "Light", "Blue", "Purple", "AMOLED", "Rose", "Cyber", "Sunset", "Ocean", "Forest", "Gold", "Matrix", "Blood"}
 local AccentColor = Color3.fromRGB(0, 120, 215)
 
 -- Utility Functions
@@ -35,11 +146,8 @@ function NazuX:CreateWindow(options)
     local SubtitleText = options.Subtitle or "Premium Script Hub"
     local Size = options.Size or UDim2.new(0, 600, 0, 450)
     local Position = options.Position or UDim2.new(0.5, -300, 0.5, -225)
-    local Keybind = options.Keybind or Enum.KeyCode.RightControl
-    local Logo = options.Logo or "rbxassetid://7733960981" -- Default logo
     
     local NazuXLibrary = {}
-    local UIEnabled = true
     
     -- Main ScreenGui
     local ScreenGui = Create("ScreenGui", {
@@ -48,102 +156,17 @@ function NazuX:CreateWindow(options)
         ResetOnSpawn = false
     })
     
-    if syn and syn.protect_gui then
-        syn.protect_gui(ScreenGui)
-    end
-    
     ScreenGui.Parent = game:GetService("CoreGui")
     
-    -- Flame Loading Screen
-    local LoadingScreen = Create("Frame", {
-        Name = "LoadingScreen",
-        BackgroundColor3 = Color3.fromRGB(15, 15, 15),
-        BackgroundTransparency = 0.1,
-        Size = UDim2.new(1, 0, 1, 0),
-        ZIndex = 20,
-        Parent = ScreenGui
-    })
-    
-    local LoadingContainer = Create("Frame", {
-        Name = "LoadingContainer",
-        BackgroundColor3 = Color3.fromRGB(25, 25, 25),
-        BorderSizePixel = 0,
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        Position = UDim2.new(0.5, 0, 0.5, 0),
-        Size = UDim2.new(0, 150, 0, 150),
-        ZIndex = 21,
-        Parent = LoadingScreen
-    })
-    
-    local LoadingUICorner = Create("UICorner", {
-        CornerRadius = UDim.new(0, 20),
-        Parent = LoadingContainer
-    })
-    
-    -- Flame Loading Animation
-    local FlameParticles = Create("Frame", {
-        Name = "FlameParticles",
-        BackgroundTransparency = 1,
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        Position = UDim2.new(0.5, 0, 0.5, 0),
-        Size = UDim2.new(0, 80, 0, 80),
-        ZIndex = 22,
-        Parent = LoadingContainer
-    })
-    
-    -- Create multiple flame particles
-    local flameColors = {
-        Color3.fromRGB(255, 100, 0),
-        Color3.fromRGB(255, 150, 0),
-        Color3.fromRGB(255, 200, 0),
-        Color3.fromRGB(255, 255, 100)
-    }
-    
-    local flames = {}
-    for i = 1, 8 do
-        local flame = Create("Frame", {
-            Name = "Flame"..i,
-            BackgroundColor3 = flameColors[math.random(1, #flameColors)],
-            BorderSizePixel = 0,
-            Size = UDim2.new(0, math.random(8, 15), 0, math.random(8, 15)),
-            AnchorPoint = Vector2.new(0.5, 0.5),
-            Position = UDim2.new(0.5, 0, 0.5, 0),
-            ZIndex = 23,
-            Parent = FlameParticles
-        })
-        
-        local flameCorner = Create("UICorner", {
-            CornerRadius = UDim.new(1, 0),
-            Parent = flame
-        })
-        
-        table.insert(flames, flame)
-    end
-    
-    local LoadingText = Create("TextLabel", {
-        Name = "LoadingText",
-        BackgroundTransparency = 1,
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        Position = UDim2.new(0.5, 0, 0.8, 0),
-        Size = UDim2.new(0.8, 0, 0, 20),
-        Font = Enum.Font.GothamSemibold,
-        Text = "Loading NazuX...",
-        TextColor3 = Color3.fromRGB(255, 255, 255),
-        TextSize = 12,
-        ZIndex = 22,
-        Parent = LoadingContainer
-    })
-    
-    -- Main Container (Hidden initially)
+    -- Main Container
     local MainFrame = Create("Frame", {
         Name = "MainFrame",
-        BackgroundColor3 = Color3.fromRGB(25, 25, 25),
+        BackgroundColor3 = CurrentTheme.Background,
         BorderSizePixel = 0,
         Position = Position,
         Size = Size,
         Active = true,
         Draggable = true,
-        Visible = false, -- Hidden until loading completes
         Parent = ScreenGui
     })
     
@@ -152,12 +175,12 @@ function NazuX:CreateWindow(options)
         Parent = MainFrame
     })
     
-    -- Title Bar with Logo
+    -- Title Bar
     local TopFrame = Create("Frame", {
         Name = "TopFrame",
-        BackgroundColor3 = Color3.fromRGB(30, 30, 30),
+        BackgroundColor3 = CurrentTheme.Secondary,
         BorderSizePixel = 0,
-        Size = UDim2.new(1, 0, 0, 50), -- Increased height for logo
+        Size = UDim2.new(1, 0, 0, 40),
         Parent = MainFrame
     })
     
@@ -166,32 +189,15 @@ function NazuX:CreateWindow(options)
         Parent = TopFrame
     })
     
-    -- Rectangular Logo (Left side)
-    local LogoImage = Create("ImageLabel", {
-        Name = "LogoImage",
-        BackgroundColor3 = Color3.fromRGB(40, 40, 40),
-        BorderSizePixel = 0,
-        Position = UDim2.new(0, 10, 0, 5),
-        Size = UDim2.new(0, 40, 0, 40), -- Rectangular size
-        Image = Logo,
-        Parent = TopFrame
-    })
-    
-    local LogoUICorner = Create("UICorner", {
-        CornerRadius = UDim.new(0, 6), -- Slightly rounded corners for rectangle
-        Parent = LogoImage
-    })
-    
-    -- Title and Subtitle (Next to logo)
     local Title = Create("TextLabel", {
         Name = "Title",
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 60, 0, 8),
-        Size = UDim2.new(0, 200, 0, 20),
+        Position = UDim2.new(0, 15, 0, 5),
+        Size = UDim2.new(0, 200, 0, 18),
         Font = Enum.Font.GothamBold,
         Text = WindowName,
-        TextColor3 = Color3.fromRGB(255, 255, 255),
-        TextSize = 16,
+        TextColor3 = CurrentTheme.Text,
+        TextSize = 14,
         TextXAlignment = Enum.TextXAlignment.Left,
         Parent = TopFrame
     })
@@ -199,35 +205,40 @@ function NazuX:CreateWindow(options)
     local Subtitle = Create("TextLabel", {
         Name = "Subtitle",
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 60, 0, 28),
-        Size = UDim2.new(0, 200, 0, 15),
+        Position = UDim2.new(0, 15, 0, 22),
+        Size = UDim2.new(0, 200, 0, 14),
         Font = Enum.Font.Gotham,
         Text = SubtitleText,
-        TextColor3 = Color3.fromRGB(200, 200, 200),
-        TextSize = 11,
+        TextColor3 = CurrentTheme.SubText,
+        TextSize = 10,
         TextXAlignment = Enum.TextXAlignment.Left,
         Parent = TopFrame
     })
     
-    -- Keybind Display
-    local KeybindLabel = Create("TextLabel", {
-        Name = "KeybindLabel",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0.5, -50, 0, 15),
+    -- THEME BUTTON (Ở giữa)
+    local ThemeButton = Create("TextButton", {
+        Name = "ThemeButton",
+        BackgroundColor3 = AccentColor,
+        BorderSizePixel = 0,
+        Position = UDim2.new(0.5, -50, 0, 10),
         Size = UDim2.new(0, 100, 0, 20),
         Font = Enum.Font.Gotham,
-        Text = "Keybind: " .. tostring(Keybind):gsub("Enum.KeyCode.", ""),
-        TextColor3 = Color3.fromRGB(150, 150, 150),
-        TextSize = 10,
-        TextXAlignment = Enum.TextXAlignment.Center,
+        Text = "Theme: Dark",
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        TextSize = 11,
         Parent = TopFrame
+    })
+    
+    local ThemeUICorner = Create("UICorner", {
+        CornerRadius = UDim.new(0, 4),
+        Parent = ThemeButton
     })
     
     local CloseButton = Create("TextButton", {
         Name = "CloseButton",
         BackgroundColor3 = Color3.fromRGB(220, 60, 60),
         BorderSizePixel = 0,
-        Position = UDim2.new(1, -30, 0, 15),
+        Position = UDim2.new(1, -30, 0, 10),
         Size = UDim2.new(0, 20, 0, 20),
         Font = Enum.Font.GothamBold,
         Text = "X",
@@ -245,15 +256,15 @@ function NazuX:CreateWindow(options)
     local ContentArea = Create("Frame", {
         Name = "ContentArea",
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 0, 0, 50), -- Adjusted for taller titlebar
-        Size = UDim2.new(1, 0, 1, -50),
+        Position = UDim2.new(0, 0, 0, 40),
+        Size = UDim2.new(1, 0, 1, -40),
         Parent = MainFrame
     })
     
     -- Left Sidebar
     local LeftSidebar = Create("Frame", {
         Name = "LeftSidebar",
-        BackgroundColor3 = Color3.fromRGB(35, 35, 35),
+        BackgroundColor3 = CurrentTheme.Secondary,
         BorderSizePixel = 0,
         Size = UDim2.new(0, 180, 1, 0),
         Parent = ContentArea
@@ -264,102 +275,15 @@ function NazuX:CreateWindow(options)
         Parent = LeftSidebar
     })
     
-    -- User Info
-    local UserInfoFrame = Create("Frame", {
-        Name = "UserInfoFrame",
-        BackgroundColor3 = Color3.fromRGB(40, 40, 40),
-        BorderSizePixel = 0,
-        Size = UDim2.new(1, -10, 0, 80),
-        Position = UDim2.new(0, 5, 0, 5),
-        Parent = LeftSidebar
-    })
-    
-    local UserInfoUICorner = Create("UICorner", {
-        CornerRadius = UDim.new(0, 6),
-        Parent = UserInfoFrame
-    })
-    
-    local Avatar = Create("ImageLabel", {
-        Name = "Avatar",
-        BackgroundColor3 = Color3.fromRGB(50, 50, 50),
-        BorderSizePixel = 0,
-        Position = UDim2.new(0, 10, 0, 10),
-        Size = UDim2.new(0, 40, 0, 40),
-        Image = "https://www.roblox.com/headshot-thumbnail/image?userId="..LocalPlayer.UserId.."&width=150&height=150&format=png",
-        Parent = UserInfoFrame
-    })
-    
-    local AvatarUICorner = Create("UICorner", {
-        CornerRadius = UDim.new(0, 20),
-        Parent = Avatar
-    })
-    
-    local UsernameLabel = Create("TextLabel", {
-        Name = "UsernameLabel",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 60, 0, 15),
-        Size = UDim2.new(1, -65, 0, 20),
-        Font = Enum.Font.GothamSemibold,
-        Text = LocalPlayer.Name,
-        TextColor3 = Color3.fromRGB(255, 255, 255),
-        TextSize = 12,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        TextTruncate = Enum.TextTruncate.AtEnd,
-        Parent = UserInfoFrame
-    })
-    
-    local UserIdLabel = Create("TextLabel", {
-        Name = "UserIdLabel",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 60, 0, 35),
-        Size = UDim2.new(1, -65, 0, 15),
-        Font = Enum.Font.Gotham,
-        Text = "ID: "..LocalPlayer.UserId,
-        TextColor3 = Color3.fromRGB(200, 200, 200),
-        TextSize = 10,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        Parent = UserInfoFrame
-    })
-    
-    -- Search Bar
-    local SearchContainer = Create("Frame", {
-        Name = "SearchContainer",
-        BackgroundColor3 = Color3.fromRGB(40, 40, 40),
-        BorderSizePixel = 0,
-        Size = UDim2.new(1, -10, 0, 35),
-        Position = UDim2.new(0, 5, 0, 90),
-        Parent = LeftSidebar
-    })
-    
-    local SearchUICorner = Create("UICorner", {
-        CornerRadius = UDim.new(0, 6),
-        Parent = SearchContainer
-    })
-    
-    local SearchBox = Create("TextBox", {
-        Name = "SearchBox",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 10, 0, 0),
-        Size = UDim2.new(1, -40, 1, 0),
-        Font = Enum.Font.Gotham,
-        PlaceholderText = "Search tabs...",
-        PlaceholderColor3 = Color3.fromRGB(150, 150, 150),
-        Text = "",
-        TextColor3 = Color3.fromRGB(255, 255, 255),
-        TextSize = 12,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        Parent = SearchContainer
-    })
-    
     -- Tabs Container
     local TabsContainer = Create("ScrollingFrame", {
         Name = "TabsContainer",
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 5, 0, 130),
-        Size = UDim2.new(1, -10, 1, -135),
+        Position = UDim2.new(0, 5, 0, 5),
+        Size = UDim2.new(1, -10, 1, -10),
         CanvasSize = UDim2.new(0, 0, 0, 0),
         ScrollBarThickness = 3,
-        ScrollBarImageColor3 = Color3.fromRGB(60, 60, 60),
+        ScrollBarImageColor3 = CurrentTheme.Tertiary,
         Parent = LeftSidebar
     })
     
@@ -367,6 +291,10 @@ function NazuX:CreateWindow(options)
         Padding = UDim.new(0, 5),
         Parent = TabsContainer
     })
+    
+    TabsListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        TabsContainer.CanvasSize = UDim2.new(0, 0, 0, TabsListLayout.AbsoluteContentSize.Y)
+    end)
     
     -- Main Content Area
     local MainContent = Create("Frame", {
@@ -377,54 +305,57 @@ function NazuX:CreateWindow(options)
         Parent = ContentArea
     })
     
-    -- Flame Loading Animation
-    local flameConnections = {}
-    local function StartFlameAnimation()
-        for i, flame in ipairs(flames) do
-            local connection = RunService.Heartbeat:Connect(function(delta)
-                local time = tick() + (i * 0.2)
-                local x = math.cos(time * 2) * 20
-                local y = math.sin(time * 3) * 25 - 10
-                local scale = 0.8 + math.sin(time * 4) * 0.3
-                local transparency = 0.3 + math.sin(time * 5) * 0.3
-                
-                flame.Position = UDim2.new(0.5, x, 0.5, y)
-                flame.Size = UDim2.new(0, 10 * scale, 0, 10 * scale)
-                flame.BackgroundTransparency = transparency
-            end)
-            table.insert(flameConnections, connection)
+    -- THEME MANAGEMENT FUNCTION
+    local function UpdateTheme()
+        -- Update all UI elements with new theme colors
+        Tween(MainFrame, {BackgroundColor3 = CurrentTheme.Background}, 0.3)
+        Tween(TopFrame, {BackgroundColor3 = CurrentTheme.Secondary}, 0.3)
+        Tween(LeftSidebar, {BackgroundColor3 = CurrentTheme.Secondary}, 0.3)
+        
+        Tween(Title, {TextColor3 = CurrentTheme.Text}, 0.3)
+        Tween(Subtitle, {TextColor3 = CurrentTheme.SubText}, 0.3)
+        
+        -- Update Theme Button Text
+        ThemeButton.Text = "Theme: " .. CurrentTheme.Name
+        
+        -- Update Tabs
+        for _, tabButton in pairs(TabsContainer:GetChildren()) do
+            if tabButton:IsA("TextButton") then
+                if tabButton.BackgroundColor3 ~= AccentColor then
+                    Tween(tabButton, {BackgroundColor3 = CurrentTheme.Tertiary, TextColor3 = CurrentTheme.SubText}, 0.3)
+                end
+            end
         end
     end
     
-    local function StopFlameAnimation()
-        for _, connection in ipairs(flameConnections) do
-            connection:Disconnect()
-        end
-        flameConnections = {}
-    end
-    
-    -- Keybind Functionality
-    local keybindConnection
-    local function SetupKeybind()
-        if keybindConnection then
-            keybindConnection:Disconnect()
+    -- THEME BUTTON EVENT
+    ThemeButton.MouseButton1Click:Connect(function()
+        -- Cycle through themes
+        ThemeIndex = ThemeIndex + 1
+        if ThemeIndex > #ThemeNames then
+            ThemeIndex = 1
         end
         
-        keybindConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
-            if gameProcessed then return end
-            if input.KeyCode == Keybind then
-                NazuXLibrary:ToggleUI()
-            end
-        end)
-    end
+        CurrentTheme = Themes[ThemeNames[ThemeIndex]]
+        UpdateTheme()
+        
+        -- Button click effect
+        Tween(ThemeButton, {BackgroundColor3 = Color3.fromRGB(0, 100, 200)}, 0.1)
+        wait(0.1)
+        Tween(ThemeButton, {BackgroundColor3 = AccentColor}, 0.2)
+    end)
     
-    -- Button Events
+    ThemeButton.MouseEnter:Connect(function()
+        Tween(ThemeButton, {BackgroundColor3 = Color3.fromRGB(0, 140, 255)}, 0.2)
+    end)
+    
+    ThemeButton.MouseLeave:Connect(function()
+        Tween(ThemeButton, {BackgroundColor3 = AccentColor}, 0.2)
+    end)
+    
+    -- Close Button Event
     CloseButton.MouseButton1Click:Connect(function()
         ScreenGui:Destroy()
-        StopFlameAnimation()
-        if keybindConnection then
-            keybindConnection:Disconnect()
-        end
     end)
     
     CloseButton.MouseEnter:Connect(function()
@@ -435,36 +366,18 @@ function NazuX:CreateWindow(options)
         Tween(CloseButton, {BackgroundColor3 = Color3.fromRGB(220, 60, 60)}, 0.2)
     end)
     
-    -- Search Functionality
-    local function FilterTabs(searchText)
-        for _, tabButton in pairs(TabsContainer:GetChildren()) do
-            if tabButton:IsA("TextButton") then
-                local tabName = tabButton.Name:gsub("TabButton", "")
-                if string.find(string.lower(tabName), string.lower(searchText)) or searchText == "" then
-                    tabButton.Visible = true
-                else
-                    tabButton.Visible = false
-                end
-            end
-        end
-    end
-    
-    SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
-        FilterTabs(SearchBox.Text)
-    end)
-    
     -- Tab Management
     local CurrentTab = nil
     
     function NazuXLibrary:CreateTab(TabName)
         local TabButton = Create("TextButton", {
             Name = TabName .. "TabButton",
-            BackgroundColor3 = Color3.fromRGB(50, 50, 50),
+            BackgroundColor3 = CurrentTheme.Tertiary,
             BorderSizePixel = 0,
             Size = UDim2.new(1, 0, 0, 35),
             Font = Enum.Font.Gotham,
             Text = TabName,
-            TextColor3 = Color3.fromRGB(200, 200, 200),
+            TextColor3 = CurrentTheme.SubText,
             TextSize = 12,
             AutoButtonColor = false,
             Parent = TabsContainer
@@ -481,7 +394,7 @@ function NazuX:CreateWindow(options)
             Size = UDim2.new(1, 0, 1, 0),
             CanvasSize = UDim2.new(0, 0, 0, 0),
             ScrollBarThickness = 3,
-            ScrollBarImageColor3 = Color3.fromRGB(60, 60, 60),
+            ScrollBarImageColor3 = CurrentTheme.Tertiary,
             Visible = false,
             Parent = MainContent
         })
@@ -500,7 +413,7 @@ function NazuX:CreateWindow(options)
                 CurrentTab.Visible = false
                 for _, btn in pairs(TabsContainer:GetChildren()) do
                     if btn:IsA("TextButton") then
-                        Tween(btn, {BackgroundColor3 = Color3.fromRGB(50, 50, 50), TextColor3 = Color3.fromRGB(200, 200, 200)}, 0.2)
+                        Tween(btn, {BackgroundColor3 = CurrentTheme.Tertiary, TextColor3 = CurrentTheme.SubText}, 0.2)
                     end
                 end
             end
@@ -518,7 +431,7 @@ function NazuX:CreateWindow(options)
         
         TabButton.MouseLeave:Connect(function()
             if CurrentTab ~= TabContent then
-                Tween(TabButton, {BackgroundColor3 = Color3.fromRGB(50, 50, 50)}, 0.2)
+                Tween(TabButton, {BackgroundColor3 = CurrentTheme.Tertiary}, 0.2)
             end
         end)
         
@@ -531,7 +444,7 @@ function NazuX:CreateWindow(options)
             
             local ButtonContainer = Create("Frame", {
                 Name = ButtonName .. "Container",
-                BackgroundColor3 = Color3.fromRGB(45, 45, 45),
+                BackgroundColor3 = CurrentTheme.Secondary,
                 BorderSizePixel = 0,
                 Size = UDim2.new(1, -20, 0, 35),
                 Parent = TabContent
@@ -548,7 +461,7 @@ function NazuX:CreateWindow(options)
                 Size = UDim2.new(1, 0, 1, 0),
                 Font = Enum.Font.Gotham,
                 Text = ButtonName,
-                TextColor3 = Color3.fromRGB(255, 255, 255),
+                TextColor3 = CurrentTheme.Text,
                 TextSize = 12,
                 Parent = ButtonContainer
             })
@@ -557,15 +470,15 @@ function NazuX:CreateWindow(options)
                 Callback()
                 Tween(ButtonContainer, {BackgroundColor3 = AccentColor}, 0.1)
                 wait(0.1)
-                Tween(ButtonContainer, {BackgroundColor3 = Color3.fromRGB(45, 45, 45)}, 0.1)
+                Tween(ButtonContainer, {BackgroundColor3 = CurrentTheme.Secondary}, 0.1)
             end)
             
             Button.MouseEnter:Connect(function()
-                Tween(ButtonContainer, {BackgroundColor3 = Color3.fromRGB(55, 55, 55)}, 0.2)
+                Tween(ButtonContainer, {BackgroundColor3 = Color3.fromRGB(50, 50, 50)}, 0.2)
             end)
             
             Button.MouseLeave:Connect(function()
-                Tween(ButtonContainer, {BackgroundColor3 = Color3.fromRGB(45, 45, 45)}, 0.2)
+                Tween(ButtonContainer, {BackgroundColor3 = CurrentTheme.Secondary}, 0.2)
             end)
             
             return ButtonContainer
@@ -581,32 +494,22 @@ function NazuX:CreateWindow(options)
         return TabFunctions
     end
     
-    -- Library Functions
     function NazuXLibrary:ToggleUI()
-        UIEnabled = not UIEnabled
-        MainFrame.Visible = UIEnabled
+        MainFrame.Visible = not MainFrame.Visible
     end
     
-    function NazuXLibrary:SetKeybind(newKeybind)
-        Keybind = newKeybind
-        KeybindLabel.Text = "Keybind: " .. tostring(Keybind):gsub("Enum.KeyCode.", "")
-        SetupKeybind()
+    function NazuXLibrary:SetTheme(themeName)
+        if Themes[themeName] then
+            CurrentTheme = Themes[themeName]
+            for i, name in ipairs(ThemeNames) do
+                if name == themeName then
+                    ThemeIndex = i
+                    break
+                end
+            end
+            UpdateTheme()
+        end
     end
-    
-    -- Start Loading Animation
-    StartFlameAnimation()
-    
-    -- Auto-hide loading after 1 second
-    delay(1, function()
-        StopFlameAnimation()
-        Tween(LoadingScreen, {BackgroundTransparency = 1}, 0.5)
-        wait(0.5)
-        LoadingScreen.Visible = false
-        MainFrame.Visible = true
-    end)
-    
-    -- Setup Keybind
-    SetupKeybind()
     
     return NazuXLibrary
 end
