@@ -1,5 +1,5 @@
 -- NazuX Library - Windows 11 Style UI
--- Multiple Themes Added
+-- Centered Theme Button with Fingerprint Logo
 
 local NazuX = {}
 NazuX.__index = NazuX
@@ -14,7 +14,7 @@ local LocalPlayer = Players.LocalPlayer
 -- Colors
 local AccentColor = Color3.fromRGB(0, 120, 215)
 
--- Multiple Themes
+-- Multiple Themes with Special Themes
 local Themes = {
     Dark = {
         Name = "Dark",
@@ -71,12 +71,68 @@ local Themes = {
         Tertiary = Color3.fromRGB(80, 60, 45),
         Text = Color3.fromRGB(255, 255, 255),
         SubText = Color3.fromRGB(255, 220, 180)
+    },
+    Rose = {
+        Name = "Rose",
+        Background = Color3.fromRGB(60, 25, 45),
+        Secondary = Color3.fromRGB(70, 35, 55),
+        Tertiary = Color3.fromRGB(80, 45, 65),
+        Text = Color3.fromRGB(255, 255, 255),
+        SubText = Color3.fromRGB(255, 200, 220)
+    },
+    AMOLED = {
+        Name = "AMOLED",
+        Background = Color3.fromRGB(0, 0, 0),
+        Secondary = Color3.fromRGB(10, 10, 10),
+        Tertiary = Color3.fromRGB(20, 20, 20),
+        Text = Color3.fromRGB(255, 255, 255),
+        SubText = Color3.fromRGB(100, 100, 100)
+    },
+    Cyber = {
+        Name = "Cyber",
+        Background = Color3.fromRGB(10, 15, 30),
+        Secondary = Color3.fromRGB(20, 25, 40),
+        Tertiary = Color3.fromRGB(30, 35, 50),
+        Text = Color3.fromRGB(0, 255, 255),
+        SubText = Color3.fromRGB(0, 200, 200)
+    },
+    Sunset = {
+        Name = "Sunset",
+        Background = Color3.fromRGB(80, 25, 45),
+        Secondary = Color3.fromRGB(90, 35, 55),
+        Tertiary = Color3.fromRGB(100, 45, 65),
+        Text = Color3.fromRGB(255, 255, 200),
+        SubText = Color3.fromRGB(255, 200, 150)
+    },
+    Ocean = {
+        Name = "Ocean",
+        Background = Color3.fromRGB(20, 40, 60),
+        Secondary = Color3.fromRGB(30, 50, 70),
+        Tertiary = Color3.fromRGB(40, 60, 80),
+        Text = Color3.fromRGB(200, 240, 255),
+        SubText = Color3.fromRGB(150, 200, 230)
+    },
+    Forest = {
+        Name = "Forest",
+        Background = Color3.fromRGB(20, 40, 25),
+        Secondary = Color3.fromRGB(30, 50, 35),
+        Tertiary = Color3.fromRGB(40, 60, 45),
+        Text = Color3.fromRGB(220, 255, 220),
+        SubText = Color3.fromRGB(180, 230, 180)
+    },
+    Gold = {
+        Name = "Gold",
+        Background = Color3.fromRGB(60, 50, 20),
+        Secondary = Color3.fromRGB(70, 60, 30),
+        Tertiary = Color3.fromRGB(80, 70, 40),
+        Text = Color3.fromRGB(255, 255, 200),
+        SubText = Color3.fromRGB(255, 230, 150)
     }
 }
 
 local CurrentTheme = Themes.Dark
 local ThemeIndex = 1
-local ThemeNames = {"Dark", "Light", "Blue", "Purple", "Green", "Red", "Orange"}
+local ThemeNames = {"Dark", "Light", "Blue", "Purple", "Green", "Red", "Orange", "Rose", "AMOLED", "Cyber", "Sunset", "Ocean", "Forest", "Gold"}
 
 -- Utility Functions
 local function Create(class, properties)
@@ -148,62 +204,6 @@ function NazuX:CreateWindow(options)
         Parent = MainFrame
     })
 
-    -- Transparent Loading Screen (trên cùng MainFrame)
-    local LoadingScreen = Create("Frame", {
-        Name = "LoadingScreen",
-        BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-        BackgroundTransparency = 0.7, -- Trong suốt
-        BorderSizePixel = 0,
-        Size = UDim2.new(1, 0, 1, 0),
-        ZIndex = 10,
-        Parent = MainFrame
-    })
-    
-    local LoadingContainer = Create("Frame", {
-        Name = "LoadingContainer",
-        BackgroundColor3 = CurrentTheme.Background,
-        BackgroundTransparency = 0.3,
-        BorderSizePixel = 0,
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        Position = UDim2.new(0.5, 0, 0.5, 0),
-        Size = UDim2.new(0, 200, 0, 120),
-        ZIndex = 11,
-        Parent = LoadingScreen
-    })
-    
-    local LoadingContainerCorner = Create("UICorner", {
-        CornerRadius = UDim.new(0, 12),
-        Parent = LoadingContainer
-    })
-    
-    local LoadingSpinner = Create("ImageLabel", {
-        Name = "LoadingSpinner",
-        BackgroundTransparency = 1,
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        Position = UDim2.new(0.5, 0, 0.4, 0),
-        Size = UDim2.new(0, 40, 0, 40),
-        Image = "rbxassetid://3926305904",
-        ImageColor3 = AccentColor,
-        ImageRectOffset = Vector2.new(964, 324),
-        ImageRectSize = Vector2.new(36, 36),
-        ZIndex = 12,
-        Parent = LoadingContainer
-    })
-    
-    local LoadingText = Create("TextLabel", {
-        Name = "LoadingText",
-        BackgroundTransparency = 1,
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        Position = UDim2.new(0.5, 0, 0.75, 0),
-        Size = UDim2.new(0.8, 0, 0, 20),
-        Font = Enum.Font.GothamSemibold,
-        Text = "Loading NazuX Library...",
-        TextColor3 = Color3.fromRGB(255, 255, 255),
-        TextSize = 12,
-        ZIndex = 12,
-        Parent = LoadingContainer
-    })
-    
     -- Title Bar
     local TitleBar = Create("Frame", {
         Name = "TitleBar",
@@ -218,6 +218,7 @@ function NazuX:CreateWindow(options)
         Parent = TitleBar
     })
     
+    -- Title và Subtitle (Bên trái titlebar)
     local TitleLabel = Create("TextLabel", {
         Name = "TitleLabel",
         BackgroundTransparency = 1,
@@ -244,13 +245,13 @@ function NazuX:CreateWindow(options)
         Parent = TitleBar
     })
     
-    -- Theme Change Button (ở giữa titlebar)
+    -- Theme Button với logo vân tay (Ở GIỮA titlebar)
     local ThemeButton = Create("TextButton", {
         Name = "ThemeButton",
         BackgroundColor3 = AccentColor,
         BorderSizePixel = 0,
-        Position = UDim2.new(0.5, -40, 0, 10),
-        Size = UDim2.new(0, 80, 0, 20),
+        Position = UDim2.new(0.5, -60, 0, 10),
+        Size = UDim2.new(0, 120, 0, 20),
         Font = Enum.Font.Gotham,
         Text = "Theme: Dark",
         TextColor3 = Color3.fromRGB(255, 255, 255),
@@ -263,7 +264,20 @@ function NazuX:CreateWindow(options)
         Parent = ThemeButton
     })
     
-    -- Close Button
+    -- Fingerprint Logo (Bên phải nút theme)
+    local FingerprintLogo = Create("ImageLabel", {
+        Name = "FingerprintLogo",
+        BackgroundTransparency = 1,
+        Position = UDim2.new(1, -25, 0, 5),
+        Size = UDim2.new(0, 10, 0, 10),
+        Image = "rbxassetid://3926305904",
+        ImageColor3 = Color3.fromRGB(255, 255, 255),
+        ImageRectOffset = Vector2.new(884, 284), -- Fingerprint icon
+        ImageRectSize = Vector2.new(36, 36),
+        Parent = ThemeButton
+    })
+    
+    -- Close Button (Bên phải titlebar)
     local CloseButton = Create("TextButton", {
         Name = "CloseButton",
         BackgroundColor3 = Color3.fromRGB(232, 17, 35),
@@ -295,7 +309,7 @@ function NazuX:CreateWindow(options)
     local LeftSidebar = Create("Frame", {
         Name = "LeftSidebar",
         BackgroundColor3 = CurrentTheme.Secondary,
-        BackgroundTransparency = 0.3, -- Trong suốt
+        BackgroundTransparency = 0.3,
         BorderSizePixel = 0,
         Size = UDim2.new(0, 180, 1, 0),
         Parent = ContentArea
@@ -439,13 +453,6 @@ function NazuX:CreateWindow(options)
         Parent = ContentArea
     })
     
-    -- Animation for loading spinner
-    local LoadingRotation = 0
-    local LoadingConnection = RunService.Heartbeat:Connect(function(delta)
-        LoadingRotation = (LoadingRotation + 180 * delta) % 360
-        LoadingSpinner.Rotation = LoadingRotation
-    end)
-
     -- Theme Management
     local function UpdateTheme()
         -- Update Main Frame
@@ -465,9 +472,6 @@ function NazuX:CreateWindow(options)
         Tween(UserInfoFrame, {BackgroundColor3 = CurrentTheme.Tertiary}, 0.3)
         Tween(SearchContainer, {BackgroundColor3 = CurrentTheme.Tertiary}, 0.3)
         Tween(Avatar, {BackgroundColor3 = CurrentTheme.Secondary}, 0.3)
-        
-        -- Update Loading Screen
-        Tween(LoadingContainer, {BackgroundColor3 = CurrentTheme.Background}, 0.3)
         
         -- Update Theme Button Text
         ThemeButton.Text = "Theme: " .. CurrentTheme.Name
@@ -509,28 +513,8 @@ function NazuX:CreateWindow(options)
         end
     end
     
-    function NazuXLibrary:ShowLoading(duration, text)
-        if text then
-            LoadingText.Text = text
-        end
-        LoadingScreen.Visible = true
-        
-        if duration then
-            delay(duration, function()
-                self:HideLoading()
-            end)
-        end
-    end
-    
-    function NazuXLibrary:HideLoading()
-        LoadingScreen.Visible = false
-    end
-    
     -- Close Button Event
     CloseButton.MouseButton1Click:Connect(function()
-        if LoadingConnection then
-            LoadingConnection:Disconnect()
-        end
         ScreenGui:Destroy()
     end)
     
@@ -542,17 +526,28 @@ function NazuX:CreateWindow(options)
         Tween(CloseButton, {BackgroundColor3 = Color3.fromRGB(232, 17, 35)}, 0.2)
     end)
     
-    -- Theme Button Event
+    -- Theme Button Event với hiệu ứng fingerprint (Ở GIỮA)
     ThemeButton.MouseButton1Click:Connect(function()
+        -- Hiệu ứng click
+        Tween(ThemeButton, {BackgroundColor3 = Color3.fromRGB(0, 100, 200)}, 0.1)
+        Tween(FingerprintLogo, {ImageColor3 = Color3.fromRGB(200, 230, 255)}, 0.1)
+        
+        wait(0.1)
+        
         NazuXLibrary:NextTheme()
+        
+        Tween(ThemeButton, {BackgroundColor3 = AccentColor}, 0.2)
+        Tween(FingerprintLogo, {ImageColor3 = Color3.fromRGB(255, 255, 255)}, 0.2)
     end)
     
     ThemeButton.MouseEnter:Connect(function()
         Tween(ThemeButton, {BackgroundColor3 = Color3.fromRGB(0, 140, 255)}, 0.2)
+        Tween(FingerprintLogo, {Size = UDim2.new(0, 12, 0, 12)}, 0.2)
     end)
     
     ThemeButton.MouseLeave:Connect(function()
         Tween(ThemeButton, {BackgroundColor3 = AccentColor}, 0.2)
+        Tween(FingerprintLogo, {Size = UDim2.new(0, 10, 0, 10)}, 0.2)
     end)
     
     -- Search Functionality
@@ -575,7 +570,6 @@ function NazuX:CreateWindow(options)
     
     -- Tab Management
     local CurrentTab = nil
-    local TabContents = {}
     
     function NazuXLibrary:CreateTab(TabName)
         local TabButton = Create("TextButton", {
@@ -661,7 +655,7 @@ function NazuX:CreateWindow(options)
                 Size = UDim2.new(1, -20, 0, 35),
                 Parent = TabContent
             })
-            
+        
             local ButtonContainerUICorner = Create("UICorner", {
                 CornerRadius = UDim.new(0, 6),
                 Parent = ButtonContainer
@@ -696,112 +690,6 @@ function NazuX:CreateWindow(options)
             return ButtonContainer
         end
         
-        -- AddToggle Function
-        function TabFunctions:AddToggle(ToggleConfig)
-            ToggleConfig = ToggleConfig or {}
-            local ToggleName = ToggleConfig.Name or "Toggle"
-            local Default = ToggleConfig.Default or false
-            local Callback = ToggleConfig.Callback or function() end
-            
-            local ToggleState = Default
-            
-            local ToggleContainer = Create("Frame", {
-                Name = ToggleName .. "Container",
-                BackgroundColor3 = CurrentTheme.Secondary,
-                BackgroundTransparency = 0.2,
-                BorderSizePixel = 0,
-                Size = UDim2.new(1, -20, 0, 35),
-                Parent = TabContent
-            })
-            
-            local ToggleContainerUICorner = Create("UICorner", {
-                CornerRadius = UDim.new(0, 6),
-                Parent = ToggleContainer
-            })
-            
-            local ToggleLabel = Create("TextLabel", {
-                Name = ToggleName .. "Label",
-                BackgroundTransparency = 1,
-                Position = UDim2.new(0, 10, 0, 0),
-                Size = UDim2.new(0.7, -10, 1, 0),
-                Font = Enum.Font.Gotham,
-                Text = ToggleName,
-                TextColor3 = CurrentTheme.Text,
-                TextSize = 12,
-                TextXAlignment = Enum.TextXAlignment.Left,
-                Parent = ToggleContainer
-            })
-            
-            local ToggleButton = Create("TextButton", {
-                Name = ToggleName .. "Button",
-                BackgroundTransparency = 1,
-                Position = UDim2.new(0.7, 0, 0, 0),
-                Size = UDim2.new(0.3, 0, 1, 0),
-                Text = "",
-                AutoButtonColor = false,
-                Parent = ToggleContainer
-            })
-            
-            local ToggleBackground = Create("Frame", {
-                Name = ToggleName .. "Background",
-                BackgroundColor3 = Default and AccentColor or Color3.fromRGB(80, 80, 80),
-                BorderSizePixel = 0,
-                Position = UDim2.new(0.5, -20, 0.5, -10),
-                Size = UDim2.new(0, 40, 0, 20),
-                Parent = ToggleButton
-            })
-            
-            local ToggleBackgroundUICorner = Create("UICorner", {
-                CornerRadius = UDim.new(0, 10),
-                Parent = ToggleBackground
-            })
-            
-            local ToggleKnob = Create("Frame", {
-                Name = ToggleName .. "Knob",
-                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                BorderSizePixel = 0,
-                Position = UDim2.new(0, Default and 22 or 2, 0, 2),
-                Size = UDim2.new(0, 16, 0, 16),
-                Parent = ToggleBackground
-            })
-            
-            local ToggleKnobUICorner = Create("UICorner", {
-                CornerRadius = UDim.new(0, 8),
-                Parent = ToggleKnob
-            })
-            
-            local function UpdateToggle()
-                Tween(ToggleBackground, {BackgroundColor3 = ToggleState and AccentColor or Color3.fromRGB(80, 80, 80)}, 0.2)
-                Tween(ToggleKnob, {Position = UDim2.new(0, ToggleState and 22 or 2, 0, 2)}, 0.2)
-                Callback(ToggleState)
-            end
-            
-            ToggleButton.MouseButton1Click:Connect(function()
-                ToggleState = not ToggleState
-                UpdateToggle()
-            end)
-            
-            ToggleButton.MouseEnter:Connect(function()
-                Tween(ToggleBackground, {BackgroundColor3 = ToggleState and Color3.fromRGB(0, 140, 255) or Color3.fromRGB(100, 100, 100)}, 0.2)
-            end)
-            
-            ToggleButton.MouseLeave:Connect(function()
-                Tween(ToggleBackground, {BackgroundColor3 = ToggleState and AccentColor or Color3.fromRGB(80, 80, 80)}, 0.2)
-            end)
-            
-            UpdateToggle()
-            
-            return {
-                Set = function(self, state)
-                    ToggleState = state
-                    UpdateToggle()
-                end,
-                Get = function(self)
-                    return ToggleState
-                end
-            }
-        end
-        
         -- Auto-select first tab
         if not CurrentTab then
             CurrentTab = TabContent
@@ -811,11 +699,6 @@ function NazuX:CreateWindow(options)
         
         return TabFunctions
     end
-    
-    -- Tự động ẩn loading sau 2 giây
-    delay(2, function()
-        NazuXLibrary:HideLoading()
-    end)
     
     return NazuXLibrary
 end
