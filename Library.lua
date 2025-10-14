@@ -1,5 +1,5 @@
 -- NazuX Library - Windows 11 Style UI
--- Fixed Minimize Button
+-- Fixed Minimize - All Elements Move Together
 
 local NazuX = {}
 NazuX.__index = NazuX
@@ -224,23 +224,23 @@ function NazuX:CreateWindow(options)
         Parent = CloseButton
     })
     
-    -- Content Area (sẽ di chuyển khi minimize)
-    local ContentArea = Create("Frame", {
-        Name = "ContentArea",
+    -- MAIN CONTENT CONTAINER (TẤT CẢ NỘI DUNG TRONG NÀY SẼ DI CHUYỂN CÙNG NHAU)
+    local MainContentContainer = Create("Frame", {
+        Name = "MainContentContainer",
         BackgroundTransparency = 1,
         Position = UDim2.new(0, 0, 0, 40),
         Size = UDim2.new(1, 0, 1, -40),
         Parent = MainFrame
     })
     
-    -- Left Sidebar (Tabs)
+    -- Left Sidebar (Tabs) - GIỜ NẰM TRONG MAIN CONTENT CONTAINER
     local LeftSidebar = Create("Frame", {
         Name = "LeftSidebar",
         BackgroundColor3 = DarkTheme.Secondary,
         BackgroundTransparency = 0.3, -- Trong suốt
         BorderSizePixel = 0,
         Size = UDim2.new(0, 180, 1, 0),
-        Parent = ContentArea
+        Parent = MainContentContainer
     })
     
     local SidebarUICorner = Create("UICorner", {
@@ -248,7 +248,7 @@ function NazuX:CreateWindow(options)
         Parent = LeftSidebar
     })
     
-    -- User Info Section
+    -- User Info Section - GIỜ NẰM TRONG LEFT SIDEBAR
     local UserInfoFrame = Create("Frame", {
         Name = "UserInfoFrame",
         BackgroundColor3 = DarkTheme.Tertiary,
@@ -307,7 +307,7 @@ function NazuX:CreateWindow(options)
     UsernameLabel.Parent = UserInfoFrame
     UserIdLabel.Parent = UserInfoFrame
     
-    -- Search Bar
+    -- Search Bar - GIỜ NẰM TRONG LEFT SIDEBAR
     local SearchContainer = Create("Frame", {
         Name = "SearchContainer",
         BackgroundColor3 = DarkTheme.Tertiary,
@@ -351,7 +351,7 @@ function NazuX:CreateWindow(options)
     SearchBox.Parent = SearchContainer
     SearchIcon.Parent = SearchContainer
     
-    -- Tabs Container
+    -- Tabs Container - GIỜ NẰM TRONG LEFT SIDEBAR
     local TabsContainer = Create("ScrollingFrame", {
         Name = "TabsContainer",
         BackgroundTransparency = 1,
@@ -368,13 +368,13 @@ function NazuX:CreateWindow(options)
         Parent = TabsContainer
     })
     
-    -- Right Content Area
+    -- Right Content Area - GIỜ NẰM TRONG MAIN CONTENT CONTAINER
     local RightContent = Create("Frame", {
         Name = "RightContent",
         BackgroundTransparency = 1,
         Position = UDim2.new(0, 185, 0, 0),
         Size = UDim2.new(1, -185, 1, 0),
-        Parent = ContentArea
+        Parent = MainContentContainer
     })
     
     -- Animation for loading spinner
@@ -397,20 +397,18 @@ function NazuX:CreateWindow(options)
         IsMinimized = not IsMinimized
         
         if IsMinimized then
-            -- Thu nhỏ: chỉ hiển thị title bar
-            Tween(ContentArea, {
-                Position = UDim2.new(0, 0, 0, -ContentArea.Size.Y.Offset),
-                Size = UDim2.new(1, 0, 0, 0)
+            -- Thu nhỏ: di chuyển TOÀN BỘ MainContentContainer lên trên
+            Tween(MainContentContainer, {
+                Position = UDim2.new(0, 0, 0, -MainContentContainer.Size.Y.Offset)
             }, 0.3)
             
             Tween(MainFrame, {
                 Size = UDim2.new(OriginalSize.X.Scale, OriginalSize.X.Offset, 0, 40)
             }, 0.3)
         else
-            -- Mở rộng: hiển thị toàn bộ content
-            Tween(ContentArea, {
-                Position = UDim2.new(0, 0, 0, 40),
-                Size = UDim2.new(1, 0, 1, -40)
+            -- Mở rộng: di chuyển TOÀN BỘ MainContentContainer về vị trí cũ
+            Tween(MainContentContainer, {
+                Position = UDim2.new(0, 0, 0, 40)
             }, 0.3)
             
             Tween(MainFrame, {
@@ -712,275 +710,6 @@ function NazuX:CreateWindow(options)
                 end,
                 Get = function(self)
                     return ToggleState
-                end
-            }
-        end
-        
-        -- AddSlider Function
-        function TabFunctions:AddSlider(SliderConfig)
-            SliderConfig = SliderConfig or {}
-            local SliderName = SliderConfig.Name or "Slider"
-            local Min = SliderConfig.Min or 0
-            local Max = SliderConfig.Max or 100
-            local Default = SliderConfig.Default or Min
-            local Callback = SliderConfig.Callback or function() end
-            
-            local SliderValue = Default
-            
-            local SliderContainer = Create("Frame", {
-                Name = SliderName .. "Container",
-                BackgroundColor3 = DarkTheme.Secondary,
-                BackgroundTransparency = 0.2,
-                BorderSizePixel = 0,
-                Size = UDim2.new(1, -20, 0, 60),
-                Parent = TabContent
-            })
-            
-            local SliderContainerUICorner = Create("UICorner", {
-                CornerRadius = UDim.new(0, 6),
-                Parent = SliderContainer
-            })
-            
-            local SliderLabel = Create("TextLabel", {
-                Name = SliderName .. "Label",
-                BackgroundTransparency = 1,
-                Position = UDim2.new(0, 10, 0, 5),
-                Size = UDim2.new(1, -20, 0, 15),
-                Font = Enum.Font.Gotham,
-                Text = SliderName,
-                TextColor3 = DarkTheme.Text,
-                TextSize = 12,
-                TextXAlignment = Enum.TextXAlignment.Left,
-                Parent = SliderContainer
-            })
-            
-            local ValueLabel = Create("TextLabel", {
-                Name = SliderName .. "Value",
-                BackgroundTransparency = 1,
-                Position = UDim2.new(0, 10, 0, 5),
-                Size = UDim2.new(1, -20, 0, 15),
-                Font = Enum.Font.Gotham,
-                Text = tostring(Default),
-                TextColor3 = DarkTheme.SubText,
-                TextSize = 11,
-                TextXAlignment = Enum.TextXAlignment.Right,
-                Parent = SliderContainer
-            })
-            
-            local SliderTrack = Create("Frame", {
-                Name = SliderName .. "Track",
-                BackgroundColor3 = DarkTheme.Tertiary,
-                BorderSizePixel = 0,
-                Position = UDim2.new(0, 10, 0, 30),
-                Size = UDim2.new(1, -20, 0, 5),
-                Parent = SliderContainer
-            })
-            
-            local SliderTrackUICorner = Create("UICorner", {
-                CornerRadius = UDim.new(0, 3),
-                Parent = SliderTrack
-            })
-            
-            local SliderFill = Create("Frame", {
-                Name = SliderName .. "Fill",
-                BackgroundColor3 = AccentColor,
-                BorderSizePixel = 0,
-                Size = UDim2.new((Default - Min) / (Max - Min), 0, 1, 0),
-                Parent = SliderTrack
-            })
-            
-            local SliderFillUICorner = Create("UICorner", {
-                CornerRadius = UDim.new(0, 3),
-                Parent = SliderFill
-            })
-            
-            local SliderButton = Create("TextButton", {
-                Name = SliderName .. "Button",
-                BackgroundTransparency = 1,
-                Position = UDim2.new(0, 10, 0, 25),
-                Size = UDim2.new(1, -20, 0, 15),
-                Text = "",
-                Parent = SliderContainer
-            })
-            
-            local function UpdateSlider(value)
-                local percent = math.clamp((value - Min) / (Max - Min), 0, 1)
-                SliderValue = math.floor(Min + (Max - Min) * percent)
-                ValueLabel.Text = tostring(SliderValue)
-                Tween(SliderFill, {Size = UDim2.new(percent, 0, 1, 0)}, 0.1)
-                Callback(SliderValue)
-            end
-            
-            local Dragging = false
-            
-            SliderButton.MouseButton1Down:Connect(function()
-                Dragging = true
-            end)
-            
-            UserInputService.InputEnded:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                    Dragging = false
-                end
-            end)
-            
-            SliderButton.MouseMoved:Connect(function()
-                if Dragging then
-                    local mousePos = UserInputService:GetMouseLocation()
-                    local sliderAbsPos = SliderTrack.AbsolutePosition
-                    local sliderAbsSize = SliderTrack.AbsoluteSize
-                    
-                    local relativeX = math.clamp((mousePos.X - sliderAbsPos.X) / sliderAbsSize.X, 0, 1)
-                    UpdateSlider(Min + (Max - Min) * relativeX)
-                end
-            end)
-            
-            UpdateSlider(Default)
-            
-            return {
-                Set = function(self, value)
-                    UpdateSlider(value)
-                end,
-                Get = function(self)
-                    return SliderValue
-                end
-            }
-        end
-        
-        -- AddDropdown Function
-        function TabFunctions:AddDropdown(DropdownConfig)
-            DropdownConfig = DropdownConfig or {}
-            local DropdownName = DropdownConfig.Name or "Dropdown"
-            local Options = DropdownConfig.Options or {}
-            local Default = DropdownConfig.Default or Options[1]
-            local Callback = DropdownConfig.Callback or function() end
-            
-            local DropdownOpen = false
-            local SelectedOption = Default
-            
-            local DropdownContainer = Create("Frame", {
-                Name = DropdownName .. "Container",
-                BackgroundColor3 = DarkTheme.Secondary,
-                BackgroundTransparency = 0.2,
-                BorderSizePixel = 0,
-                Size = UDim2.new(1, -20, 0, 35),
-                Parent = TabContent
-            })
-            
-            local DropdownContainerUICorner = Create("UICorner", {
-                CornerRadius = UDim.new(0, 6),
-                Parent = DropdownContainer
-            })
-            
-            local DropdownButton = Create("TextButton", {
-                Name = DropdownName .. "Button",
-                BackgroundTransparency = 1,
-                Size = UDim2.new(1, 0, 1, 0),
-                Font = Enum.Font.Gotham,
-                Text = DropdownName .. ": " .. SelectedOption,
-                TextColor3 = DarkTheme.Text,
-                TextSize = 12,
-                Parent = DropdownContainer
-            })
-            
-            local DropdownArrow = Create("ImageLabel", {
-                Name = DropdownName .. "Arrow",
-                BackgroundTransparency = 1,
-                Position = UDim2.new(1, -25, 0, 10),
-                Size = UDim2.new(0, 15, 0, 15),
-                Image = "rbxassetid://3926305904",
-                ImageColor3 = DarkTheme.SubText,
-                ImageRectOffset = Vector2.new(884, 284),
-                ImageRectSize = Vector2.new(36, 36),
-                Rotation = 0,
-                Parent = DropdownButton
-            })
-            
-            local DropdownList = Create("ScrollingFrame", {
-                Name = DropdownName .. "List",
-                BackgroundColor3 = DarkTheme.Tertiary,
-                BackgroundTransparency = 0.1,
-                BorderSizePixel = 0,
-                Position = UDim2.new(0, 0, 1, 5),
-                Size = UDim2.new(1, 0, 0, 0),
-                CanvasSize = UDim2.new(0, 0, 0, 0),
-                ScrollBarThickness = 3,
-                ScrollBarImageColor3 = DarkTheme.Tertiary,
-                Visible = false,
-                Parent = DropdownContainer
-            })
-            
-            local DropdownListLayout = Create("UIListLayout", {
-                Padding = UDim.new(0, 2),
-                Parent = DropdownList
-            })
-            
-            local function UpdateDropdown()
-                DropdownButton.Text = DropdownName .. ": " .. SelectedOption
-                Callback(SelectedOption)
-            end
-            
-            local function ToggleDropdown()
-                DropdownOpen = not DropdownOpen
-                DropdownList.Visible = DropdownOpen
-                
-                if DropdownOpen then
-                    Tween(DropdownList, {Size = UDim2.new(1, 0, 0, math.min(#Options * 25, 100))}, 0.2)
-                    Tween(DropdownArrow, {Rotation = 180}, 0.2)
-                else
-                    Tween(DropdownList, {Size = UDim2.new(1, 0, 0, 0)}, 0.2)
-                    Tween(DropdownArrow, {Rotation = 0}, 0.2)
-                end
-            end
-            
-            DropdownButton.MouseButton1Click:Connect(ToggleDropdown)
-            
-            -- Create option buttons
-            for i, option in pairs(Options) do
-                local OptionButton = Create("TextButton", {
-                    Name = option .. "Option",
-                    BackgroundColor3 = DarkTheme.Secondary,
-                    BackgroundTransparency = 0.2,
-                    BorderSizePixel = 0,
-                    Size = UDim2.new(1, 0, 0, 25),
-                    Font = Enum.Font.Gotham,
-                    Text = option,
-                    TextColor3 = DarkTheme.Text,
-                    TextSize = 11,
-                    AutoButtonColor = false
-                })
-                
-                OptionButton.MouseButton1Click:Connect(function()
-                    SelectedOption = option
-                    UpdateDropdown()
-                    ToggleDropdown()
-                end)
-                
-                OptionButton.MouseEnter:Connect(function()
-                    Tween(OptionButton, {BackgroundColor3 = Color3.fromRGB(60, 60, 60)}, 0.2)
-                end)
-                
-                OptionButton.MouseLeave:Connect(function()
-                    Tween(OptionButton, {BackgroundColor3 = DarkTheme.Secondary}, 0.2)
-                end)
-                
-                OptionButton.Parent = DropdownList
-            end
-            
-            DropdownListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-                DropdownList.CanvasSize = UDim2.new(0, 0, 0, DropdownListLayout.AbsoluteContentSize.Y)
-            end)
-            
-            UpdateDropdown()
-            
-            return {
-                Set = function(self, option)
-                    if table.find(Options, option) then
-                        SelectedOption = option
-                        UpdateDropdown()
-                    end
-                end,
-                Get = function(self)
-                    return SelectedOption
                 end
             }
         end
