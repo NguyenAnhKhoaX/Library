@@ -1,5 +1,5 @@
 -- NazuX Library - Windows 11 Style UI
--- Transparent Loading
+-- Fixed Minimize Button
 
 local NazuX = {}
 NazuX.__index = NazuX
@@ -41,6 +41,7 @@ end
 function NazuX:CreateWindow(options)
     options = options or {}
     local WindowName = options.Name or "NazuX Library"
+    local SubtitleText = options.Subtitle or "Powered by NazuX"
     local DefaultToggle = options.DefaultToggle or false
     local Size = options.Size or UDim2.new(0, 600, 0, 450)
     local Position = options.Position or UDim2.new(0.5, -300, 0.5, -225)
@@ -163,14 +164,46 @@ function NazuX:CreateWindow(options)
     local TitleLabel = Create("TextLabel", {
         Name = "TitleLabel",
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 15, 0, 0),
-        Size = UDim2.new(0, 200, 1, 0),
+        Position = UDim2.new(0, 15, 0, 5),
+        Size = UDim2.new(0, 200, 0, 18),
         Font = Enum.Font.GothamSemibold,
         Text = WindowName,
         TextColor3 = DarkTheme.Text,
         TextSize = 14,
         TextXAlignment = Enum.TextXAlignment.Left,
         Parent = TitleBar
+    })
+    
+    local SubtitleLabel = Create("TextLabel", {
+        Name = "SubtitleLabel",
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, 15, 0, 22),
+        Size = UDim2.new(0, 200, 0, 14),
+        Font = Enum.Font.Gotham,
+        Text = SubtitleText,
+        TextColor3 = DarkTheme.SubText,
+        TextSize = 10,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Parent = TitleBar
+    })
+    
+    -- Window Control Buttons
+    local MinimizeButton = Create("TextButton", {
+        Name = "MinimizeButton",
+        BackgroundColor3 = Color3.fromRGB(255, 196, 0),
+        BorderSizePixel = 0,
+        Position = UDim2.new(1, -60, 0, 10),
+        Size = UDim2.new(0, 20, 0, 20),
+        Font = Enum.Font.GothamBold,
+        Text = "_",
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        TextSize = 14,
+        Parent = TitleBar
+    })
+    
+    local MinimizeButtonUICorner = Create("UICorner", {
+        CornerRadius = UDim.new(0, 4),
+        Parent = MinimizeButton
     })
     
     local CloseButton = Create("TextButton", {
@@ -191,7 +224,7 @@ function NazuX:CreateWindow(options)
         Parent = CloseButton
     })
     
-    -- Content Area
+    -- Content Area (sẽ di chuyển khi minimize)
     local ContentArea = Create("Frame", {
         Name = "ContentArea",
         BackgroundTransparency = 1,
@@ -351,9 +384,39 @@ function NazuX:CreateWindow(options)
         LoadingSpinner.Rotation = LoadingRotation
     end)
 
+    -- Minimize State
+    local IsMinimized = false
+    local OriginalSize = Size
+
     -- Functions
     function NazuXLibrary:ToggleUI()
         MainFrame.Visible = not MainFrame.Visible
+    end
+    
+    function NazuXLibrary:Minimize()
+        IsMinimized = not IsMinimized
+        
+        if IsMinimized then
+            -- Thu nhỏ: chỉ hiển thị title bar
+            Tween(ContentArea, {
+                Position = UDim2.new(0, 0, 0, -ContentArea.Size.Y.Offset),
+                Size = UDim2.new(1, 0, 0, 0)
+            }, 0.3)
+            
+            Tween(MainFrame, {
+                Size = UDim2.new(OriginalSize.X.Scale, OriginalSize.X.Offset, 0, 40)
+            }, 0.3)
+        else
+            -- Mở rộng: hiển thị toàn bộ content
+            Tween(ContentArea, {
+                Position = UDim2.new(0, 0, 0, 40),
+                Size = UDim2.new(1, 0, 1, -40)
+            }, 0.3)
+            
+            Tween(MainFrame, {
+                Size = OriginalSize
+            }, 0.3)
+        end
     end
     
     function NazuXLibrary:ShowLoading(duration, text)
@@ -387,6 +450,19 @@ function NazuX:CreateWindow(options)
     
     CloseButton.MouseLeave:Connect(function()
         Tween(CloseButton, {BackgroundColor3 = Color3.fromRGB(232, 17, 35)}, 0.2)
+    end)
+    
+    -- Minimize Button Event
+    MinimizeButton.MouseButton1Click:Connect(function()
+        NazuXLibrary:Minimize()
+    end)
+    
+    MinimizeButton.MouseEnter:Connect(function()
+        Tween(MinimizeButton, {BackgroundColor3 = Color3.fromRGB(255, 213, 0)}, 0.2)
+    end)
+    
+    MinimizeButton.MouseLeave:Connect(function()
+        Tween(MinimizeButton, {BackgroundColor3 = Color3.fromRGB(255, 196, 0)}, 0.2)
     end)
     
     -- Search Functionality
@@ -534,7 +610,7 @@ function NazuX:CreateWindow(options)
             return ButtonContainer
         end
         
-        -- AddToggle Function
+        -- AddToggle Function (FIXED)
         function TabFunctions:AddToggle(ToggleConfig)
             ToggleConfig = ToggleConfig or {}
             local ToggleName = ToggleConfig.Name or "Toggle"
@@ -570,18 +646,28 @@ function NazuX:CreateWindow(options)
                 Parent = ToggleContainer
             })
             
-            local ToggleButton = Create("Frame", {
+            local ToggleButton = Create("TextButton", {
                 Name = ToggleName .. "Button",
-                BackgroundColor3 = Default and AccentColor or Color3.fromRGB(80, 80, 80),
-                BorderSizePixel = 0,
-                Position = UDim2.new(1, -50, 0, 7),
-                Size = UDim2.new(0, 40, 0, 20),
+                BackgroundTransparency = 1,
+                Position = UDim2.new(0.7, 0, 0, 0),
+                Size = UDim2.new(0.3, 0, 1, 0),
+                Text = "",
+                AutoButtonColor = false,
                 Parent = ToggleContainer
             })
             
-            local ToggleButtonUICorner = Create("UICorner", {
-                CornerRadius = UDim.new(0, 10),
+            local ToggleBackground = Create("Frame", {
+                Name = ToggleName .. "Background",
+                BackgroundColor3 = Default and AccentColor or Color3.fromRGB(80, 80, 80),
+                BorderSizePixel = 0,
+                Position = UDim2.new(0.5, -20, 0.5, -10),
+                Size = UDim2.new(0, 40, 0, 20),
                 Parent = ToggleButton
+            })
+            
+            local ToggleBackgroundUICorner = Create("UICorner", {
+                CornerRadius = UDim.new(0, 10),
+                Parent = ToggleBackground
             })
             
             local ToggleKnob = Create("Frame", {
@@ -590,7 +676,7 @@ function NazuX:CreateWindow(options)
                 BorderSizePixel = 0,
                 Position = UDim2.new(0, Default and 22 or 2, 0, 2),
                 Size = UDim2.new(0, 16, 0, 16),
-                Parent = ToggleButton
+                Parent = ToggleBackground
             })
             
             local ToggleKnobUICorner = Create("UICorner", {
@@ -599,16 +685,22 @@ function NazuX:CreateWindow(options)
             })
             
             local function UpdateToggle()
-                Tween(ToggleButton, {BackgroundColor3 = ToggleState and AccentColor or Color3.fromRGB(80, 80, 80)}, 0.2)
+                Tween(ToggleBackground, {BackgroundColor3 = ToggleState and AccentColor or Color3.fromRGB(80, 80, 80)}, 0.2)
                 Tween(ToggleKnob, {Position = UDim2.new(0, ToggleState and 22 or 2, 0, 2)}, 0.2)
                 Callback(ToggleState)
             end
             
-            ToggleButton.InputBegan:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                    ToggleState = not ToggleState
-                    UpdateToggle()
-                end
+            ToggleButton.MouseButton1Click:Connect(function()
+                ToggleState = not ToggleState
+                UpdateToggle()
+            end)
+            
+            ToggleButton.MouseEnter:Connect(function()
+                Tween(ToggleBackground, {BackgroundColor3 = ToggleState and Color3.fromRGB(0, 140, 255) or Color3.fromRGB(100, 100, 100)}, 0.2)
+            end)
+            
+            ToggleButton.MouseLeave:Connect(function()
+                Tween(ToggleBackground, {BackgroundColor3 = ToggleState and AccentColor or Color3.fromRGB(80, 80, 80)}, 0.2)
             end)
             
             UpdateToggle()
