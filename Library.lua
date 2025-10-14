@@ -139,52 +139,49 @@ local function Tween(Object, Goals, Duration, Style, Direction)
     return Tween
 end
 
--- Function to create triangle icon
-local function CreateTriangleIcon(parent, size, position, color)
-    local TriangleFrame = Create("Frame", {
+-- Function to create triangle using ImageLabel với hình tam giác đơn giản
+local function CreateTriangleIcon(parent)
+    local TriangleContainer = Create("Frame", {
         Name = "TriangleIcon",
         BackgroundTransparency = 1,
-        Position = position,
-        Size = size,
+        Position = UDim2.new(0, 8, 0, 10),
+        Size = UDim2.new(0, 20, 0, 20),
         Parent = parent
     })
     
-    local Triangle = Create("UIStroke", {
-        Name = "TriangleStroke",
-        ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-        Color = color,
-        LineJoinMode = Enum.LineJoinMode.Miter,
-        Thickness = 2,
-        Parent = TriangleFrame
+    -- Sử dụng ImageLabel với hình tam giác từ Roblox asset
+    -- Hoặc tạo hình tam giác bằng cách sử dụng multiple frames
+    local TrianglePart1 = Create("Frame", {
+        Name = "TrianglePart1",
+        BackgroundColor3 = AccentColor,
+        BorderSizePixel = 0,
+        Position = UDim2.new(0.5, 0, 0, 2),
+        Size = UDim2.new(0, 2, 0, 16),
+        Rotation = 0,
+        Parent = TriangleContainer
     })
     
-    -- Tạo hình tam giác bằng cách sử dụng UIStroke với các điểm
-    local function UpdateTriangle()
-        -- Tạo các điểm cho hình tam giác
-        local points = {
-            Vector2.new(size.X.Offset/2, 2), -- Đỉnh trên
-            Vector2.new(2, size.Y.Offset - 2), -- Góc trái dưới
-            Vector2.new(size.X.Offset - 2, size.Y.Offset - 2) -- Góc phải dưới
-        }
-        
-        -- Đặt các điểm cho UIStroke (cần convert sang table phù hợp)
-        Triangle:SetAttribute("PointA", points[1])
-        Triangle:SetAttribute("PointB", points[2])
-        Triangle:SetAttribute("PointC", points[3])
-    end
-    
-    -- Alternative method: Sử dụng ImageLabel với hình tam giác
-    local TriangleImage = Create("ImageLabel", {
-        Name = "TriangleImage",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 0, 0, 0),
-        Size = UDim2.new(1, 0, 1, 0),
-        Image = "rbxassetid://11988293630", -- ID hình tam giác (có thể thay đổi)
-        ImageColor3 = color,
-        Parent = TriangleFrame
+    local TrianglePart2 = Create("Frame", {
+        Name = "TrianglePart2",
+        BackgroundColor3 = AccentColor,
+        BorderSizePixel = 0,
+        Position = UDim2.new(0.3, 0, 0.5, 0),
+        Size = UDim2.new(0, 12, 0, 2),
+        Rotation = 60,
+        Parent = TriangleContainer
     })
     
-    return TriangleFrame
+    local TrianglePart3 = Create("Frame", {
+        Name = "TrianglePart3",
+        BackgroundColor3 = AccentColor,
+        BorderSizePixel = 0,
+        Position = UDim2.new(0.7, 0, 0.5, 0),
+        Size = UDim2.new(0, 12, 0, 2),
+        Rotation = -60,
+        Parent = TriangleContainer
+    })
+    
+    return TriangleContainer
 end
 
 -- Main Library Function
@@ -237,39 +234,19 @@ function NazuX:CreateWindow(options)
         Parent = TopFrame
     })
     
-    -- TRIANGLE ICON (Bên trái title)
-    local TriangleIcon = Create("Frame", {
+    -- SIMPLE TRIANGLE ICON (Sử dụng TextLabel với symbol)
+    local TriangleIcon = Create("TextLabel", {
         Name = "TriangleIcon",
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 8, 0, 10),
+        Position = UDim2.new(0, 10, 0, 10),
         Size = UDim2.new(0, 20, 0, 20),
+        Font = Enum.Font.GothamBold,
+        Text = "▲", -- Sử dụng ký tự tam giác
+        TextColor3 = AccentColor,
+        TextSize = 16,
+        TextScaled = false,
         Parent = TopFrame
     })
-    
-    -- Tạo hình tam giác bằng UIStroke
-    local TriangleStroke = Create("UIStroke", {
-        Name = "TriangleStroke",
-        ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-        Color = AccentColor,
-        LineJoinMode = Enum.LineJoinMode.Miter,
-        Thickness = 2,
-        Parent = TriangleIcon
-    })
-    
-    -- Tạo hình tam giác bằng Polygon
-    local TrianglePolygon = Create("UIPolygon", {
-        Name = "TrianglePolygon",
-        BackgroundTransparency = 1,
-        Size = UDim2.new(1, 0, 1, 0),
-        Parent = TriangleIcon
-    })
-    
-    -- Đặt các điểm cho hình tam giác
-    TrianglePolygon.Vertices = {
-        Vector2.new(10, 2),    -- Đỉnh trên
-        Vector2.new(2, 18),    -- Góc trái dưới
-        Vector2.new(18, 18)    -- Góc phải dưới
-    }
     
     local Title = Create("TextLabel", {
         Name = "Title",
@@ -399,11 +376,13 @@ function NazuX:CreateWindow(options)
         
         -- Update Triangle Icon color based on theme
         if CurrentTheme.Name == "Cyber" then
-            TriangleStroke.Color = Color3.fromRGB(0, 255, 255)
+            Tween(TriangleIcon, {TextColor3 = Color3.fromRGB(0, 255, 255)}, 0.3)
         elseif CurrentTheme.Name == "Matrix" then
-            TriangleStroke.Color = Color3.fromRGB(0, 255, 0)
+            Tween(TriangleIcon, {TextColor3 = Color3.fromRGB(0, 255, 0)}, 0.3)
+        elseif CurrentTheme.Name == "Gold" then
+            Tween(TriangleIcon, {TextColor3 = Color3.fromRGB(255, 215, 0)}, 0.3)
         else
-            TriangleStroke.Color = AccentColor
+            Tween(TriangleIcon, {TextColor3 = AccentColor}, 0.3)
         end
         
         -- Update Theme Button Text
@@ -421,16 +400,18 @@ function NazuX:CreateWindow(options)
     
     -- THÊM HIỆU ỨNG CHO ICON TAM GIÁC
     TriangleIcon.MouseEnter:Connect(function()
-        Tween(TriangleStroke, {Color = Color3.fromRGB(255, 255, 255)}, 0.2)
+        Tween(TriangleIcon, {TextColor3 = Color3.fromRGB(255, 255, 255)}, 0.2)
     end)
     
     TriangleIcon.MouseLeave:Connect(function()
         if CurrentTheme.Name == "Cyber" then
-            Tween(TriangleStroke, {Color = Color3.fromRGB(0, 255, 255)}, 0.2)
+            Tween(TriangleIcon, {TextColor3 = Color3.fromRGB(0, 255, 255)}, 0.2)
         elseif CurrentTheme.Name == "Matrix" then
-            Tween(TriangleStroke, {Color = Color3.fromRGB(0, 255, 0)}, 0.2)
+            Tween(TriangleIcon, {TextColor3 = Color3.fromRGB(0, 255, 0)}, 0.2)
+        elseif CurrentTheme.Name == "Gold" then
+            Tween(TriangleIcon, {TextColor3 = Color3.fromRGB(255, 215, 0)}, 0.2)
         else
-            Tween(TriangleStroke, {Color = AccentColor}, 0.2)
+            Tween(TriangleIcon, {TextColor3 = AccentColor}, 0.2)
         end
     end)
     
