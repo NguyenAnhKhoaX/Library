@@ -1,5 +1,5 @@
 -- NazuX Library - Windows 11 Style UI
--- Combined from multiple sources with clean organization
+-- Transparent Loading
 
 local NazuX = {}
 NazuX.__index = NazuX
@@ -42,6 +42,8 @@ function NazuX:CreateWindow(options)
     options = options or {}
     local WindowName = options.Name or "NazuX Library"
     local DefaultToggle = options.DefaultToggle or false
+    local Size = options.Size or UDim2.new(0, 600, 0, 450)
+    local Position = options.Position or UDim2.new(0.5, -300, 0.5, -225)
     
     local NazuXLibrary = {}
     
@@ -58,15 +60,16 @@ function NazuX:CreateWindow(options)
     
     ScreenGui.Parent = game:GetService("CoreGui")
     
-    -- Main Container
+    -- Main Container (Hiển thị ngay)
     local MainFrame = Create("Frame", {
         Name = "MainFrame",
         BackgroundColor3 = DarkTheme.Background,
         BorderSizePixel = 0,
-        Position = UDim2.new(0.5, -300, 0.5, -200),
-        Size = UDim2.new(0, 600, 0, 450),
+        Position = Position,
+        Size = Size,
         Active = true,
-        Draggable = true
+        Draggable = true,
+        Parent = ScreenGui
     })
     
     local UICorner = Create("UICorner", {
@@ -85,6 +88,62 @@ function NazuX:CreateWindow(options)
         ScaleType = Enum.ScaleType.Slice,
         SliceCenter = Rect.new(49, 49, 450, 450),
         Parent = MainFrame
+    })
+
+    -- Transparent Loading Screen (trên cùng MainFrame)
+    local LoadingScreen = Create("Frame", {
+        Name = "LoadingScreen",
+        BackgroundColor3 = Color3.fromRGB(0, 0, 0),
+        BackgroundTransparency = 0.7, -- Trong suốt
+        BorderSizePixel = 0,
+        Size = UDim2.new(1, 0, 1, 0),
+        ZIndex = 10,
+        Parent = MainFrame
+    })
+    
+    local LoadingContainer = Create("Frame", {
+        Name = "LoadingContainer",
+        BackgroundColor3 = DarkTheme.Background,
+        BackgroundTransparency = 0.3,
+        BorderSizePixel = 0,
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        Position = UDim2.new(0.5, 0, 0.5, 0),
+        Size = UDim2.new(0, 200, 0, 120),
+        ZIndex = 11,
+        Parent = LoadingScreen
+    })
+    
+    local LoadingContainerCorner = Create("UICorner", {
+        CornerRadius = UDim.new(0, 12),
+        Parent = LoadingContainer
+    })
+    
+    local LoadingSpinner = Create("ImageLabel", {
+        Name = "LoadingSpinner",
+        BackgroundTransparency = 1,
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        Position = UDim2.new(0.5, 0, 0.4, 0),
+        Size = UDim2.new(0, 40, 0, 40),
+        Image = "rbxassetid://3926305904",
+        ImageColor3 = AccentColor,
+        ImageRectOffset = Vector2.new(964, 324),
+        ImageRectSize = Vector2.new(36, 36),
+        ZIndex = 12,
+        Parent = LoadingContainer
+    })
+    
+    local LoadingText = Create("TextLabel", {
+        Name = "LoadingText",
+        BackgroundTransparency = 1,
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        Position = UDim2.new(0.5, 0, 0.75, 0),
+        Size = UDim2.new(0.8, 0, 0, 20),
+        Font = Enum.Font.GothamSemibold,
+        Text = "Loading NazuX Library...",
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        TextSize = 12,
+        ZIndex = 12,
+        Parent = LoadingContainer
     })
     
     -- Title Bar
@@ -145,6 +204,7 @@ function NazuX:CreateWindow(options)
     local LeftSidebar = Create("Frame", {
         Name = "LeftSidebar",
         BackgroundColor3 = DarkTheme.Secondary,
+        BackgroundTransparency = 0.3, -- Trong suốt
         BorderSizePixel = 0,
         Size = UDim2.new(0, 180, 1, 0),
         Parent = ContentArea
@@ -159,6 +219,7 @@ function NazuX:CreateWindow(options)
     local UserInfoFrame = Create("Frame", {
         Name = "UserInfoFrame",
         BackgroundColor3 = DarkTheme.Tertiary,
+        BackgroundTransparency = 0.2,
         BorderSizePixel = 0,
         Size = UDim2.new(1, -10, 0, 80),
         Position = UDim2.new(0, 5, 0, 5),
@@ -217,6 +278,7 @@ function NazuX:CreateWindow(options)
     local SearchContainer = Create("Frame", {
         Name = "SearchContainer",
         BackgroundColor3 = DarkTheme.Tertiary,
+        BackgroundTransparency = 0.2,
         BorderSizePixel = 0,
         Size = UDim2.new(1, -10, 0, 35),
         Position = UDim2.new(0, 5, 0, 90),
@@ -282,76 +344,40 @@ function NazuX:CreateWindow(options)
         Parent = ContentArea
     })
     
-    -- Loading Screen
-    local LoadingScreen = Create("Frame", {
-        Name = "LoadingScreen",
-        BackgroundColor3 = DarkTheme.Background,
-        BorderSizePixel = 0,
-        Size = UDim2.new(1, 0, 1, 0),
-        Parent = ScreenGui
-    })
-    
-    local LoadingSpinner = Create("ImageLabel", {
-        Name = "LoadingSpinner",
-        BackgroundTransparency = 1,
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        Position = UDim2.new(0.5, 0, 0.5, -20),
-        Size = UDim2.new(0, 50, 0, 50),
-        Image = "rbxassetid://3926305904",
-        ImageColor3 = AccentColor,
-        ImageRectOffset = Vector2.new(964, 324),
-        ImageRectSize = Vector2.new(36, 36)
-    })
-    
-    local LoadingText = Create("TextLabel", {
-        Name = "LoadingText",
-        BackgroundTransparency = 1,
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        Position = UDim2.new(0.5, 0, 0.5, 30),
-        Size = UDim2.new(0, 200, 0, 20),
-        Font = Enum.Font.GothamSemibold,
-        Text = "Loading NazuX Library...",
-        TextColor3 = DarkTheme.Text,
-        TextSize = 14,
-        Parent = LoadingScreen
-    })
-    
     -- Animation for loading spinner
     local LoadingRotation = 0
-    local LoadingConnection
-    
+    local LoadingConnection = RunService.Heartbeat:Connect(function(delta)
+        LoadingRotation = (LoadingRotation + 180 * delta) % 360
+        LoadingSpinner.Rotation = LoadingRotation
+    end)
+
     -- Functions
     function NazuXLibrary:ToggleUI()
         MainFrame.Visible = not MainFrame.Visible
     end
     
-    function NazuXLibrary:ShowLoading(duration)
+    function NazuXLibrary:ShowLoading(duration, text)
+        if text then
+            LoadingText.Text = text
+        end
         LoadingScreen.Visible = true
-        MainFrame.Visible = false
-        
-        LoadingConnection = RunService.Heartbeat:Connect(function(delta)
-            LoadingRotation = (LoadingRotation + 180 * delta) % 360
-            LoadingSpinner.Rotation = LoadingRotation
-        end)
         
         if duration then
             delay(duration, function()
-                NazuXLibrary:HideLoading()
+                self:HideLoading()
             end)
         end
     end
     
     function NazuXLibrary:HideLoading()
-        if LoadingConnection then
-            LoadingConnection:Disconnect()
-            LoadingConnection = nil
-        end
         LoadingScreen.Visible = false
-        MainFrame.Visible = true
     end
     
     -- Close Button Event
     CloseButton.MouseButton1Click:Connect(function()
+        if LoadingConnection then
+            LoadingConnection:Disconnect()
+        end
         ScreenGui:Destroy()
     end)
     
@@ -389,6 +415,7 @@ function NazuX:CreateWindow(options)
         local TabButton = Create("TextButton", {
             Name = TabName .. "TabButton",
             BackgroundColor3 = DarkTheme.Tertiary,
+            BackgroundTransparency = 0.2,
             BorderSizePixel = 0,
             Size = UDim2.new(1, 0, 0, 35),
             Font = Enum.Font.Gotham,
@@ -467,6 +494,7 @@ function NazuX:CreateWindow(options)
             local ButtonContainer = Create("Frame", {
                 Name = ButtonName .. "Container",
                 BackgroundColor3 = DarkTheme.Secondary,
+                BackgroundTransparency = 0.2,
                 BorderSizePixel = 0,
                 Size = UDim2.new(1, -20, 0, 35),
                 Parent = TabContent
@@ -518,6 +546,7 @@ function NazuX:CreateWindow(options)
             local ToggleContainer = Create("Frame", {
                 Name = ToggleName .. "Container",
                 BackgroundColor3 = DarkTheme.Secondary,
+                BackgroundTransparency = 0.2,
                 BorderSizePixel = 0,
                 Size = UDim2.new(1, -20, 0, 35),
                 Parent = TabContent
@@ -609,6 +638,7 @@ function NazuX:CreateWindow(options)
             local SliderContainer = Create("Frame", {
                 Name = SliderName .. "Container",
                 BackgroundColor3 = DarkTheme.Secondary,
+                BackgroundTransparency = 0.2,
                 BorderSizePixel = 0,
                 Size = UDim2.new(1, -20, 0, 60),
                 Parent = TabContent
@@ -738,6 +768,7 @@ function NazuX:CreateWindow(options)
             local DropdownContainer = Create("Frame", {
                 Name = DropdownName .. "Container",
                 BackgroundColor3 = DarkTheme.Secondary,
+                BackgroundTransparency = 0.2,
                 BorderSizePixel = 0,
                 Size = UDim2.new(1, -20, 0, 35),
                 Parent = TabContent
@@ -775,6 +806,7 @@ function NazuX:CreateWindow(options)
             local DropdownList = Create("ScrollingFrame", {
                 Name = DropdownName .. "List",
                 BackgroundColor3 = DarkTheme.Tertiary,
+                BackgroundTransparency = 0.1,
                 BorderSizePixel = 0,
                 Position = UDim2.new(0, 0, 1, 5),
                 Size = UDim2.new(1, 0, 0, 0),
@@ -815,6 +847,7 @@ function NazuX:CreateWindow(options)
                 local OptionButton = Create("TextButton", {
                     Name = option .. "Option",
                     BackgroundColor3 = DarkTheme.Secondary,
+                    BackgroundTransparency = 0.2,
                     BorderSizePixel = 0,
                     Size = UDim2.new(1, 0, 0, 25),
                     Font = Enum.Font.Gotham,
@@ -870,8 +903,10 @@ function NazuX:CreateWindow(options)
         return TabFunctions
     end
     
-    -- Show loading screen initially
-    NazuXLibrary:ShowLoading(2)
+    -- Tự động ẩn loading sau 2 giây
+    delay(2, function()
+        NazuXLibrary:HideLoading()
+    end)
     
     return NazuXLibrary
 end
