@@ -1,5 +1,5 @@
 -- NazuX Library - Windows 11 Style UI
--- Added Theme Change Button
+-- Multiple Themes Added
 
 local NazuX = {}
 NazuX.__index = NazuX
@@ -13,23 +13,70 @@ local LocalPlayer = Players.LocalPlayer
 
 -- Colors
 local AccentColor = Color3.fromRGB(0, 120, 215)
-local DarkTheme = {
-    Background = Color3.fromRGB(32, 32, 32),
-    Secondary = Color3.fromRGB(40, 40, 40),
-    Tertiary = Color3.fromRGB(50, 50, 50),
-    Text = Color3.fromRGB(255, 255, 255),
-    SubText = Color3.fromRGB(200, 200, 200)
+
+-- Multiple Themes
+local Themes = {
+    Dark = {
+        Name = "Dark",
+        Background = Color3.fromRGB(32, 32, 32),
+        Secondary = Color3.fromRGB(40, 40, 40),
+        Tertiary = Color3.fromRGB(50, 50, 50),
+        Text = Color3.fromRGB(255, 255, 255),
+        SubText = Color3.fromRGB(200, 200, 200)
+    },
+    Light = {
+        Name = "Light",
+        Background = Color3.fromRGB(240, 240, 240),
+        Secondary = Color3.fromRGB(220, 220, 220),
+        Tertiary = Color3.fromRGB(200, 200, 200),
+        Text = Color3.fromRGB(0, 0, 0),
+        SubText = Color3.fromRGB(80, 80, 80)
+    },
+    Blue = {
+        Name = "Blue",
+        Background = Color3.fromRGB(25, 35, 60),
+        Secondary = Color3.fromRGB(35, 45, 70),
+        Tertiary = Color3.fromRGB(45, 55, 80),
+        Text = Color3.fromRGB(255, 255, 255),
+        SubText = Color3.fromRGB(180, 200, 255)
+    },
+    Purple = {
+        Name = "Purple",
+        Background = Color3.fromRGB(40, 25, 60),
+        Secondary = Color3.fromRGB(50, 35, 70),
+        Tertiary = Color3.fromRGB(60, 45, 80),
+        Text = Color3.fromRGB(255, 255, 255),
+        SubText = Color3.fromRGB(220, 180, 255)
+    },
+    Green = {
+        Name = "Green",
+        Background = Color3.fromRGB(25, 50, 35),
+        Secondary = Color3.fromRGB(35, 60, 45),
+        Tertiary = Color3.fromRGB(45, 70, 55),
+        Text = Color3.fromRGB(255, 255, 255),
+        SubText = Color3.fromRGB(180, 255, 200)
+    },
+    Red = {
+        Name = "Red",
+        Background = Color3.fromRGB(60, 25, 25),
+        Secondary = Color3.fromRGB(70, 35, 35),
+        Tertiary = Color3.fromRGB(80, 45, 45),
+        Text = Color3.fromRGB(255, 255, 255),
+        SubText = Color3.fromRGB(255, 180, 180)
+    },
+    Orange = {
+        Name = "Orange",
+        Background = Color3.fromRGB(60, 40, 25),
+        Secondary = Color3.fromRGB(70, 50, 35),
+        Tertiary = Color3.fromRGB(80, 60, 45),
+        Text = Color3.fromRGB(255, 255, 255),
+        SubText = Color3.fromRGB(255, 220, 180)
+    }
 }
 
-local LightTheme = {
-    Background = Color3.fromRGB(240, 240, 240),
-    Secondary = Color3.fromRGB(220, 220, 220),
-    Tertiary = Color3.fromRGB(200, 200, 200),
-    Text = Color3.fromRGB(0, 0, 0),
-    SubText = Color3.fromRGB(80, 80, 80)
-}
-
-local CurrentTheme = DarkTheme
+local CurrentTheme = Themes.Dark
+local ThemeIndex = 1
+local ThemeNames = {"Dark", "Light", "Blue", "Purple", "Green", "Red", "Orange"}
 
 -- Utility Functions
 local function Create(class, properties)
@@ -205,7 +252,7 @@ function NazuX:CreateWindow(options)
         Position = UDim2.new(0.5, -40, 0, 10),
         Size = UDim2.new(0, 80, 0, 20),
         Font = Enum.Font.Gotham,
-        Text = "Dark Theme",
+        Text = "Theme: Dark",
         TextColor3 = Color3.fromRGB(255, 255, 255),
         TextSize = 11,
         Parent = TitleBar
@@ -379,6 +426,10 @@ function NazuX:CreateWindow(options)
         Parent = TabsContainer
     })
     
+    TabsListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        TabsContainer.CanvasSize = UDim2.new(0, 0, 0, TabsListLayout.AbsoluteContentSize.Y)
+    end)
+    
     -- Right Content Area
     local RightContent = Create("Frame", {
         Name = "RightContent",
@@ -419,10 +470,15 @@ function NazuX:CreateWindow(options)
         Tween(LoadingContainer, {BackgroundColor3 = CurrentTheme.Background}, 0.3)
         
         -- Update Theme Button Text
-        if CurrentTheme == DarkTheme then
-            ThemeButton.Text = "Light Theme"
-        else
-            ThemeButton.Text = "Dark Theme"
+        ThemeButton.Text = "Theme: " .. CurrentTheme.Name
+        
+        -- Update Tabs
+        for _, tabButton in pairs(TabsContainer:GetChildren()) do
+            if tabButton:IsA("TextButton") then
+                if tabButton.BackgroundColor3 ~= AccentColor then
+                    Tween(tabButton, {BackgroundColor3 = CurrentTheme.Tertiary, TextColor3 = CurrentTheme.SubText}, 0.3)
+                end
+            end
         end
     end
 
@@ -431,13 +487,26 @@ function NazuX:CreateWindow(options)
         MainFrame.Visible = not MainFrame.Visible
     end
     
-    function NazuXLibrary:ToggleTheme()
-        if CurrentTheme == DarkTheme then
-            CurrentTheme = LightTheme
-        else
-            CurrentTheme = DarkTheme
+    function NazuXLibrary:NextTheme()
+        ThemeIndex = ThemeIndex + 1
+        if ThemeIndex > #ThemeNames then
+            ThemeIndex = 1
         end
+        CurrentTheme = Themes[ThemeNames[ThemeIndex]]
         UpdateTheme()
+    end
+    
+    function NazuXLibrary:SetTheme(themeName)
+        if Themes[themeName] then
+            CurrentTheme = Themes[themeName]
+            for i, name in ipairs(ThemeNames) do
+                if name == themeName then
+                    ThemeIndex = i
+                    break
+                end
+            end
+            UpdateTheme()
+        end
     end
     
     function NazuXLibrary:ShowLoading(duration, text)
@@ -475,7 +544,7 @@ function NazuX:CreateWindow(options)
     
     -- Theme Button Event
     ThemeButton.MouseButton1Click:Connect(function()
-        NazuXLibrary:ToggleTheme()
+        NazuXLibrary:NextTheme()
     end)
     
     ThemeButton.MouseEnter:Connect(function()
@@ -519,7 +588,8 @@ function NazuX:CreateWindow(options)
             Text = TabName,
             TextColor3 = CurrentTheme.SubText,
             TextSize = 12,
-            AutoButtonColor = false
+            AutoButtonColor = false,
+            Parent = TabsContainer
         })
         
         local TabButtonUICorner = Create("UICorner", {
@@ -534,7 +604,8 @@ function NazuX:CreateWindow(options)
             CanvasSize = UDim2.new(0, 0, 0, 0),
             ScrollBarThickness = 3,
             ScrollBarImageColor3 = CurrentTheme.Tertiary,
-            Visible = false
+            Visible = false,
+            Parent = RightContent
         })
         
         local TabContentListLayout = Create("UIListLayout", {
@@ -545,12 +616,6 @@ function NazuX:CreateWindow(options)
         TabContentListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
             TabContent.CanvasSize = UDim2.new(0, 0, 0, TabContentListLayout.AbsoluteContentSize.Y + 10)
         end)
-        
-        TabContent.Parent = RightContent
-        TabButton.Parent = TabsContainer
-        
-        -- Update tabs container size
-        TabsContainer.CanvasSize = UDim2.new(0, 0, 0, TabsListLayout.AbsoluteContentSize.Y)
         
         TabButton.MouseButton1Click:Connect(function()
             if CurrentTab then
