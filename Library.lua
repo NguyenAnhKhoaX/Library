@@ -1,5 +1,5 @@
 -- NazuX Library - Windows 11 Style UI
--- Centered Theme Button with Fingerprint Logo
+-- Normal Button with Fingerprint Logo
 
 local NazuX = {}
 NazuX.__index = NazuX
@@ -14,634 +14,21 @@ local LocalPlayer = Players.LocalPlayer
 -- Colors
 local AccentColor = Color3.fromRGB(0, 120, 215)
 
--- Multiple Themes with Special Themes
-local Themes = {
-    Dark = {
-        Name = "Dark",
-        Background = Color3.fromRGB(32, 32, 32),
-        Secondary = Color3.fromRGB(40, 40, 40),
-        Tertiary = Color3.fromRGB(50, 50, 50),
-        Text = Color3.fromRGB(255, 255, 255),
-        SubText = Color3.fromRGB(200, 200, 200)
-    },
-    Light = {
-        Name = "Light",
-        Background = Color3.fromRGB(240, 240, 240),
-        Secondary = Color3.fromRGB(220, 220, 220),
-        Tertiary = Color3.fromRGB(200, 200, 200),
-        Text = Color3.fromRGB(0, 0, 0),
-        SubText = Color3.fromRGB(80, 80, 80)
-    },
-    Blue = {
-        Name = "Blue",
-        Background = Color3.fromRGB(25, 35, 60),
-        Secondary = Color3.fromRGB(35, 45, 70),
-        Tertiary = Color3.fromRGB(45, 55, 80),
-        Text = Color3.fromRGB(255, 255, 255),
-        SubText = Color3.fromRGB(180, 200, 255)
-    },
-    Purple = {
-        Name = "Purple",
-        Background = Color3.fromRGB(40, 25, 60),
-        Secondary = Color3.fromRGB(50, 35, 70),
-        Tertiary = Color3.fromRGB(60, 45, 80),
-        Text = Color3.fromRGB(255, 255, 255),
-        SubText = Color3.fromRGB(220, 180, 255)
-    },
-    Green = {
-        Name = "Green",
-        Background = Color3.fromRGB(25, 50, 35),
-        Secondary = Color3.fromRGB(35, 60, 45),
-        Tertiary = Color3.fromRGB(45, 70, 55),
-        Text = Color3.fromRGB(255, 255, 255),
-        SubText = Color3.fromRGB(180, 255, 200)
-    },
-    Red = {
-        Name = "Red",
-        Background = Color3.fromRGB(60, 25, 25),
-        Secondary = Color3.fromRGB(70, 35, 35),
-        Tertiary = Color3.fromRGB(80, 45, 45),
-        Text = Color3.fromRGB(255, 255, 255),
-        SubText = Color3.fromRGB(255, 180, 180)
-    },
-    Orange = {
-        Name = "Orange",
-        Background = Color3.fromRGB(60, 40, 25),
-        Secondary = Color3.fromRGB(70, 50, 35),
-        Tertiary = Color3.fromRGB(80, 60, 45),
-        Text = Color3.fromRGB(255, 255, 255),
-        SubText = Color3.fromRGB(255, 220, 180)
-    },
-    Rose = {
-        Name = "Rose",
-        Background = Color3.fromRGB(60, 25, 45),
-        Secondary = Color3.fromRGB(70, 35, 55),
-        Tertiary = Color3.fromRGB(80, 45, 65),
-        Text = Color3.fromRGB(255, 255, 255),
-        SubText = Color3.fromRGB(255, 200, 220)
-    },
-    AMOLED = {
-        Name = "AMOLED",
-        Background = Color3.fromRGB(0, 0, 0),
-        Secondary = Color3.fromRGB(10, 10, 10),
-        Tertiary = Color3.fromRGB(20, 20, 20),
-        Text = Color3.fromRGB(255, 255, 255),
-        SubText = Color3.fromRGB(100, 100, 100)
-    },
-    Cyber = {
-        Name = "Cyber",
-        Background = Color3.fromRGB(10, 15, 30),
-        Secondary = Color3.fromRGB(20, 25, 40),
-        Tertiary = Color3.fromRGB(30, 35, 50),
-        Text = Color3.fromRGB(0, 255, 255),
-        SubText = Color3.fromRGB(0, 200, 200)
-    },
-    Sunset = {
-        Name = "Sunset",
-        Background = Color3.fromRGB(80, 25, 45),
-        Secondary = Color3.fromRGB(90, 35, 55),
-        Tertiary = Color3.fromRGB(100, 45, 65),
-        Text = Color3.fromRGB(255, 255, 200),
-        SubText = Color3.fromRGB(255, 200, 150)
-    },
-    Ocean = {
-        Name = "Ocean",
-        Background = Color3.fromRGB(20, 40, 60),
-        Secondary = Color3.fromRGB(30, 50, 70),
-        Tertiary = Color3.fromRGB(40, 60, 80),
-        Text = Color3.fromRGB(200, 240, 255),
-        SubText = Color3.fromRGB(150, 200, 230)
-    },
-    Forest = {
-        Name = "Forest",
-        Background = Color3.fromRGB(20, 40, 25),
-        Secondary = Color3.fromRGB(30, 50, 35),
-        Tertiary = Color3.fromRGB(40, 60, 45),
-        Text = Color3.fromRGB(220, 255, 220),
-        SubText = Color3.fromRGB(180, 230, 180)
-    },
-    Gold = {
-        Name = "Gold",
-        Background = Color3.fromRGB(60, 50, 20),
-        Secondary = Color3.fromRGB(70, 60, 30),
-        Tertiary = Color3.fromRGB(80, 70, 40),
-        Text = Color3.fromRGB(255, 255, 200),
-        SubText = Color3.fromRGB(255, 230, 150)
-    }
-}
-
-local CurrentTheme = Themes.Dark
-local ThemeIndex = 1
-local ThemeNames = {"Dark", "Light", "Blue", "Purple", "Green", "Red", "Orange", "Rose", "AMOLED", "Cyber", "Sunset", "Ocean", "Forest", "Gold"}
-
--- Utility Functions
-local function Create(class, properties)
-    local instance = Instance.new(class)
-    for property, value in pairs(properties) do
-        instance[property] = value
-    end
-    return instance
-end
-
-local function Tween(Object, Goals, Duration, Style, Direction)
-    local TweenInfo = TweenInfo.new(Duration or 0.3, Style or Enum.EasingStyle.Quad, Direction or Enum.EasingDirection.Out)
-    local Tween = TweenService:Create(Object, TweenInfo, Goals)
-    Tween:Play()
-    return Tween
-end
+-- Themes và các phần khác giữ nguyên...
 
 -- Main Library Function
 function NazuX:CreateWindow(options)
-    options = options or {}
-    local WindowName = options.Name or "NazuX Library"
-    local SubtitleText = options.Subtitle or "Powered by NazuX"
-    local DefaultToggle = options.DefaultToggle or false
-    local Size = options.Size or UDim2.new(0, 600, 0, 450)
-    local Position = options.Position or UDim2.new(0.5, -300, 0.5, -225)
-    
-    local NazuXLibrary = {}
-    
-    -- Main ScreenGui
-    local ScreenGui = Create("ScreenGui", {
-        Name = "NazuXLibrary",
-        DisplayOrder = 10,
-        ResetOnSpawn = false
-    })
-    
-    if syn and syn.protect_gui then
-        syn.protect_gui(ScreenGui)
-    end
-    
-    ScreenGui.Parent = game:GetService("CoreGui")
-    
-    -- Main Container (Hiển thị ngay)
-    local MainFrame = Create("Frame", {
-        Name = "MainFrame",
-        BackgroundColor3 = CurrentTheme.Background,
-        BorderSizePixel = 0,
-        Position = Position,
-        Size = Size,
-        Active = true,
-        Draggable = true,
-        Parent = ScreenGui
-    })
-    
-    local UICorner = Create("UICorner", {
-        CornerRadius = UDim.new(0, 8),
-        Parent = MainFrame
-    })
-    
-    local DropShadow = Create("ImageLabel", {
-        Name = "DropShadow",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, -15, 0, -15),
-        Size = UDim2.new(1, 30, 1, 30),
-        Image = "rbxassetid://6015897843",
-        ImageColor3 = Color3.fromRGB(0, 0, 0),
-        ImageTransparency = 0.5,
-        ScaleType = Enum.ScaleType.Slice,
-        SliceCenter = Rect.new(49, 49, 450, 450),
-        Parent = MainFrame
-    })
-
-    -- Title Bar
-    local TitleBar = Create("Frame", {
-        Name = "TitleBar",
-        BackgroundColor3 = CurrentTheme.Secondary,
-        BorderSizePixel = 0,
-        Size = UDim2.new(1, 0, 0, 40),
-        Parent = MainFrame
-    })
-    
-    local TitleBarUICorner = Create("UICorner", {
-        CornerRadius = UDim.new(0, 8),
-        Parent = TitleBar
-    })
-    
-    -- Title và Subtitle (Bên trái titlebar)
-    local TitleLabel = Create("TextLabel", {
-        Name = "TitleLabel",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 15, 0, 5),
-        Size = UDim2.new(0, 200, 0, 18),
-        Font = Enum.Font.GothamSemibold,
-        Text = WindowName,
-        TextColor3 = CurrentTheme.Text,
-        TextSize = 14,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        Parent = TitleBar
-    })
-    
-    local SubtitleLabel = Create("TextLabel", {
-        Name = "SubtitleLabel",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 15, 0, 22),
-        Size = UDim2.new(0, 200, 0, 14),
-        Font = Enum.Font.Gotham,
-        Text = SubtitleText,
-        TextColor3 = CurrentTheme.SubText,
-        TextSize = 10,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        Parent = TitleBar
-    })
-    
-    -- Theme Button với logo vân tay (Ở GIỮA titlebar)
-    local ThemeButton = Create("TextButton", {
-        Name = "ThemeButton",
-        BackgroundColor3 = AccentColor,
-        BorderSizePixel = 0,
-        Position = UDim2.new(0.5, -60, 0, 10),
-        Size = UDim2.new(0, 120, 0, 20),
-        Font = Enum.Font.Gotham,
-        Text = "Theme: Dark",
-        TextColor3 = Color3.fromRGB(255, 255, 255),
-        TextSize = 11,
-        Parent = TitleBar
-    })
-    
-    local ThemeButtonUICorner = Create("UICorner", {
-        CornerRadius = UDim.new(0, 4),
-        Parent = ThemeButton
-    })
-    
-    -- Fingerprint Logo (Bên phải nút theme)
-    local FingerprintLogo = Create("ImageLabel", {
-        Name = "FingerprintLogo",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(1, -25, 0, 5),
-        Size = UDim2.new(0, 10, 0, 10),
-        Image = "rbxassetid://3926305904",
-        ImageColor3 = Color3.fromRGB(255, 255, 255),
-        ImageRectOffset = Vector2.new(884, 284), -- Fingerprint icon
-        ImageRectSize = Vector2.new(36, 36),
-        Parent = ThemeButton
-    })
-    
-    -- Close Button (Bên phải titlebar)
-    local CloseButton = Create("TextButton", {
-        Name = "CloseButton",
-        BackgroundColor3 = Color3.fromRGB(232, 17, 35),
-        BorderSizePixel = 0,
-        Position = UDim2.new(1, -30, 0, 10),
-        Size = UDim2.new(0, 20, 0, 20),
-        Font = Enum.Font.GothamBold,
-        Text = "×",
-        TextColor3 = Color3.fromRGB(255, 255, 255),
-        TextSize = 14,
-        Parent = TitleBar
-    })
-    
-    local CloseButtonUICorner = Create("UICorner", {
-        CornerRadius = UDim.new(0, 4),
-        Parent = CloseButton
-    })
-    
-    -- Content Area
-    local ContentArea = Create("Frame", {
-        Name = "ContentArea",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 0, 0, 40),
-        Size = UDim2.new(1, 0, 1, -40),
-        Parent = MainFrame
-    })
-    
-    -- Left Sidebar (Tabs)
-    local LeftSidebar = Create("Frame", {
-        Name = "LeftSidebar",
-        BackgroundColor3 = CurrentTheme.Secondary,
-        BackgroundTransparency = 0.3,
-        BorderSizePixel = 0,
-        Size = UDim2.new(0, 180, 1, 0),
-        Parent = ContentArea
-    })
-    
-    local SidebarUICorner = Create("UICorner", {
-        CornerRadius = UDim.new(0, 8),
-        Parent = LeftSidebar
-    })
-    
-    -- User Info Section
-    local UserInfoFrame = Create("Frame", {
-        Name = "UserInfoFrame",
-        BackgroundColor3 = CurrentTheme.Tertiary,
-        BackgroundTransparency = 0.2,
-        BorderSizePixel = 0,
-        Size = UDim2.new(1, -10, 0, 80),
-        Position = UDim2.new(0, 5, 0, 5),
-        Parent = LeftSidebar
-    })
-    
-    local UserInfoUICorner = Create("UICorner", {
-        CornerRadius = UDim.new(0, 6),
-        Parent = UserInfoFrame
-    })
-    
-    local Avatar = Create("ImageLabel", {
-        Name = "Avatar",
-        BackgroundColor3 = CurrentTheme.Secondary,
-        BorderSizePixel = 0,
-        Position = UDim2.new(0, 10, 0, 10),
-        Size = UDim2.new(0, 40, 0, 40),
-        Image = "https://www.roblox.com/headshot-thumbnail/image?userId="..LocalPlayer.UserId.."&width=150&height=150&format=png"
-    })
-    
-    local AvatarUICorner = Create("UICorner", {
-        CornerRadius = UDim.new(0, 20),
-        Parent = Avatar
-    })
-    
-    local UsernameLabel = Create("TextLabel", {
-        Name = "UsernameLabel",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 60, 0, 15),
-        Size = UDim2.new(1, -65, 0, 20),
-        Font = Enum.Font.GothamSemibold,
-        Text = LocalPlayer.Name,
-        TextColor3 = CurrentTheme.Text,
-        TextSize = 12,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        TextTruncate = Enum.TextTruncate.AtEnd
-    })
-    
-    local UserIdLabel = Create("TextLabel", {
-        Name = "UserIdLabel",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 60, 0, 35),
-        Size = UDim2.new(1, -65, 0, 15),
-        Font = Enum.Font.Gotham,
-        Text = "ID: "..LocalPlayer.UserId,
-        TextColor3 = CurrentTheme.SubText,
-        TextSize = 10,
-        TextXAlignment = Enum.TextXAlignment.Left
-    })
-    
-    Avatar.Parent = UserInfoFrame
-    UsernameLabel.Parent = UserInfoFrame
-    UserIdLabel.Parent = UserInfoFrame
-    
-    -- Search Bar
-    local SearchContainer = Create("Frame", {
-        Name = "SearchContainer",
-        BackgroundColor3 = CurrentTheme.Tertiary,
-        BackgroundTransparency = 0.2,
-        BorderSizePixel = 0,
-        Size = UDim2.new(1, -10, 0, 35),
-        Position = UDim2.new(0, 5, 0, 90),
-        Parent = LeftSidebar
-    })
-    
-    local SearchUICorner = Create("UICorner", {
-        CornerRadius = UDim.new(0, 6),
-        Parent = SearchContainer
-    })
-    
-    local SearchBox = Create("TextBox", {
-        Name = "SearchBox",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 10, 0, 0),
-        Size = UDim2.new(1, -40, 1, 0),
-        Font = Enum.Font.Gotham,
-        PlaceholderText = "Search...",
-        PlaceholderColor3 = CurrentTheme.SubText,
-        Text = "",
-        TextColor3 = CurrentTheme.Text,
-        TextSize = 12,
-        TextXAlignment = Enum.TextXAlignment.Left
-    })
-    
-    local SearchIcon = Create("ImageLabel", {
-        Name = "SearchIcon",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(1, -25, 0, 7),
-        Size = UDim2.new(0, 20, 0, 20),
-        Image = "rbxassetid://3926305904",
-        ImageColor3 = CurrentTheme.SubText,
-        ImageRectOffset = Vector2.new(964, 324),
-        ImageRectSize = Vector2.new(36, 36)
-    })
-    
-    SearchBox.Parent = SearchContainer
-    SearchIcon.Parent = SearchContainer
-    
-    -- Tabs Container
-    local TabsContainer = Create("ScrollingFrame", {
-        Name = "TabsContainer",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 5, 0, 130),
-        Size = UDim2.new(1, -10, 1, -135),
-        CanvasSize = UDim2.new(0, 0, 0, 0),
-        ScrollBarThickness = 3,
-        ScrollBarImageColor3 = CurrentTheme.Tertiary,
-        Parent = LeftSidebar
-    })
-    
-    local TabsListLayout = Create("UIListLayout", {
-        Padding = UDim.new(0, 5),
-        Parent = TabsContainer
-    })
-    
-    TabsListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        TabsContainer.CanvasSize = UDim2.new(0, 0, 0, TabsListLayout.AbsoluteContentSize.Y)
-    end)
-    
-    -- Right Content Area
-    local RightContent = Create("Frame", {
-        Name = "RightContent",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 185, 0, 0),
-        Size = UDim2.new(1, -185, 1, 0),
-        Parent = ContentArea
-    })
-    
-    -- Theme Management
-    local function UpdateTheme()
-        -- Update Main Frame
-        Tween(MainFrame, {BackgroundColor3 = CurrentTheme.Background}, 0.3)
-        Tween(TitleBar, {BackgroundColor3 = CurrentTheme.Secondary}, 0.3)
-        Tween(LeftSidebar, {BackgroundColor3 = CurrentTheme.Secondary}, 0.3)
-        
-        -- Update Text Colors
-        Tween(TitleLabel, {TextColor3 = CurrentTheme.Text}, 0.3)
-        Tween(SubtitleLabel, {TextColor3 = CurrentTheme.SubText}, 0.3)
-        Tween(UsernameLabel, {TextColor3 = CurrentTheme.Text}, 0.3)
-        Tween(UserIdLabel, {TextColor3 = CurrentTheme.SubText}, 0.3)
-        Tween(SearchBox, {TextColor3 = CurrentTheme.Text, PlaceholderColor3 = CurrentTheme.SubText}, 0.3)
-        Tween(SearchIcon, {ImageColor3 = CurrentTheme.SubText}, 0.3)
-        
-        -- Update Containers
-        Tween(UserInfoFrame, {BackgroundColor3 = CurrentTheme.Tertiary}, 0.3)
-        Tween(SearchContainer, {BackgroundColor3 = CurrentTheme.Tertiary}, 0.3)
-        Tween(Avatar, {BackgroundColor3 = CurrentTheme.Secondary}, 0.3)
-        
-        -- Update Theme Button Text
-        ThemeButton.Text = "Theme: " .. CurrentTheme.Name
-        
-        -- Update Tabs
-        for _, tabButton in pairs(TabsContainer:GetChildren()) do
-            if tabButton:IsA("TextButton") then
-                if tabButton.BackgroundColor3 ~= AccentColor then
-                    Tween(tabButton, {BackgroundColor3 = CurrentTheme.Tertiary, TextColor3 = CurrentTheme.SubText}, 0.3)
-                end
-            end
-        end
-    end
-
-    -- Functions
-    function NazuXLibrary:ToggleUI()
-        MainFrame.Visible = not MainFrame.Visible
-    end
-    
-    function NazuXLibrary:NextTheme()
-        ThemeIndex = ThemeIndex + 1
-        if ThemeIndex > #ThemeNames then
-            ThemeIndex = 1
-        end
-        CurrentTheme = Themes[ThemeNames[ThemeIndex]]
-        UpdateTheme()
-    end
-    
-    function NazuXLibrary:SetTheme(themeName)
-        if Themes[themeName] then
-            CurrentTheme = Themes[themeName]
-            for i, name in ipairs(ThemeNames) do
-                if name == themeName then
-                    ThemeIndex = i
-                    break
-                end
-            end
-            UpdateTheme()
-        end
-    end
-    
-    -- Close Button Event
-    CloseButton.MouseButton1Click:Connect(function()
-        ScreenGui:Destroy()
-    end)
-    
-    CloseButton.MouseEnter:Connect(function()
-        Tween(CloseButton, {BackgroundColor3 = Color3.fromRGB(241, 112, 122)}, 0.2)
-    end)
-    
-    CloseButton.MouseLeave:Connect(function()
-        Tween(CloseButton, {BackgroundColor3 = Color3.fromRGB(232, 17, 35)}, 0.2)
-    end)
-    
-    -- Theme Button Event với hiệu ứng fingerprint (Ở GIỮA)
-    ThemeButton.MouseButton1Click:Connect(function()
-        -- Hiệu ứng click
-        Tween(ThemeButton, {BackgroundColor3 = Color3.fromRGB(0, 100, 200)}, 0.1)
-        Tween(FingerprintLogo, {ImageColor3 = Color3.fromRGB(200, 230, 255)}, 0.1)
-        
-        wait(0.1)
-        
-        NazuXLibrary:NextTheme()
-        
-        Tween(ThemeButton, {BackgroundColor3 = AccentColor}, 0.2)
-        Tween(FingerprintLogo, {ImageColor3 = Color3.fromRGB(255, 255, 255)}, 0.2)
-    end)
-    
-    ThemeButton.MouseEnter:Connect(function()
-        Tween(ThemeButton, {BackgroundColor3 = Color3.fromRGB(0, 140, 255)}, 0.2)
-        Tween(FingerprintLogo, {Size = UDim2.new(0, 12, 0, 12)}, 0.2)
-    end)
-    
-    ThemeButton.MouseLeave:Connect(function()
-        Tween(ThemeButton, {BackgroundColor3 = AccentColor}, 0.2)
-        Tween(FingerprintLogo, {Size = UDim2.new(0, 10, 0, 10)}, 0.2)
-    end)
-    
-    -- Search Functionality
-    local function FilterElements(searchText)
-        for _, tabButton in pairs(TabsContainer:GetChildren()) do
-            if tabButton:IsA("TextButton") then
-                local tabName = tabButton.Name:gsub("TabButton", "")
-                if string.find(string.lower(tabName), string.lower(searchText)) or searchText == "" then
-                    tabButton.Visible = true
-                else
-                    tabButton.Visible = false
-                end
-            end
-        end
-    end
-    
-    SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
-        FilterElements(SearchBox.Text)
-    end)
+    -- Các phần trước giữ nguyên...
     
     -- Tab Management
     local CurrentTab = nil
     
     function NazuXLibrary:CreateTab(TabName)
-        local TabButton = Create("TextButton", {
-            Name = TabName .. "TabButton",
-            BackgroundColor3 = CurrentTheme.Tertiary,
-            BackgroundTransparency = 0.2,
-            BorderSizePixel = 0,
-            Size = UDim2.new(1, 0, 0, 35),
-            Font = Enum.Font.Gotham,
-            Text = TabName,
-            TextColor3 = CurrentTheme.SubText,
-            TextSize = 12,
-            AutoButtonColor = false,
-            Parent = TabsContainer
-        })
-        
-        local TabButtonUICorner = Create("UICorner", {
-            CornerRadius = UDim.new(0, 6),
-            Parent = TabButton
-        })
-        
-        local TabContent = Create("ScrollingFrame", {
-            Name = TabName .. "Content",
-            BackgroundTransparency = 1,
-            Size = UDim2.new(1, 0, 1, 0),
-            CanvasSize = UDim2.new(0, 0, 0, 0),
-            ScrollBarThickness = 3,
-            ScrollBarImageColor3 = CurrentTheme.Tertiary,
-            Visible = false,
-            Parent = RightContent
-        })
-        
-        local TabContentListLayout = Create("UIListLayout", {
-            Padding = UDim.new(0, 10),
-            Parent = TabContent
-        })
-        
-        TabContentListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-            TabContent.CanvasSize = UDim2.new(0, 0, 0, TabContentListLayout.AbsoluteContentSize.Y + 10)
-        end)
-        
-        TabButton.MouseButton1Click:Connect(function()
-            if CurrentTab then
-                CurrentTab.Visible = false
-                -- Reset all tab buttons
-                for _, btn in pairs(TabsContainer:GetChildren()) do
-                    if btn:IsA("TextButton") then
-                        Tween(btn, {BackgroundColor3 = CurrentTheme.Tertiary, TextColor3 = CurrentTheme.SubText}, 0.2)
-                    end
-                end
-            end
-            
-            CurrentTab = TabContent
-            TabContent.Visible = true
-            Tween(TabButton, {BackgroundColor3 = AccentColor, TextColor3 = Color3.fromRGB(255, 255, 255)}, 0.2)
-        end)
-        
-        TabButton.MouseEnter:Connect(function()
-            if CurrentTab ~= TabContent then
-                Tween(TabButton, {BackgroundColor3 = Color3.fromRGB(60, 60, 60)}, 0.2)
-            end
-        end)
-        
-        TabButton.MouseLeave:Connect(function()
-            if CurrentTab ~= TabContent then
-                Tween(TabButton, {BackgroundColor3 = CurrentTheme.Tertiary}, 0.2)
-            end
-        end)
+        -- Tạo tab button và content giữ nguyên...
         
         local TabFunctions = {}
         
-        -- AddButton Function
+        -- AddButton Function với logo vân tay
         function TabFunctions:AddButton(ButtonConfig)
             ButtonConfig = ButtonConfig or {}
             local ButtonName = ButtonConfig.Name or "Button"
@@ -661,35 +48,189 @@ function NazuX:CreateWindow(options)
                 Parent = ButtonContainer
             })
             
-            local Button = Create("TextButton", {
-                Name = ButtonName .. "Button",
+            -- Button Label (Bên trái)
+            local ButtonLabel = Create("TextLabel", {
+                Name = ButtonName .. "Label",
                 BackgroundTransparency = 1,
-                Size = UDim2.new(1, 0, 1, 0),
+                Position = UDim2.new(0, 15, 0, 0),
+                Size = UDim2.new(0.7, -15, 1, 0),
                 Font = Enum.Font.Gotham,
                 Text = ButtonName,
                 TextColor3 = CurrentTheme.Text,
                 TextSize = 12,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                Parent = ButtonContainer
+            })
+            
+            -- Fingerprint Logo (Bên phải)
+            local ButtonFingerprint = Create("ImageLabel", {
+                Name = ButtonName .. "Fingerprint",
+                BackgroundTransparency = 1,
+                Position = UDim2.new(1, -30, 0.5, -8),
+                Size = UDim2.new(0, 16, 0, 16),
+                Image = "rbxassetid://3926305904",
+                ImageColor3 = CurrentTheme.SubText,
+                ImageRectOffset = Vector2.new(884, 284), -- Fingerprint icon
+                ImageRectSize = Vector2.new(36, 36),
+                Parent = ButtonContainer
+            })
+            
+            -- Invisible Button (Cover toàn bộ container)
+            local Button = Create("TextButton", {
+                Name = ButtonName .. "Button",
+                BackgroundTransparency = 1,
+                Size = UDim2.new(1, 0, 1, 0),
+                Text = "",
                 Parent = ButtonContainer
             })
             
             Button.MouseButton1Click:Connect(function()
                 Callback()
+                -- Hiệu ứng click
                 Tween(ButtonContainer, {BackgroundColor3 = AccentColor}, 0.1)
+                Tween(ButtonFingerprint, {ImageColor3 = Color3.fromRGB(255, 255, 255)}, 0.1)
                 wait(0.1)
                 Tween(ButtonContainer, {BackgroundColor3 = CurrentTheme.Secondary}, 0.1)
+                Tween(ButtonFingerprint, {ImageColor3 = CurrentTheme.SubText}, 0.1)
             end)
             
             Button.MouseEnter:Connect(function()
                 Tween(ButtonContainer, {BackgroundColor3 = Color3.fromRGB(50, 50, 50)}, 0.2)
+                Tween(ButtonFingerprint, {Size = UDim2.new(0, 18, 0, 18)}, 0.2)
             end)
             
             Button.MouseLeave:Connect(function()
                 Tween(ButtonContainer, {BackgroundColor3 = CurrentTheme.Secondary}, 0.2)
+                Tween(ButtonFingerprint, {Size = UDim2.new(0, 16, 0, 16)}, 0.2)
             end)
             
             return ButtonContainer
         end
         
+        -- AddToggle Function với logo vân tay
+        function TabFunctions:AddToggle(ToggleConfig)
+            ToggleConfig = ToggleConfig or {}
+            local ToggleName = ToggleConfig.Name or "Toggle"
+            local Default = ToggleConfig.Default or false
+            local Callback = ToggleConfig.Callback or function() end
+            
+            local ToggleState = Default
+            
+            local ToggleContainer = Create("Frame", {
+                Name = ToggleName .. "Container",
+                BackgroundColor3 = CurrentTheme.Secondary,
+                BackgroundTransparency = 0.2,
+                BorderSizePixel = 0,
+                Size = UDim2.new(1, -20, 0, 35),
+                Parent = TabContent
+            })
+            
+            local ToggleContainerUICorner = Create("UICorner", {
+                CornerRadius = UDim.new(0, 6),
+                Parent = ToggleContainer
+            })
+            
+            -- Toggle Label (Bên trái)
+            local ToggleLabel = Create("TextLabel", {
+                Name = ToggleName .. "Label",
+                BackgroundTransparency = 1,
+                Position = UDim2.new(0, 15, 0, 0),
+                Size = UDim2.new(0.6, -15, 1, 0),
+                Font = Enum.Font.Gotham,
+                Text = ToggleName,
+                TextColor3 = CurrentTheme.Text,
+                TextSize = 12,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                Parent = ToggleContainer
+            })
+            
+            -- Fingerprint Logo (Bên phải)
+            local ToggleFingerprint = Create("ImageLabel", {
+                Name = ToggleName .. "Fingerprint",
+                BackgroundTransparency = 1,
+                Position = UDim2.new(1, -30, 0.5, -8),
+                Size = UDim2.new(0, 16, 0, 16),
+                Image = "rbxassetid://3926305904",
+                ImageColor3 = CurrentTheme.SubText,
+                ImageRectOffset = Vector2.new(884, 284),
+                ImageRectSize = Vector2.new(36, 36),
+                Parent = ToggleContainer
+            })
+            
+            -- Toggle Switch (Giữa)
+            local ToggleButton = Create("TextButton", {
+                Name = ToggleName .. "Button",
+                BackgroundTransparency = 1,
+                Position = UDim2.new(0.6, 0, 0, 0),
+                Size = UDim2.new(0.3, 0, 1, 0),
+                Text = "",
+                AutoButtonColor = false,
+                Parent = ToggleContainer
+            })
+            
+            local ToggleBackground = Create("Frame", {
+                Name = ToggleName .. "Background",
+                BackgroundColor3 = Default and AccentColor or Color3.fromRGB(80, 80, 80),
+                BorderSizePixel = 0,
+                Position = UDim2.new(0.5, -20, 0.5, -10),
+                Size = UDim2.new(0, 40, 0, 20),
+                Parent = ToggleButton
+            })
+            
+            local ToggleBackgroundUICorner = Create("UICorner", {
+                CornerRadius = UDim.new(0, 10),
+                Parent = ToggleBackground
+            })
+            
+            local ToggleKnob = Create("Frame", {
+                Name = ToggleName .. "Knob",
+                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                BorderSizePixel = 0,
+                Position = UDim2.new(0, Default and 22 or 2, 0, 2),
+                Size = UDim2.new(0, 16, 0, 16),
+                Parent = ToggleBackground
+            })
+            
+            local ToggleKnobUICorner = Create("UICorner", {
+                CornerRadius = UDim.new(0, 8),
+                Parent = ToggleKnob
+            })
+            
+            local function UpdateToggle()
+                Tween(ToggleBackground, {BackgroundColor3 = ToggleState and AccentColor or Color3.fromRGB(80, 80, 80)}, 0.2)
+                Tween(ToggleKnob, {Position = UDim2.new(0, ToggleState and 22 or 2, 0, 2)}, 0.2)
+                Tween(ToggleFingerprint, {ImageColor3 = ToggleState and AccentColor or CurrentTheme.SubText}, 0.2)
+                Callback(ToggleState)
+            end
+            
+            ToggleButton.MouseButton1Click:Connect(function()
+                ToggleState = not ToggleState
+                UpdateToggle()
+            end)
+            
+            ToggleButton.MouseEnter:Connect(function()
+                Tween(ToggleBackground, {BackgroundColor3 = ToggleState and Color3.fromRGB(0, 140, 255) or Color3.fromRGB(100, 100, 100)}, 0.2)
+                Tween(ToggleFingerprint, {Size = UDim2.new(0, 18, 0, 18)}, 0.2)
+            end)
+            
+            ToggleButton.MouseLeave:Connect(function()
+                Tween(ToggleBackground, {BackgroundColor3 = ToggleState and AccentColor or Color3.fromRGB(80, 80, 80)}, 0.2)
+                Tween(ToggleFingerprint, {Size = UDim2.new(0, 16, 0, 16)}, 0.2)
+            end)
+            
+            UpdateToggle()
+            
+            return {
+                Set = function(self, state)
+                    ToggleState = state
+                    UpdateToggle()
+                end,
+                Get = function(self)
+                    return ToggleState
+                end
+            }
+        end
+
         -- Auto-select first tab
         if not CurrentTab then
             CurrentTab = TabContent
