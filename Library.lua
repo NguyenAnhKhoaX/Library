@@ -1,5 +1,5 @@
 -- NazuX Library - Windows 11 Style UI
--- Đa theme với theme đặc biệt + nút change theme ở giữa
+-- AMOLED đen trắng + Minimize chỉ còn titlebar
 
 local NazuX = {}
 NazuX.__index = NazuX
@@ -34,11 +34,11 @@ local Themes = {
     AMOLED = {
         Name = "AMOLED",
         Background = Color3.fromRGB(0, 0, 0),
-        Secondary = Color3.fromRGB(10, 10, 10),
-        Tertiary = Color3.fromRGB(20, 20, 20),
+        Secondary = Color3.fromRGB(0, 0, 0),
+        Tertiary = Color3.fromRGB(10, 10, 10),
         Text = Color3.fromRGB(255, 255, 255),
         SubText = Color3.fromRGB(150, 150, 150),
-        Accent = Color3.fromRGB(0, 255, 0)
+        Accent = Color3.fromRGB(255, 255, 255)  -- Chỉ có trắng
     },
     Rose = {
         Name = "Rose",
@@ -57,33 +57,6 @@ local Themes = {
         Text = Color3.fromRGB(255, 255, 255),
         SubText = Color3.fromRGB(180, 200, 220),
         Accent = Color3.fromRGB(0, 180, 216)
-    },
-    Sunset = {
-        Name = "Sunset",
-        Background = Color3.fromRGB(41, 31, 48),
-        Secondary = Color3.fromRGB(52, 38, 60),
-        Tertiary = Color3.fromRGB(65, 47, 74),
-        Text = Color3.fromRGB(255, 255, 255),
-        SubText = Color3.fromRGB(200, 180, 220),
-        Accent = Color3.fromRGB(255, 94, 77)
-    },
-    Matrix = {
-        Name = "Matrix",
-        Background = Color3.fromRGB(0, 20, 0),
-        Secondary = Color3.fromRGB(0, 30, 0),
-        Tertiary = Color3.fromRGB(0, 40, 0),
-        Text = Color3.fromRGB(0, 255, 0),
-        SubText = Color3.fromRGB(0, 180, 0),
-        Accent = Color3.fromRGB(0, 255, 100)
-    },
-    Purple = {
-        Name = "Purple",
-        Background = Color3.fromRGB(30, 25, 60),
-        Secondary = Color3.fromRGB(40, 33, 70),
-        Tertiary = Color3.fromRGB(50, 41, 85),
-        Text = Color3.fromRGB(255, 255, 255),
-        SubText = Color3.fromRGB(200, 190, 240),
-        Accent = Color3.fromRGB(138, 43, 226)
     }
 }
 
@@ -264,7 +237,7 @@ function NazuX:CreateWindow(options)
         Size = UDim2.new(0, 20, 0, 20),
         Font = Enum.Font.GothamBold,
         Text = "🎨",
-        TextColor3 = Color3.fromRGB(255, 255, 255),
+        TextColor3 = CurrentTheme == "AMOLED" and Color3.fromRGB(0, 0, 0) or Color3.fromRGB(255, 255, 255),
         TextSize = 12,
         Parent = TitleBar
     })
@@ -310,9 +283,9 @@ function NazuX:CreateWindow(options)
         Parent = CloseButton
     })
     
-    -- MAIN CONTENT CONTAINER (TẤT CẢ NỘI DUNG TRONG NÀY SẼ DI CHUYỂN CÙNG NHAU)
-    local MainContentContainer = Create("Frame", {
-        Name = "MainContentContainer",
+    -- CONTENT CONTAINER (TẤT CẢ NỘI DUNG SẼ ẨN KHI MINIMIZE)
+    local ContentContainer = Create("Frame", {
+        Name = "ContentContainer",
         BackgroundTransparency = 1,
         Position = UDim2.new(0, 0, 0, 40),
         Size = UDim2.new(1, 0, 1, -40),
@@ -323,10 +296,10 @@ function NazuX:CreateWindow(options)
     local LeftSidebar = Create("Frame", {
         Name = "LeftSidebar",
         BackgroundColor3 = Themes[CurrentTheme].Secondary,
-        BackgroundTransparency = 0.3,
+        BackgroundTransparency = CurrentTheme == "AMOLED" and 0 or 0.3,
         BorderSizePixel = 0,
         Size = UDim2.new(0, 180, 1, 0),
-        Parent = MainContentContainer
+        Parent = ContentContainer
     })
     
     local SidebarUICorner = Create("UICorner", {
@@ -338,7 +311,7 @@ function NazuX:CreateWindow(options)
     local UserInfoFrame = Create("Frame", {
         Name = "UserInfoFrame",
         BackgroundColor3 = Themes[CurrentTheme].Tertiary,
-        BackgroundTransparency = 0.2,
+        BackgroundTransparency = CurrentTheme == "AMOLED" and 0.1 or 0.2,
         BorderSizePixel = 0,
         Size = UDim2.new(1, -10, 0, 80),
         Position = UDim2.new(0, 5, 0, 5),
@@ -397,7 +370,7 @@ function NazuX:CreateWindow(options)
     local SearchContainer = Create("Frame", {
         Name = "SearchContainer",
         BackgroundColor3 = Themes[CurrentTheme].Tertiary,
-        BackgroundTransparency = 0.2,
+        BackgroundTransparency = CurrentTheme == "AMOLED" and 0.1 or 0.2,
         BorderSizePixel = 0,
         Size = UDim2.new(1, -10, 0, 35),
         Position = UDim2.new(0, 5, 0, 90),
@@ -460,7 +433,7 @@ function NazuX:CreateWindow(options)
         BackgroundTransparency = 1,
         Position = UDim2.new(0, 185, 0, 0),
         Size = UDim2.new(1, -185, 1, 0),
-        Parent = MainContentContainer
+        Parent = ContentContainer
     })
     
     -- Animation for loading spinner
@@ -487,6 +460,17 @@ function NazuX:CreateWindow(options)
         SearchContainer.BackgroundColor3 = theme.Tertiary
         LoadingContainer.BackgroundColor3 = theme.Background
         
+        -- Điều chỉnh độ trong suốt cho AMOLED
+        if themeName == "AMOLED" then
+            LeftSidebar.BackgroundTransparency = 0
+            UserInfoFrame.BackgroundTransparency = 0.1
+            SearchContainer.BackgroundTransparency = 0.1
+        else
+            LeftSidebar.BackgroundTransparency = 0.3
+            UserInfoFrame.BackgroundTransparency = 0.2
+            SearchContainer.BackgroundTransparency = 0.2
+        end
+        
         -- Text colors
         TitleLabel.TextColor3 = theme.Text
         SubtitleLabel.TextColor3 = theme.SubText
@@ -500,14 +484,17 @@ function NazuX:CreateWindow(options)
         
         -- Buttons
         ChangeThemeButton.BackgroundColor3 = theme.Accent
+        ChangeThemeButton.TextColor3 = themeName == "AMOLED" and Color3.fromRGB(0, 0, 0) or Color3.fromRGB(255, 255, 255)
         
         -- Update all tab buttons
         for _, tabButton in pairs(TabsContainer:GetChildren()) do
             if tabButton:IsA("TextButton") then
                 if tabButton.BackgroundColor3 == Themes[CurrentTheme].Accent then
                     tabButton.BackgroundColor3 = theme.Accent
+                    tabButton.TextColor3 = themeName == "AMOLED" and Color3.fromRGB(0, 0, 0) or Color3.fromRGB(255, 255, 255)
                 else
                     tabButton.BackgroundColor3 = theme.Tertiary
+                    tabButton.TextColor3 = theme.SubText
                 end
             end
         end
@@ -522,7 +509,7 @@ function NazuX:CreateWindow(options)
         BackgroundColor3 = Themes[CurrentTheme].Secondary,
         BorderSizePixel = 0,
         Position = UDim2.new(0.5, -100, 0.5, -150),
-        Size = UDim2.new(0, 200, 0, 300),
+        Size = UDim2.new(0, 200, 0, 250),
         Visible = false,
         ZIndex = 20,
         Parent = ScreenGui
@@ -586,7 +573,7 @@ function NazuX:CreateWindow(options)
             Size = UDim2.new(1, 0, 0, 35),
             Font = Enum.Font.Gotham,
             Text = themeData.Name,
-            TextColor3 = Color3.fromRGB(255, 255, 255),
+            TextColor3 = themeName == "AMOLED" and Color3.fromRGB(0, 0, 0) or Color3.fromRGB(255, 255, 255),
             TextSize = 12,
             AutoButtonColor = false,
             ZIndex = 22,
@@ -604,15 +591,21 @@ function NazuX:CreateWindow(options)
         end)
         
         ThemeButton.MouseEnter:Connect(function()
-            Tween(ThemeButton, {BackgroundColor3 = Color3.fromRGB(
-                math.min(themeData.Accent.R * 255 + 30, 255),
-                math.min(themeData.Accent.G * 255 + 30, 255),
-                math.min(themeData.Accent.B * 255 + 30, 255)
-            )}, 0.2)
+            if themeName == "AMOLED" then
+                Tween(ThemeButton, {BackgroundColor3 = Color3.fromRGB(50, 50, 50)}, 0.2)
+                Tween(ThemeButton, {TextColor3 = Color3.fromRGB(255, 255, 255)}, 0.2)
+            else
+                Tween(ThemeButton, {BackgroundColor3 = Color3.fromRGB(
+                    math.min(themeData.Accent.R * 255 + 30, 255),
+                    math.min(themeData.Accent.G * 255 + 30, 255),
+                    math.min(themeData.Accent.B * 255 + 30, 255)
+                )}, 0.2)
+            end
         end)
         
         ThemeButton.MouseLeave:Connect(function()
-            Tween(ThemeButton, {BackgroundColor3 = themeData.Accent}, 0.2)
+            ThemeButton.BackgroundColor3 = themeData.Accent
+            ThemeButton.TextColor3 = themeName == "AMOLED" and Color3.fromRGB(0, 0, 0) or Color3.fromRGB(255, 255, 255)
         end)
     end
     
@@ -630,18 +623,18 @@ function NazuX:CreateWindow(options)
         IsMinimized = not IsMinimized
         
         if IsMinimized then
-            -- Thu nhỏ: di chuyển TOÀN BỘ MainContentContainer lên trên
-            Tween(MainContentContainer, {
-                Position = UDim2.new(0, 0, 0, -MainContentContainer.Size.Y.Offset)
+            -- Thu nhỏ: ẩn TOÀN BỘ ContentContainer, chỉ còn TitleBar
+            Tween(ContentContainer, {
+                Size = UDim2.new(1, 0, 0, 0)
             }, 0.3)
             
             Tween(MainFrame, {
                 Size = UDim2.new(OriginalSize.X.Scale, OriginalSize.X.Offset, 0, 40)
             }, 0.3)
         else
-            -- Mở rộng: di chuyển TOÀN BỘ MainContentContainer về vị trí cũ
-            Tween(MainContentContainer, {
-                Position = UDim2.new(0, 0, 0, 40)
+            -- Mở rộng: hiện lại TOÀN BỘ ContentContainer
+            Tween(ContentContainer, {
+                Size = UDim2.new(1, 0, 1, -40)
             }, 0.3)
             
             Tween(MainFrame, {
@@ -708,15 +701,21 @@ function NazuX:CreateWindow(options)
     end)
     
     ChangeThemeButton.MouseEnter:Connect(function()
-        Tween(ChangeThemeButton, {BackgroundColor3 = Color3.fromRGB(
-            math.min(Themes[CurrentTheme].Accent.R * 255 + 30, 255),
-            math.min(Themes[CurrentTheme].Accent.G * 255 + 30, 255),
-            math.min(Themes[CurrentTheme].Accent.B * 255 + 30, 255)
-        )}, 0.2)
+        if CurrentTheme == "AMOLED" then
+            Tween(ChangeThemeButton, {BackgroundColor3 = Color3.fromRGB(50, 50, 50)}, 0.2)
+            Tween(ChangeThemeButton, {TextColor3 = Color3.fromRGB(255, 255, 255)}, 0.2)
+        else
+            Tween(ChangeThemeButton, {BackgroundColor3 = Color3.fromRGB(
+                math.min(Themes[CurrentTheme].Accent.R * 255 + 30, 255),
+                math.min(Themes[CurrentTheme].Accent.G * 255 + 30, 255),
+                math.min(Themes[CurrentTheme].Accent.B * 255 + 30, 255)
+            )}, 0.2)
+        end
     end)
     
     ChangeThemeButton.MouseLeave:Connect(function()
-        Tween(ChangeThemeButton, {BackgroundColor3 = Themes[CurrentTheme].Accent}, 0.2)
+        ChangeThemeButton.BackgroundColor3 = Themes[CurrentTheme].Accent
+        ChangeThemeButton.TextColor3 = CurrentTheme == "AMOLED" and Color3.fromRGB(0, 0, 0) or Color3.fromRGB(255, 255, 255)
     end)
     
     -- Close theme popup when clicking outside
@@ -812,7 +811,7 @@ function NazuX:CreateWindow(options)
             
             CurrentTab = TabContent
             TabContent.Visible = true
-            Tween(TabButton, {BackgroundColor3 = Themes[CurrentTheme].Accent, TextColor3 = Color3.fromRGB(255, 255, 255)}, 0.2)
+            Tween(TabButton, {BackgroundColor3 = Themes[CurrentTheme].Accent, TextColor3 = CurrentTheme == "AMOLED" and Color3.fromRGB(0, 0, 0) or Color3.fromRGB(255, 255, 255)}, 0.2)
         end)
         
         TabButton.MouseEnter:Connect(function()
@@ -886,121 +885,11 @@ function NazuX:CreateWindow(options)
             return ButtonContainer
         end
         
-        -- AddToggle Function
-        function TabFunctions:AddToggle(ToggleConfig)
-            ToggleConfig = ToggleConfig or {}
-            local ToggleName = ToggleConfig.Name or "Toggle"
-            local Default = ToggleConfig.Default or false
-            local Callback = ToggleConfig.Callback or function() end
-            
-            local ToggleState = Default
-            
-            local ToggleContainer = Create("Frame", {
-                Name = ToggleName .. "Container",
-                BackgroundColor3 = Themes[CurrentTheme].Secondary,
-                BackgroundTransparency = 0.2,
-                BorderSizePixel = 0,
-                Size = UDim2.new(1, -20, 0, 35),
-                Parent = TabContent
-            })
-            
-            local ToggleContainerUICorner = Create("UICorner", {
-                CornerRadius = UDim.new(0, 6),
-                Parent = ToggleContainer
-            })
-            
-            local ToggleLabel = Create("TextLabel", {
-                Name = ToggleName .. "Label",
-                BackgroundTransparency = 1,
-                Position = UDim2.new(0, 10, 0, 0),
-                Size = UDim2.new(0.7, -10, 1, 0),
-                Font = Enum.Font.Gotham,
-                Text = ToggleName,
-                TextColor3 = Themes[CurrentTheme].Text,
-                TextSize = 12,
-                TextXAlignment = Enum.TextXAlignment.Left,
-                Parent = ToggleContainer
-            })
-            
-            local ToggleButton = Create("TextButton", {
-                Name = ToggleName .. "Button",
-                BackgroundTransparency = 1,
-                Position = UDim2.new(0.7, 0, 0, 0),
-                Size = UDim2.new(0.3, 0, 1, 0),
-                Text = "",
-                AutoButtonColor = false,
-                Parent = ToggleContainer
-            })
-            
-            local ToggleBackground = Create("Frame", {
-                Name = ToggleName .. "Background",
-                BackgroundColor3 = Default and Themes[CurrentTheme].Accent or Color3.fromRGB(80, 80, 80),
-                BorderSizePixel = 0,
-                Position = UDim2.new(0.5, -20, 0.5, -10),
-                Size = UDim2.new(0, 40, 0, 20),
-                Parent = ToggleButton
-            })
-            
-            local ToggleBackgroundUICorner = Create("UICorner", {
-                CornerRadius = UDim.new(0, 10),
-                Parent = ToggleBackground
-            })
-            
-            local ToggleKnob = Create("Frame", {
-                Name = ToggleName .. "Knob",
-                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                BorderSizePixel = 0,
-                Position = UDim2.new(0, Default and 22 or 2, 0, 2),
-                Size = UDim2.new(0, 16, 0, 16),
-                Parent = ToggleBackground
-            })
-            
-            local ToggleKnobUICorner = Create("UICorner", {
-                CornerRadius = UDim.new(0, 8),
-                Parent = ToggleKnob
-            })
-            
-            local function UpdateToggle()
-                Tween(ToggleBackground, {BackgroundColor3 = ToggleState and Themes[CurrentTheme].Accent or Color3.fromRGB(80, 80, 80)}, 0.2)
-                Tween(ToggleKnob, {Position = UDim2.new(0, ToggleState and 22 or 2, 0, 2)}, 0.2)
-                Callback(ToggleState)
-            end
-            
-            ToggleButton.MouseButton1Click:Connect(function()
-                ToggleState = not ToggleState
-                UpdateToggle()
-            end)
-            
-            ToggleButton.MouseEnter:Connect(function()
-                Tween(ToggleBackground, {BackgroundColor3 = ToggleState and Color3.fromRGB(
-                    math.min(Themes[CurrentTheme].Accent.R * 255 + 20, 255),
-                    math.min(Themes[CurrentTheme].Accent.G * 255 + 20, 255),
-                    math.min(Themes[CurrentTheme].Accent.B * 255 + 20, 255)
-                ) or Color3.fromRGB(100, 100, 100)}, 0.2)
-            end)
-            
-            ToggleButton.MouseLeave:Connect(function()
-                Tween(ToggleBackground, {BackgroundColor3 = ToggleState and Themes[CurrentTheme].Accent or Color3.fromRGB(80, 80, 80)}, 0.2)
-            end)
-            
-            UpdateToggle()
-            
-            return {
-                Set = function(self, state)
-                    ToggleState = state
-                    UpdateToggle()
-                end,
-                Get = function(self)
-                    return ToggleState
-                end
-            }
-        end
-        
         -- Auto-select first tab
         if not CurrentTab then
             CurrentTab = TabContent
             TabContent.Visible = true
-            Tween(TabButton, {BackgroundColor3 = Themes[CurrentTheme].Accent, TextColor3 = Color3.fromRGB(255, 255, 255)}, 0.2)
+            Tween(TabButton, {BackgroundColor3 = Themes[CurrentTheme].Accent, TextColor3 = CurrentTheme == "AMOLED" and Color3.fromRGB(0, 0, 0) or Color3.fromRGB(255, 255, 255)}, 0.2)
         end
         
         return TabFunctions
