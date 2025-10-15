@@ -1,4 +1,6 @@
--- NazuX Library - With Special Themes
+-- NazuX Library - Windows 11 Style UI
+-- Đã sửa: User info và search bar không di chuyển khi thu nhỏ
+
 local NazuX = {}
 NazuX.__index = NazuX
 
@@ -9,119 +11,15 @@ local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
--- Theme Colors với themes đặc biệt
-local Themes = {
-    Dark = {
-        Name = "Dark",
-        Background = Color3.fromRGB(25, 25, 25),
-        Secondary = Color3.fromRGB(30, 30, 30),
-        Tertiary = Color3.fromRGB(35, 35, 35),
-        Text = Color3.fromRGB(255, 255, 255),
-        SubText = Color3.fromRGB(200, 200, 200)
-    },
-    Light = {
-        Name = "Light", 
-        Background = Color3.fromRGB(240, 240, 240),
-        Secondary = Color3.fromRGB(220, 220, 220),
-        Tertiary = Color3.fromRGB(200, 200, 200),
-        Text = Color3.fromRGB(0, 0, 0),
-        SubText = Color3.fromRGB(80, 80, 80)
-    },
-    Blue = {
-        Name = "Blue",
-        Background = Color3.fromRGB(25, 35, 60),
-        Secondary = Color3.fromRGB(35, 45, 70),
-        Tertiary = Color3.fromRGB(45, 55, 80),
-        Text = Color3.fromRGB(255, 255, 255),
-        SubText = Color3.fromRGB(180, 200, 255)
-    },
-    Purple = {
-        Name = "Purple",
-        Background = Color3.fromRGB(40, 25, 60),
-        Secondary = Color3.fromRGB(50, 35, 70),
-        Tertiary = Color3.fromRGB(60, 45, 80),
-        Text = Color3.fromRGB(255, 255, 255),
-        SubText = Color3.fromRGB(220, 180, 255)
-    },
-    -- THEMES ĐẶC BIỆT
-    AMOLED = {
-        Name = "AMOLED",
-        Background = Color3.fromRGB(0, 0, 0),
-        Secondary = Color3.fromRGB(5, 5, 5),
-        Tertiary = Color3.fromRGB(10, 10, 10),
-        Text = Color3.fromRGB(255, 255, 255),
-        SubText = Color3.fromRGB(100, 100, 100)
-    },
-    Rose = {
-        Name = "Rose",
-        Background = Color3.fromRGB(60, 25, 45),
-        Secondary = Color3.fromRGB(70, 35, 55),
-        Tertiary = Color3.fromRGB(80, 45, 65),
-        Text = Color3.fromRGB(255, 255, 255),
-        SubText = Color3.fromRGB(255, 200, 220)
-    },
-    Cyber = {
-        Name = "Cyber",
-        Background = Color3.fromRGB(10, 15, 30),
-        Secondary = Color3.fromRGB(20, 25, 40),
-        Tertiary = Color3.fromRGB(30, 35, 50),
-        Text = Color3.fromRGB(0, 255, 255),
-        SubText = Color3.fromRGB(0, 200, 200)
-    },
-    Sunset = {
-        Name = "Sunset",
-        Background = Color3.fromRGB(80, 25, 45),
-        Secondary = Color3.fromRGB(90, 35, 55),
-        Tertiary = Color3.fromRGB(100, 45, 65),
-        Text = Color3.fromRGB(255, 255, 200),
-        SubText = Color3.fromRGB(255, 200, 150)
-    },
-    Ocean = {
-        Name = "Ocean",
-        Background = Color3.fromRGB(20, 40, 60),
-        Secondary = Color3.fromRGB(30, 50, 70),
-        Tertiary = Color3.fromRGB(40, 60, 80),
-        Text = Color3.fromRGB(200, 240, 255),
-        SubText = Color3.fromRGB(150, 200, 230)
-    },
-    Forest = {
-        Name = "Forest",
-        Background = Color3.fromRGB(20, 40, 25),
-        Secondary = Color3.fromRGB(30, 50, 35),
-        Tertiary = Color3.fromRGB(40, 60, 45),
-        Text = Color3.fromRGB(220, 255, 220),
-        SubText = Color3.fromRGB(180, 230, 180)
-    },
-    Gold = {
-        Name = "Gold",
-        Background = Color3.fromRGB(60, 50, 20),
-        Secondary = Color3.fromRGB(70, 60, 30),
-        Tertiary = Color3.fromRGB(80, 70, 40),
-        Text = Color3.fromRGB(255, 255, 200),
-        SubText = Color3.fromRGB(255, 230, 150)
-    },
-    Matrix = {
-        Name = "Matrix",
-        Background = Color3.fromRGB(0, 20, 0),
-        Secondary = Color3.fromRGB(0, 30, 0),
-        Tertiary = Color3.fromRGB(0, 40, 0),
-        Text = Color3.fromRGB(0, 255, 0),
-        SubText = Color3.fromRGB(0, 200, 0)
-    },
-    Blood = {
-        Name = "Blood",
-        Background = Color3.fromRGB(40, 0, 0),
-        Secondary = Color3.fromRGB(60, 0, 0),
-        Tertiary = Color3.fromRGB(80, 0, 0),
-        Text = Color3.fromRGB(255, 200, 200),
-        SubText = Color3.fromRGB(255, 150, 150)
-    }
-}
-
-local CurrentTheme = Themes.Dark
-local ThemeIndex = 1
-local ThemeNames = {"Dark", "Light", "Blue", "Purple", "AMOLED", "Rose", "Cyber", "Sunset", "Ocean", "Forest", "Gold", "Matrix", "Blood"}
+-- Colors
 local AccentColor = Color3.fromRGB(0, 120, 215)
+local DarkTheme = {
+    Background = Color3.fromRGB(32, 32, 32),
+    Secondary = Color3.fromRGB(40, 40, 40),
+    Tertiary = Color3.fromRGB(50, 50, 50),
+    Text = Color3.fromRGB(255, 255, 255),
+    SubText = Color3.fromRGB(200, 200, 200)
+}
 
 -- Utility Functions
 local function Create(class, properties)
@@ -139,56 +37,12 @@ local function Tween(Object, Goals, Duration, Style, Direction)
     return Tween
 end
 
--- Function to create triangle using ImageLabel với hình tam giác đơn giản
-local function CreateTriangleIcon(parent)
-    local TriangleContainer = Create("Frame", {
-        Name = "TriangleIcon",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 8, 0, 10),
-        Size = UDim2.new(0, 20, 0, 20),
-        Parent = parent
-    })
-    
-    -- Sử dụng ImageLabel với hình tam giác từ Roblox asset
-    -- Hoặc tạo hình tam giác bằng cách sử dụng multiple frames
-    local TrianglePart1 = Create("Frame", {
-        Name = "TrianglePart1",
-        BackgroundColor3 = AccentColor,
-        BorderSizePixel = 0,
-        Position = UDim2.new(0.5, 0, 0, 2),
-        Size = UDim2.new(0, 2, 0, 16),
-        Rotation = 0,
-        Parent = TriangleContainer
-    })
-    
-    local TrianglePart2 = Create("Frame", {
-        Name = "TrianglePart2",
-        BackgroundColor3 = AccentColor,
-        BorderSizePixel = 0,
-        Position = UDim2.new(0.3, 0, 0.5, 0),
-        Size = UDim2.new(0, 12, 0, 2),
-        Rotation = 60,
-        Parent = TriangleContainer
-    })
-    
-    local TrianglePart3 = Create("Frame", {
-        Name = "TrianglePart3",
-        BackgroundColor3 = AccentColor,
-        BorderSizePixel = 0,
-        Position = UDim2.new(0.7, 0, 0.5, 0),
-        Size = UDim2.new(0, 12, 0, 2),
-        Rotation = -60,
-        Parent = TriangleContainer
-    })
-    
-    return TriangleContainer
-end
-
 -- Main Library Function
 function NazuX:CreateWindow(options)
     options = options or {}
     local WindowName = options.Name or "NazuX Library"
-    local SubtitleText = options.Subtitle or "Premium Script Hub"
+    local SubtitleText = options.Subtitle or "Powered by NazuX"
+    local DefaultToggle = options.DefaultToggle or false
     local Size = options.Size or UDim2.new(0, 600, 0, 450)
     local Position = options.Position or UDim2.new(0.5, -300, 0.5, -225)
     
@@ -201,12 +55,16 @@ function NazuX:CreateWindow(options)
         ResetOnSpawn = false
     })
     
+    if syn and syn.protect_gui then
+        syn.protect_gui(ScreenGui)
+    end
+    
     ScreenGui.Parent = game:GetService("CoreGui")
     
     -- Main Container
     local MainFrame = Create("Frame", {
         Name = "MainFrame",
-        BackgroundColor3 = CurrentTheme.Background,
+        BackgroundColor3 = DarkTheme.Background,
         BorderSizePixel = 0,
         Position = Position,
         Size = Size,
@@ -220,113 +78,161 @@ function NazuX:CreateWindow(options)
         Parent = MainFrame
     })
     
+    local DropShadow = Create("ImageLabel", {
+        Name = "DropShadow",
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, -15, 0, -15),
+        Size = UDim2.new(1, 30, 1, 30),
+        Image = "rbxassetid://6015897843",
+        ImageColor3 = Color3.fromRGB(0, 0, 0),
+        ImageTransparency = 0.5,
+        ScaleType = Enum.ScaleType.Slice,
+        SliceCenter = Rect.new(49, 49, 450, 450),
+        Parent = MainFrame
+    })
+
+    -- Loading Screen
+    local LoadingScreen = Create("Frame", {
+        Name = "LoadingScreen",
+        BackgroundColor3 = Color3.fromRGB(0, 0, 0),
+        BackgroundTransparency = 0.7,
+        BorderSizePixel = 0,
+        Size = UDim2.new(1, 0, 1, 0),
+        ZIndex = 10,
+        Parent = MainFrame
+    })
+    
+    local LoadingContainer = Create("Frame", {
+        Name = "LoadingContainer",
+        BackgroundColor3 = DarkTheme.Background,
+        BackgroundTransparency = 0.3,
+        BorderSizePixel = 0,
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        Position = UDim2.new(0.5, 0, 0.5, 0),
+        Size = UDim2.new(0, 200, 0, 120),
+        ZIndex = 11,
+        Parent = LoadingScreen
+    })
+    
+    local LoadingContainerCorner = Create("UICorner", {
+        CornerRadius = UDim.new(0, 12),
+        Parent = LoadingContainer
+    })
+    
+    local LoadingSpinner = Create("ImageLabel", {
+        Name = "LoadingSpinner",
+        BackgroundTransparency = 1,
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        Position = UDim2.new(0.5, 0, 0.4, 0),
+        Size = UDim2.new(0, 40, 0, 40),
+        Image = "rbxassetid://3926305904",
+        ImageColor3 = AccentColor,
+        ImageRectOffset = Vector2.new(964, 324),
+        ImageRectSize = Vector2.new(36, 36),
+        ZIndex = 12,
+        Parent = LoadingContainer
+    })
+    
+    local LoadingText = Create("TextLabel", {
+        Name = "LoadingText",
+        BackgroundTransparency = 1,
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        Position = UDim2.new(0.5, 0, 0.75, 0),
+        Size = UDim2.new(0.8, 0, 0, 20),
+        Font = Enum.Font.GothamSemibold,
+        Text = "Đang tải NazuX Library...",
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        TextSize = 12,
+        ZIndex = 12,
+        Parent = LoadingContainer
+    })
+    
     -- Title Bar
-    local TopFrame = Create("Frame", {
-        Name = "TopFrame",
-        BackgroundColor3 = CurrentTheme.Secondary,
+    local TitleBar = Create("Frame", {
+        Name = "TitleBar",
+        BackgroundColor3 = DarkTheme.Secondary,
         BorderSizePixel = 0,
         Size = UDim2.new(1, 0, 0, 40),
         Parent = MainFrame
     })
     
-    local UICornerTop = Create("UICorner", {
+    local TitleBarUICorner = Create("UICorner", {
         CornerRadius = UDim.new(0, 8),
-        Parent = TopFrame
+        Parent = TitleBar
     })
     
-    -- SIMPLE TRIANGLE ICON (Sử dụng TextLabel với symbol)
-    local TriangleIcon = Create("TextLabel", {
-        Name = "TriangleIcon",
+    local TitleLabel = Create("TextLabel", {
+        Name = "TitleLabel",
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 10, 0, 10),
-        Size = UDim2.new(0, 20, 0, 20),
-        Font = Enum.Font.GothamBold,
-        Text = "▲", -- Sử dụng ký tự tam giác
-        TextColor3 = AccentColor,
-        TextSize = 16,
-        TextScaled = false,
-        Parent = TopFrame
-    })
-    
-    local Title = Create("TextLabel", {
-        Name = "Title",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 35, 0, 5), -- Dịch sang phải để tránh icon
-        Size = UDim2.new(0, 180, 0, 18),
-        Font = Enum.Font.GothamBold,
+        Position = UDim2.new(0, 15, 0, 5),
+        Size = UDim2.new(0, 200, 0, 18),
+        Font = Enum.Font.GothamSemibold,
         Text = WindowName,
-        TextColor3 = CurrentTheme.Text,
+        TextColor3 = DarkTheme.Text,
         TextSize = 14,
         TextXAlignment = Enum.TextXAlignment.Left,
-        Parent = TopFrame
+        Parent = TitleBar
     })
     
-    local Subtitle = Create("TextLabel", {
-        Name = "Subtitle",
+    local SubtitleLabel = Create("TextLabel", {
+        Name = "SubtitleLabel",
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 35, 0, 22), -- Dịch sang phải để tránh icon
-        Size = UDim2.new(0, 180, 0, 14),
+        Position = UDim2.new(0, 15, 0, 22),
+        Size = UDim2.new(0, 200, 0, 14),
         Font = Enum.Font.Gotham,
         Text = SubtitleText,
-        TextColor3 = CurrentTheme.SubText,
+        TextColor3 = DarkTheme.SubText,
         TextSize = 10,
         TextXAlignment = Enum.TextXAlignment.Left,
-        Parent = TopFrame
+        Parent = TitleBar
     })
     
-    -- THEME BUTTON (Ở giữa)
-    local ThemeButton = Create("TextButton", {
-        Name = "ThemeButton",
-        BackgroundColor3 = AccentColor,
+    -- Window Control Buttons
+    local MinimizeButton = Create("TextButton", {
+        Name = "MinimizeButton",
+        BackgroundColor3 = Color3.fromRGB(255, 196, 0),
         BorderSizePixel = 0,
-        Position = UDim2.new(0.5, -50, 0, 10),
-        Size = UDim2.new(0, 100, 0, 20),
-        Font = Enum.Font.Gotham,
-        Text = "Theme: Dark",
+        Position = UDim2.new(1, -60, 0, 10),
+        Size = UDim2.new(0, 20, 0, 20),
+        Font = Enum.Font.GothamBold,
+        Text = "_",
         TextColor3 = Color3.fromRGB(255, 255, 255),
-        TextSize = 11,
-        Parent = TopFrame
+        TextSize = 14,
+        Parent = TitleBar
     })
     
-    local ThemeUICorner = Create("UICorner", {
+    local MinimizeButtonUICorner = Create("UICorner", {
         CornerRadius = UDim.new(0, 4),
-        Parent = ThemeButton
+        Parent = MinimizeButton
     })
     
     local CloseButton = Create("TextButton", {
         Name = "CloseButton",
-        BackgroundColor3 = Color3.fromRGB(220, 60, 60),
+        BackgroundColor3 = Color3.fromRGB(232, 17, 35),
         BorderSizePixel = 0,
         Position = UDim2.new(1, -30, 0, 10),
         Size = UDim2.new(0, 20, 0, 20),
         Font = Enum.Font.GothamBold,
-        Text = "X",
+        Text = "×",
         TextColor3 = Color3.fromRGB(255, 255, 255),
-        TextSize = 12,
-        Parent = TopFrame
+        TextSize = 14,
+        Parent = TitleBar
     })
     
-    local CloseUICorner = Create("UICorner", {
+    local CloseButtonUICorner = Create("UICorner", {
         CornerRadius = UDim.new(0, 4),
         Parent = CloseButton
     })
     
-    -- Content Area
-    local ContentArea = Create("Frame", {
-        Name = "ContentArea",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 0, 0, 40),
-        Size = UDim2.new(1, 0, 1, -40),
-        Parent = MainFrame
-    })
-    
-    -- Left Sidebar
+    -- Left Sidebar (CỐ ĐỊNH - KHÔNG DI CHUYỂN)
     local LeftSidebar = Create("Frame", {
         Name = "LeftSidebar",
-        BackgroundColor3 = CurrentTheme.Secondary,
+        BackgroundColor3 = DarkTheme.Secondary,
+        BackgroundTransparency = 0.3,
         BorderSizePixel = 0,
-        Size = UDim2.new(0, 180, 1, 0),
-        Parent = ContentArea
+        Position = UDim2.new(0, 0, 0, 40),
+        Size = UDim2.new(0, 180, 1, -40),
+        Parent = MainFrame
     })
     
     local SidebarUICorner = Create("UICorner", {
@@ -334,15 +240,118 @@ function NazuX:CreateWindow(options)
         Parent = LeftSidebar
     })
     
-    -- Tabs Container
+    -- User Info Section (CỐ ĐỊNH)
+    local UserInfoFrame = Create("Frame", {
+        Name = "UserInfoFrame",
+        BackgroundColor3 = DarkTheme.Tertiary,
+        BackgroundTransparency = 0.2,
+        BorderSizePixel = 0,
+        Size = UDim2.new(1, -10, 0, 80),
+        Position = UDim2.new(0, 5, 0, 5),
+        Parent = LeftSidebar
+    })
+    
+    local UserInfoUICorner = Create("UICorner", {
+        CornerRadius = UDim.new(0, 6),
+        Parent = UserInfoFrame
+    })
+    
+    local Avatar = Create("ImageLabel", {
+        Name = "Avatar",
+        BackgroundColor3 = DarkTheme.Secondary,
+        BorderSizePixel = 0,
+        Position = UDim2.new(0, 10, 0, 10),
+        Size = UDim2.new(0, 40, 0, 40),
+        Image = "https://www.roblox.com/headshot-thumbnail/image?userId="..LocalPlayer.UserId.."&width=150&height=150&format=png"
+    })
+    
+    local AvatarUICorner = Create("UICorner", {
+        CornerRadius = UDim.new(0, 20),
+        Parent = Avatar
+    })
+    
+    local UsernameLabel = Create("TextLabel", {
+        Name = "UsernameLabel",
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, 60, 0, 15),
+        Size = UDim2.new(1, -65, 0, 20),
+        Font = Enum.Font.GothamSemibold,
+        Text = LocalPlayer.Name,
+        TextColor3 = DarkTheme.Text,
+        TextSize = 12,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        TextTruncate = Enum.TextTruncate.AtEnd
+    })
+    
+    local UserIdLabel = Create("TextLabel", {
+        Name = "UserIdLabel",
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, 60, 0, 35),
+        Size = UDim2.new(1, -65, 0, 15),
+        Font = Enum.Font.Gotham,
+        Text = "ID: "..LocalPlayer.UserId,
+        TextColor3 = DarkTheme.SubText,
+        TextSize = 10,
+        TextXAlignment = Enum.TextXAlignment.Left
+    })
+    
+    Avatar.Parent = UserInfoFrame
+    UsernameLabel.Parent = UserInfoFrame
+    UserIdLabel.Parent = UserInfoFrame
+    
+    -- Search Bar (CỐ ĐỊNH)
+    local SearchContainer = Create("Frame", {
+        Name = "SearchContainer",
+        BackgroundColor3 = DarkTheme.Tertiary,
+        BackgroundTransparency = 0.2,
+        BorderSizePixel = 0,
+        Size = UDim2.new(1, -10, 0, 35),
+        Position = UDim2.new(0, 5, 0, 90),
+        Parent = LeftSidebar
+    })
+    
+    local SearchUICorner = Create("UICorner", {
+        CornerRadius = UDim.new(0, 6),
+        Parent = SearchContainer
+    })
+    
+    local SearchBox = Create("TextBox", {
+        Name = "SearchBox",
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, 10, 0, 0),
+        Size = UDim2.new(1, -40, 1, 0),
+        Font = Enum.Font.Gotham,
+        PlaceholderText = "Tìm kiếm...",
+        PlaceholderColor3 = DarkTheme.SubText,
+        Text = "",
+        TextColor3 = DarkTheme.Text,
+        TextSize = 12,
+        TextXAlignment = Enum.TextXAlignment.Left
+    })
+    
+    local SearchIcon = Create("ImageLabel", {
+        Name = "SearchIcon",
+        BackgroundTransparency = 1,
+        Position = UDim2.new(1, -25, 0, 7),
+        Size = UDim2.new(0, 20, 0, 20),
+        Image = "rbxassetid://3926305904",
+        ImageColor3 = DarkTheme.SubText,
+        ImageRectOffset = Vector2.new(964, 324),
+        ImageRectSize = Vector2.new(36, 36)
+    })
+    
+    SearchBox.Parent = SearchContainer
+    SearchIcon.Parent = SearchContainer
+    
+    -- Tabs Container (CỐ ĐỊNH)
     local TabsContainer = Create("ScrollingFrame", {
         Name = "TabsContainer",
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 5, 0, 5),
-        Size = UDim2.new(1, -10, 1, -10),
+        Position = UDim2.new(0, 5, 0, 130),
+        Size = UDim2.new(1, -10, 1, -135),
         CanvasSize = UDim2.new(0, 0, 0, 0),
         ScrollBarThickness = 3,
-        ScrollBarImageColor3 = CurrentTheme.Tertiary,
+        ScrollBarImageColor3 = DarkTheme.Tertiary,
         Parent = LeftSidebar
     })
     
@@ -351,130 +360,143 @@ function NazuX:CreateWindow(options)
         Parent = TabsContainer
     })
     
-    TabsListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        TabsContainer.CanvasSize = UDim2.new(0, 0, 0, TabsListLayout.AbsoluteContentSize.Y)
-    end)
-    
-    -- Main Content Area
-    local MainContent = Create("Frame", {
-        Name = "MainContent",
+    -- MAIN CONTENT CONTAINER (CHỈ NỘI DUNG BÊN PHẢI DI CHUYỂN)
+    local MainContentContainer = Create("Frame", {
+        Name = "MainContentContainer",
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 185, 0, 0),
-        Size = UDim2.new(1, -185, 1, 0),
-        Parent = ContentArea
+        Position = UDim2.new(0, 185, 0, 40),
+        Size = UDim2.new(1, -185, 1, -40),
+        Parent = MainFrame
     })
     
-    -- THEME MANAGEMENT FUNCTION
-    local function UpdateTheme()
-        -- Update all UI elements with new theme colors
-        Tween(MainFrame, {BackgroundColor3 = CurrentTheme.Background}, 0.3)
-        Tween(TopFrame, {BackgroundColor3 = CurrentTheme.Secondary}, 0.3)
-        Tween(LeftSidebar, {BackgroundColor3 = CurrentTheme.Secondary}, 0.3)
+    -- Right Content Area (DI CHUYỂN KHI THU NHỎ)
+    local RightContent = Create("Frame", {
+        Name = "RightContent",
+        BackgroundTransparency = 1,
+        Size = UDim2.new(1, 0, 1, 0),
+        Parent = MainContentContainer
+    })
+    
+    -- Animation for loading spinner
+    local LoadingRotation = 0
+    local LoadingConnection = RunService.Heartbeat:Connect(function(delta)
+        LoadingRotation = (LoadingRotation + 180 * delta) % 360
+        LoadingSpinner.Rotation = LoadingRotation
+    end)
+
+    -- Minimize State
+    local IsMinimized = false
+    local OriginalSize = Size
+
+    -- Functions
+    function NazuXLibrary:ToggleUI()
+        MainFrame.Visible = not MainFrame.Visible
+    end
+    
+    function NazuXLibrary:Minimize()
+        IsMinimized = not IsMinimized
         
-        Tween(Title, {TextColor3 = CurrentTheme.Text}, 0.3)
-        Tween(Subtitle, {TextColor3 = CurrentTheme.SubText}, 0.3)
-        
-        -- Update Triangle Icon color based on theme
-        if CurrentTheme.Name == "Cyber" then
-            Tween(TriangleIcon, {TextColor3 = Color3.fromRGB(0, 255, 255)}, 0.3)
-        elseif CurrentTheme.Name == "Matrix" then
-            Tween(TriangleIcon, {TextColor3 = Color3.fromRGB(0, 255, 0)}, 0.3)
-        elseif CurrentTheme.Name == "Gold" then
-            Tween(TriangleIcon, {TextColor3 = Color3.fromRGB(255, 215, 0)}, 0.3)
+        if IsMinimized then
+            -- Thu nhỏ: chỉ di chuyển MainContentContainer (nội dung bên phải)
+            Tween(MainContentContainer, {
+                Position = UDim2.new(0, 185, 0, -MainContentContainer.Size.Y.Offset)
+            }, 0.3)
+            
+            Tween(MainFrame, {
+                Size = UDim2.new(OriginalSize.X.Scale, OriginalSize.X.Offset, 0, 40)
+            }, 0.3)
         else
-            Tween(TriangleIcon, {TextColor3 = AccentColor}, 0.3)
+            -- Mở rộng: di chuyển MainContentContainer về vị trí cũ
+            Tween(MainContentContainer, {
+                Position = UDim2.new(0, 185, 0, 40)
+            }, 0.3)
+            
+            Tween(MainFrame, {
+                Size = OriginalSize
+            }, 0.3)
         end
+    end
+    
+    function NazuXLibrary:ShowLoading(duration, text)
+        if text then
+            LoadingText.Text = text
+        end
+        LoadingScreen.Visible = true
         
-        -- Update Theme Button Text
-        ThemeButton.Text = "Theme: " .. CurrentTheme.Name
-        
-        -- Update Tabs
+        if duration then
+            delay(duration, function()
+                self:HideLoading()
+            end)
+        end
+    end
+    
+    function NazuXLibrary:HideLoading()
+        LoadingScreen.Visible = false
+    end
+    
+    -- Close Button Event
+    CloseButton.MouseButton1Click:Connect(function()
+        if LoadingConnection then
+            LoadingConnection:Disconnect()
+        end
+        ScreenGui:Destroy()
+    end)
+    
+    CloseButton.MouseEnter:Connect(function()
+        Tween(CloseButton, {BackgroundColor3 = Color3.fromRGB(241, 112, 122)}, 0.2)
+    end)
+    
+    CloseButton.MouseLeave:Connect(function()
+        Tween(CloseButton, {BackgroundColor3 = Color3.fromRGB(232, 17, 35)}, 0.2)
+    end)
+    
+    -- Minimize Button Event
+    MinimizeButton.MouseButton1Click:Connect(function()
+        NazuXLibrary:Minimize()
+    end)
+    
+    MinimizeButton.MouseEnter:Connect(function()
+        Tween(MinimizeButton, {BackgroundColor3 = Color3.fromRGB(255, 213, 0)}, 0.2)
+    end)
+    
+    MinimizeButton.MouseLeave:Connect(function()
+        Tween(MinimizeButton, {BackgroundColor3 = Color3.fromRGB(255, 196, 0)}, 0.2)
+    end)
+    
+    -- Search Functionality
+    local function FilterElements(searchText)
         for _, tabButton in pairs(TabsContainer:GetChildren()) do
             if tabButton:IsA("TextButton") then
-                if tabButton.BackgroundColor3 ~= AccentColor then
-                    Tween(tabButton, {BackgroundColor3 = CurrentTheme.Tertiary, TextColor3 = CurrentTheme.SubText}, 0.3)
+                local tabName = tabButton.Name:gsub("TabButton", "")
+                if string.find(string.lower(tabName), string.lower(searchText)) or searchText == "" then
+                    tabButton.Visible = true
+                else
+                    tabButton.Visible = false
                 end
             end
         end
     end
     
-    -- THÊM HIỆU ỨNG CHO ICON TAM GIÁC
-    TriangleIcon.MouseEnter:Connect(function()
-        Tween(TriangleIcon, {TextColor3 = Color3.fromRGB(255, 255, 255)}, 0.2)
-    end)
-    
-    TriangleIcon.MouseLeave:Connect(function()
-        if CurrentTheme.Name == "Cyber" then
-            Tween(TriangleIcon, {TextColor3 = Color3.fromRGB(0, 255, 255)}, 0.2)
-        elseif CurrentTheme.Name == "Matrix" then
-            Tween(TriangleIcon, {TextColor3 = Color3.fromRGB(0, 255, 0)}, 0.2)
-        elseif CurrentTheme.Name == "Gold" then
-            Tween(TriangleIcon, {TextColor3 = Color3.fromRGB(255, 215, 0)}, 0.2)
-        else
-            Tween(TriangleIcon, {TextColor3 = AccentColor}, 0.2)
-        end
-    end)
-    
-    TriangleIcon.MouseButton1Click:Connect(function()
-        -- Hiệu ứng click cho icon
-        Tween(TriangleIcon, {Rotation = 360}, 0.5)
-        wait(0.5)
-        Tween(TriangleIcon, {Rotation = 0}, 0)
-    end)
-    
-    -- THEME BUTTON EVENT
-    ThemeButton.MouseButton1Click:Connect(function()
-        -- Cycle through themes
-        ThemeIndex = ThemeIndex + 1
-        if ThemeIndex > #ThemeNames then
-            ThemeIndex = 1
-        end
-        
-        CurrentTheme = Themes[ThemeNames[ThemeIndex]]
-        UpdateTheme()
-        
-        -- Button click effect
-        Tween(ThemeButton, {BackgroundColor3 = Color3.fromRGB(0, 100, 200)}, 0.1)
-        wait(0.1)
-        Tween(ThemeButton, {BackgroundColor3 = AccentColor}, 0.2)
-    end)
-    
-    ThemeButton.MouseEnter:Connect(function()
-        Tween(ThemeButton, {BackgroundColor3 = Color3.fromRGB(0, 140, 255)}, 0.2)
-    end)
-    
-    ThemeButton.MouseLeave:Connect(function()
-        Tween(ThemeButton, {BackgroundColor3 = AccentColor}, 0.2)
-    end)
-    
-    -- Close Button Event
-    CloseButton.MouseButton1Click:Connect(function()
-        ScreenGui:Destroy()
-    end)
-    
-    CloseButton.MouseEnter:Connect(function()
-        Tween(CloseButton, {BackgroundColor3 = Color3.fromRGB(240, 80, 80)}, 0.2)
-    end)
-    
-    CloseButton.MouseLeave:Connect(function()
-        Tween(CloseButton, {BackgroundColor3 = Color3.fromRGB(220, 60, 60)}, 0.2)
+    SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
+        FilterElements(SearchBox.Text)
     end)
     
     -- Tab Management
     local CurrentTab = nil
+    local TabContents = {}
     
     function NazuXLibrary:CreateTab(TabName)
         local TabButton = Create("TextButton", {
             Name = TabName .. "TabButton",
-            BackgroundColor3 = CurrentTheme.Tertiary,
+            BackgroundColor3 = DarkTheme.Tertiary,
+            BackgroundTransparency = 0.2,
             BorderSizePixel = 0,
             Size = UDim2.new(1, 0, 0, 35),
             Font = Enum.Font.Gotham,
             Text = TabName,
-            TextColor3 = CurrentTheme.SubText,
+            TextColor3 = DarkTheme.SubText,
             TextSize = 12,
-            AutoButtonColor = false,
-            Parent = TabsContainer
+            AutoButtonColor = false
         })
         
         local TabButtonUICorner = Create("UICorner", {
@@ -488,9 +510,8 @@ function NazuX:CreateWindow(options)
             Size = UDim2.new(1, 0, 1, 0),
             CanvasSize = UDim2.new(0, 0, 0, 0),
             ScrollBarThickness = 3,
-            ScrollBarImageColor3 = CurrentTheme.Tertiary,
-            Visible = false,
-            Parent = MainContent
+            ScrollBarImageColor3 = DarkTheme.Tertiary,
+            Visible = false
         })
         
         local TabContentListLayout = Create("UIListLayout", {
@@ -502,12 +523,19 @@ function NazuX:CreateWindow(options)
             TabContent.CanvasSize = UDim2.new(0, 0, 0, TabContentListLayout.AbsoluteContentSize.Y + 10)
         end)
         
+        TabContent.Parent = RightContent
+        TabButton.Parent = TabsContainer
+        
+        -- Update tabs container size
+        TabsContainer.CanvasSize = UDim2.new(0, 0, 0, TabsListLayout.AbsoluteContentSize.Y)
+        
         TabButton.MouseButton1Click:Connect(function()
             if CurrentTab then
                 CurrentTab.Visible = false
+                -- Reset all tab buttons
                 for _, btn in pairs(TabsContainer:GetChildren()) do
                     if btn:IsA("TextButton") then
-                        Tween(btn, {BackgroundColor3 = CurrentTheme.Tertiary, TextColor3 = CurrentTheme.SubText}, 0.2)
+                        Tween(btn, {BackgroundColor3 = DarkTheme.Tertiary, TextColor3 = DarkTheme.SubText}, 0.2)
                     end
                 end
             end
@@ -525,12 +553,13 @@ function NazuX:CreateWindow(options)
         
         TabButton.MouseLeave:Connect(function()
             if CurrentTab ~= TabContent then
-                Tween(TabButton, {BackgroundColor3 = CurrentTheme.Tertiary}, 0.2)
+                Tween(TabButton, {BackgroundColor3 = DarkTheme.Tertiary}, 0.2)
             end
         end)
         
         local TabFunctions = {}
         
+        -- AddButton Function
         function TabFunctions:AddButton(ButtonConfig)
             ButtonConfig = ButtonConfig or {}
             local ButtonName = ButtonConfig.Name or "Button"
@@ -538,7 +567,8 @@ function NazuX:CreateWindow(options)
             
             local ButtonContainer = Create("Frame", {
                 Name = ButtonName .. "Container",
-                BackgroundColor3 = CurrentTheme.Secondary,
+                BackgroundColor3 = DarkTheme.Secondary,
+                BackgroundTransparency = 0.2,
                 BorderSizePixel = 0,
                 Size = UDim2.new(1, -20, 0, 35),
                 Parent = TabContent
@@ -555,7 +585,7 @@ function NazuX:CreateWindow(options)
                 Size = UDim2.new(1, 0, 1, 0),
                 Font = Enum.Font.Gotham,
                 Text = ButtonName,
-                TextColor3 = CurrentTheme.Text,
+                TextColor3 = DarkTheme.Text,
                 TextSize = 12,
                 Parent = ButtonContainer
             })
@@ -564,7 +594,7 @@ function NazuX:CreateWindow(options)
                 Callback()
                 Tween(ButtonContainer, {BackgroundColor3 = AccentColor}, 0.1)
                 wait(0.1)
-                Tween(ButtonContainer, {BackgroundColor3 = CurrentTheme.Secondary}, 0.1)
+                Tween(ButtonContainer, {BackgroundColor3 = DarkTheme.Secondary}, 0.1)
             end)
             
             Button.MouseEnter:Connect(function()
@@ -572,10 +602,116 @@ function NazuX:CreateWindow(options)
             end)
             
             Button.MouseLeave:Connect(function()
-                Tween(ButtonContainer, {BackgroundColor3 = CurrentTheme.Secondary}, 0.2)
+                Tween(ButtonContainer, {BackgroundColor3 = DarkTheme.Secondary}, 0.2)
             end)
             
             return ButtonContainer
+        end
+        
+        -- AddToggle Function
+        function TabFunctions:AddToggle(ToggleConfig)
+            ToggleConfig = ToggleConfig or {}
+            local ToggleName = ToggleConfig.Name or "Toggle"
+            local Default = ToggleConfig.Default or false
+            local Callback = ToggleConfig.Callback or function() end
+            
+            local ToggleState = Default
+            
+            local ToggleContainer = Create("Frame", {
+                Name = ToggleName .. "Container",
+                BackgroundColor3 = DarkTheme.Secondary,
+                BackgroundTransparency = 0.2,
+                BorderSizePixel = 0,
+                Size = UDim2.new(1, -20, 0, 35),
+                Parent = TabContent
+            })
+            
+            local ToggleContainerUICorner = Create("UICorner", {
+                CornerRadius = UDim.new(0, 6),
+                Parent = ToggleContainer
+            })
+            
+            local ToggleLabel = Create("TextLabel", {
+                Name = ToggleName .. "Label",
+                BackgroundTransparency = 1,
+                Position = UDim2.new(0, 10, 0, 0),
+                Size = UDim2.new(0.7, -10, 1, 0),
+                Font = Enum.Font.Gotham,
+                Text = ToggleName,
+                TextColor3 = DarkTheme.Text,
+                TextSize = 12,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                Parent = ToggleContainer
+            })
+            
+            local ToggleButton = Create("TextButton", {
+                Name = ToggleName .. "Button",
+                BackgroundTransparency = 1,
+                Position = UDim2.new(0.7, 0, 0, 0),
+                Size = UDim2.new(0.3, 0, 1, 0),
+                Text = "",
+                AutoButtonColor = false,
+                Parent = ToggleContainer
+            })
+            
+            local ToggleBackground = Create("Frame", {
+                Name = ToggleName .. "Background",
+                BackgroundColor3 = Default and AccentColor or Color3.fromRGB(80, 80, 80),
+                BorderSizePixel = 0,
+                Position = UDim2.new(0.5, -20, 0.5, -10),
+                Size = UDim2.new(0, 40, 0, 20),
+                Parent = ToggleButton
+            })
+            
+            local ToggleBackgroundUICorner = Create("UICorner", {
+                CornerRadius = UDim.new(0, 10),
+                Parent = ToggleBackground
+            })
+            
+            local ToggleKnob = Create("Frame", {
+                Name = ToggleName .. "Knob",
+                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                BorderSizePixel = 0,
+                Position = UDim2.new(0, Default and 22 or 2, 0, 2),
+                Size = UDim2.new(0, 16, 0, 16),
+                Parent = ToggleBackground
+            })
+            
+            local ToggleKnobUICorner = Create("UICorner", {
+                CornerRadius = UDim.new(0, 8),
+                Parent = ToggleKnob
+            })
+            
+            local function UpdateToggle()
+                Tween(ToggleBackground, {BackgroundColor3 = ToggleState and AccentColor or Color3.fromRGB(80, 80, 80)}, 0.2)
+                Tween(ToggleKnob, {Position = UDim2.new(0, ToggleState and 22 or 2, 0, 2)}, 0.2)
+                Callback(ToggleState)
+            end
+            
+            ToggleButton.MouseButton1Click:Connect(function()
+                ToggleState = not ToggleState
+                UpdateToggle()
+            end)
+            
+            ToggleButton.MouseEnter:Connect(function()
+                Tween(ToggleBackground, {BackgroundColor3 = ToggleState and Color3.fromRGB(0, 140, 255) or Color3.fromRGB(100, 100, 100)}, 0.2)
+            end)
+            
+            ToggleButton.MouseLeave:Connect(function()
+                Tween(ToggleBackground, {BackgroundColor3 = ToggleState and AccentColor or Color3.fromRGB(80, 80, 80)}, 0.2)
+            end)
+            
+            UpdateToggle()
+            
+            return {
+                Set = function(self, state)
+                    ToggleState = state
+                    UpdateToggle()
+                end,
+                Get = function(self)
+                    return ToggleState
+                end
+            }
         end
         
         -- Auto-select first tab
@@ -588,22 +724,10 @@ function NazuX:CreateWindow(options)
         return TabFunctions
     end
     
-    function NazuXLibrary:ToggleUI()
-        MainFrame.Visible = not MainFrame.Visible
-    end
-    
-    function NazuXLibrary:SetTheme(themeName)
-        if Themes[themeName] then
-            CurrentTheme = Themes[themeName]
-            for i, name in ipairs(ThemeNames) do
-                if name == themeName then
-                    ThemeIndex = i
-                    break
-                end
-            end
-            UpdateTheme()
-        end
-    end
+    -- Tự động ẩn loading sau 2 giây
+    delay(2, function()
+        NazuXLibrary:HideLoading()
+    end)
     
     return NazuXLibrary
 end
