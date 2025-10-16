@@ -1,68 +1,64 @@
--- NazuX Library - Windows 11 Style UI
--- AMOLED đen trắng + Minimize chỉ còn titlebar
+--[[
+    NazuX Library
+    Created by NazuX
+    Version: 1.0
+--]]
 
 local NazuX = {}
 NazuX.__index = NazuX
 
 -- Services
-local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local HttpService = game:GetService("HttpService")
 
--- Themes System
+-- Local variables
+local localPlayer = Players.LocalPlayer
+local mouse = localPlayer:GetMouse()
+
+-- Color themes
 local Themes = {
     Dark = {
-        Name = "Dark",
-        Background = Color3.fromRGB(32, 32, 32),
-        Secondary = Color3.fromRGB(40, 40, 40),
-        Tertiary = Color3.fromRGB(50, 50, 50),
+        Main = Color3.fromRGB(32, 34, 37),
+        Secondary = Color3.fromRGB(47, 49, 54),
         Text = Color3.fromRGB(255, 255, 255),
-        SubText = Color3.fromRGB(200, 200, 200),
-        Accent = Color3.fromRGB(0, 120, 215)
+        Accent = Color3.fromRGB(88, 101, 242)
     },
     Light = {
-        Name = "Light",
-        Background = Color3.fromRGB(242, 242, 242),
+        Main = Color3.fromRGB(240, 240, 240),
         Secondary = Color3.fromRGB(255, 255, 255),
-        Tertiary = Color3.fromRGB(230, 230, 230),
         Text = Color3.fromRGB(0, 0, 0),
-        SubText = Color3.fromRGB(100, 100, 100),
-        Accent = Color3.fromRGB(0, 120, 215)
+        Accent = Color3.fromRGB(0, 122, 255)
+    },
+    Red = {
+        Main = Color3.fromRGB(54, 23, 23),
+        Secondary = Color3.fromRGB(82, 32, 32),
+        Text = Color3.fromRGB(255, 255, 255),
+        Accent = Color3.fromRGB(220, 53, 69)
+    },
+    Yellow = {
+        Main = Color3.fromRGB(54, 47, 23),
+        Secondary = Color3.fromRGB(82, 71, 32),
+        Text = Color3.fromRGB(255, 255, 255),
+        Accent = Color3.fromRGB(255, 193, 7)
     },
     AMOLED = {
-        Name = "AMOLED",
-        Background = Color3.fromRGB(0, 0, 0),
-        Secondary = Color3.fromRGB(0, 0, 0),
-        Tertiary = Color3.fromRGB(10, 10, 10),
+        Main = Color3.fromRGB(0, 0, 0),
+        Secondary = Color3.fromRGB(10, 10, 10),
         Text = Color3.fromRGB(255, 255, 255),
-        SubText = Color3.fromRGB(150, 150, 150),
-        Accent = Color3.fromRGB(255, 255, 255)  -- Chỉ có trắng
+        Accent = Color3.fromRGB(255, 255, 255)
     },
     Rose = {
-        Name = "Rose",
-        Background = Color3.fromRGB(25, 23, 36),
-        Secondary = Color3.fromRGB(31, 29, 43),
-        Tertiary = Color3.fromRGB(38, 35, 53),
-        Text = Color3.fromRGB(224, 222, 244),
-        SubText = Color3.fromRGB(144, 140, 170),
-        Accent = Color3.fromRGB(235, 111, 146)
-    },
-    Ocean = {
-        Name = "Ocean",
-        Background = Color3.fromRGB(23, 33, 43),
-        Secondary = Color3.fromRGB(30, 41, 51),
-        Tertiary = Color3.fromRGB(38, 50, 60),
+        Main = Color3.fromRGB(40, 20, 29),
+        Secondary = Color3.fromRGB(60, 30, 44),
         Text = Color3.fromRGB(255, 255, 255),
-        SubText = Color3.fromRGB(180, 200, 220),
-        Accent = Color3.fromRGB(0, 180, 216)
+        Accent = Color3.fromRGB(235, 150, 178)
     }
 }
 
-local CurrentTheme = "Dark"
-
--- Utility Functions
+-- Utility functions
 local function Create(class, properties)
     local instance = Instance.new(class)
     for property, value in pairs(properties) do
@@ -71,9 +67,8 @@ local function Create(class, properties)
     return instance
 end
 
-local function Tween(Object, Goals, Duration, Style, Direction)
-    local TweenInfo = TweenInfo.new(Duration or 0.3, Style or Enum.EasingStyle.Quad, Direction or Enum.EasingDirection.Out)
-    local Tween = TweenService:Create(Object, TweenInfo, Goals)
+local function Tween(Object, Info, Properties)
+    local Tween = TweenService:Create(Object, Info, Properties)
     Tween:Play()
     return Tween
 end
@@ -81,15 +76,10 @@ end
 -- Main Library Function
 function NazuX:CreateWindow(options)
     options = options or {}
-    local WindowName = options.Name or "NazuX Library"
-    local SubtitleText = options.Subtitle or "Powered by NazuX"
-    local DefaultToggle = options.DefaultToggle or false
-    local Size = options.Size or UDim2.new(0, 600, 0, 450)
-    local Position = options.Position or UDim2.new(0.5, -300, 0.5, -225)
+    local WindowTitle = options.Title or "NazuX Library"
+    local Theme = options.Theme or "Dark"
     
-    local NazuXLibrary = {}
-    
-    -- Main ScreenGui
+    -- Create main screen gui
     local ScreenGui = Create("ScreenGui", {
         Name = "NazuXLibrary",
         DisplayOrder = 10,
@@ -102,805 +92,920 @@ function NazuX:CreateWindow(options)
     
     ScreenGui.Parent = game:GetService("CoreGui")
     
-    -- Main Container
+    -- Main container
     local MainFrame = Create("Frame", {
-        Name = "MainFrame",
-        BackgroundColor3 = Themes[CurrentTheme].Background,
-        BorderSizePixel = 0,
-        Position = Position,
-        Size = Size,
+        Parent = ScreenGui,
+        Size = UDim2.new(0, 550, 0, 400),
+        Position = UDim2.new(0.5, -275, 0.5, -200),
+        BackgroundColor3 = Themes[Theme].Main,
+        ClipsDescendants = true,
         Active = true,
-        Draggable = true,
-        Parent = ScreenGui
+        Draggable = true
     })
     
-    local UICorner = Create("UICorner", {
-        CornerRadius = UDim.new(0, 8),
-        Parent = MainFrame
-    })
+    -- Corner radius
+    Create("UICorner", {Parent = MainFrame, CornerRadius = UDim.new(0, 8)})
     
-    local DropShadow = Create("ImageLabel", {
-        Name = "DropShadow",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, -15, 0, -15),
-        Size = UDim2.new(1, 30, 1, 30),
-        Image = "rbxassetid://6015897843",
-        ImageColor3 = Color3.fromRGB(0, 0, 0),
-        ImageTransparency = 0.5,
-        ScaleType = Enum.ScaleType.Slice,
-        SliceCenter = Rect.new(49, 49, 450, 450),
-        Parent = MainFrame
-    })
-
-    -- Loading Screen
-    local LoadingScreen = Create("Frame", {
-        Name = "LoadingScreen",
-        BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-        BackgroundTransparency = 0.7,
-        BorderSizePixel = 0,
+    -- Drop shadow
+    local Shadow = Create("ImageLabel", {
+        Parent = MainFrame,
         Size = UDim2.new(1, 0, 1, 0),
-        ZIndex = 10,
-        Parent = MainFrame
-    })
-    
-    local LoadingContainer = Create("Frame", {
-        Name = "LoadingContainer",
-        BackgroundColor3 = Themes[CurrentTheme].Background,
-        BackgroundTransparency = 0.3,
-        BorderSizePixel = 0,
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        Position = UDim2.new(0.5, 0, 0.5, 0),
-        Size = UDim2.new(0, 200, 0, 120),
-        ZIndex = 11,
-        Parent = LoadingScreen
-    })
-    
-    local LoadingContainerCorner = Create("UICorner", {
-        CornerRadius = UDim.new(0, 12),
-        Parent = LoadingContainer
-    })
-    
-    local LoadingSpinner = Create("ImageLabel", {
-        Name = "LoadingSpinner",
+        Position = UDim2.new(0, 0, 0, 0),
         BackgroundTransparency = 1,
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        Position = UDim2.new(0.5, 0, 0.4, 0),
-        Size = UDim2.new(0, 40, 0, 40),
-        Image = "rbxassetid://3926305904",
-        ImageColor3 = Themes[CurrentTheme].Accent,
-        ImageRectOffset = Vector2.new(964, 324),
-        ImageRectSize = Vector2.new(36, 36),
-        ZIndex = 12,
-        Parent = LoadingContainer
+        Image = "rbxassetid://1316045217",
+        ImageColor3 = Color3.new(0, 0, 0),
+        ImageTransparency = 0.8,
+        ScaleType = Enum.ScaleType.Slice,
+        SliceCenter = Rect.new(10, 10, 118, 118)
     })
     
-    local LoadingText = Create("TextLabel", {
-        Name = "LoadingText",
-        BackgroundTransparency = 1,
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        Position = UDim2.new(0.5, 0, 0.75, 0),
-        Size = UDim2.new(0.8, 0, 0, 20),
-        Font = Enum.Font.GothamSemibold,
-        Text = "Đang tải NazuX Library...",
-        TextColor3 = Themes[CurrentTheme].Text,
-        TextSize = 12,
-        ZIndex = 12,
-        Parent = LoadingContainer
-    })
-    
-    -- Title Bar
+    -- Title bar
     local TitleBar = Create("Frame", {
-        Name = "TitleBar",
-        BackgroundColor3 = Themes[CurrentTheme].Secondary,
-        BorderSizePixel = 0,
+        Parent = MainFrame,
         Size = UDim2.new(1, 0, 0, 40),
-        Parent = MainFrame
+        BackgroundColor3 = Themes[Theme].Secondary,
+        BorderSizePixel = 0
     })
     
-    local TitleBarUICorner = Create("UICorner", {
-        CornerRadius = UDim.new(0, 8),
-        Parent = TitleBar
-    })
+    Create("UICorner", {Parent = TitleBar, CornerRadius = UDim.new(0, 8)})
     
+    -- Title text
     local TitleLabel = Create("TextLabel", {
-        Name = "TitleLabel",
+        Parent = TitleBar,
+        Size = UDim2.new(0, 200, 1, 0),
+        Position = UDim2.new(0, 10, 0, 0),
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 15, 0, 5),
-        Size = UDim2.new(0, 200, 0, 18),
+        Text = WindowTitle,
+        TextColor3 = Themes[Theme].Text,
+        TextSize = 16,
         Font = Enum.Font.GothamSemibold,
-        Text = WindowName,
-        TextColor3 = Themes[CurrentTheme].Text,
-        TextSize = 14,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        Parent = TitleBar
+        TextXAlignment = Enum.TextXAlignment.Left
     })
     
-    local SubtitleLabel = Create("TextLabel", {
-        Name = "SubtitleLabel",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 15, 0, 22),
-        Size = UDim2.new(0, 200, 0, 14),
-        Font = Enum.Font.Gotham,
-        Text = SubtitleText,
-        TextColor3 = Themes[CurrentTheme].SubText,
-        TextSize = 10,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        Parent = TitleBar
-    })
-    
-    -- Window Control Buttons - Nút change theme ở GIỮA
-    local ChangeThemeButton = Create("TextButton", {
-        Name = "ChangeThemeButton",
-        BackgroundColor3 = Themes[CurrentTheme].Accent,
-        BorderSizePixel = 0,
-        Position = UDim2.new(0.5, -10, 0, 10),
-        Size = UDim2.new(0, 20, 0, 20),
-        Font = Enum.Font.GothamBold,
-        Text = "🎨",
-        TextColor3 = CurrentTheme == "AMOLED" and Color3.fromRGB(0, 0, 0) or Color3.fromRGB(255, 255, 255),
-        TextSize = 12,
-        Parent = TitleBar
-    })
-    
-    local ChangeThemeButtonUICorner = Create("UICorner", {
-        CornerRadius = UDim.new(0, 4),
-        Parent = ChangeThemeButton
-    })
-    
+    -- Control buttons
     local MinimizeButton = Create("TextButton", {
-        Name = "MinimizeButton",
-        BackgroundColor3 = Color3.fromRGB(255, 196, 0),
-        BorderSizePixel = 0,
-        Position = UDim2.new(1, -60, 0, 10),
-        Size = UDim2.new(0, 20, 0, 20),
-        Font = Enum.Font.GothamBold,
-        Text = "_",
-        TextColor3 = Color3.fromRGB(255, 255, 255),
-        TextSize = 14,
-        Parent = TitleBar
+        Parent = TitleBar,
+        Size = UDim2.new(0, 30, 0, 30),
+        Position = UDim2.new(1, -70, 0.5, -15),
+        BackgroundColor3 = Themes[Theme].Secondary,
+        Text = "-",
+        TextColor3 = Themes[Theme].Text,
+        TextSize = 18,
+        Font = Enum.Font.GothamBold
     })
     
-    local MinimizeButtonUICorner = Create("UICorner", {
-        CornerRadius = UDim.new(0, 4),
-        Parent = MinimizeButton
-    })
+    Create("UICorner", {Parent = MinimizeButton, CornerRadius = UDim.new(0, 4)})
     
     local CloseButton = Create("TextButton", {
-        Name = "CloseButton",
-        BackgroundColor3 = Color3.fromRGB(232, 17, 35),
-        BorderSizePixel = 0,
-        Position = UDim2.new(1, -30, 0, 10),
-        Size = UDim2.new(0, 20, 0, 20),
-        Font = Enum.Font.GothamBold,
-        Text = "×",
+        Parent = TitleBar,
+        Size = UDim2.new(0, 30, 0, 30),
+        Position = UDim2.new(1, -35, 0.5, -15),
+        BackgroundColor3 = Color3.fromRGB(232, 72, 72),
+        Text = "X",
         TextColor3 = Color3.fromRGB(255, 255, 255),
         TextSize = 14,
-        Parent = TitleBar
+        Font = Enum.Font.GothamBold
     })
     
-    local CloseButtonUICorner = Create("UICorner", {
-        CornerRadius = UDim.new(0, 4),
-        Parent = CloseButton
+    Create("UICorner", {Parent = CloseButton, CornerRadius = UDim.new(0, 4)})
+    
+    -- Color change buttons in title bar (Win11 style)
+    local ThemeButton = Create("TextButton", {
+        Parent = TitleBar,
+        Size = UDim2.new(0, 30, 0, 30),
+        Position = UDim2.new(1, -105, 0.5, -15),
+        BackgroundColor3 = Themes[Theme].Secondary,
+        Text = "🎨",
+        TextColor3 = Themes[Theme].Text,
+        TextSize = 14,
+        Font = Enum.Font.GothamBold
     })
     
-    -- CONTENT CONTAINER (TẤT CẢ NỘI DUNG SẼ ẨN KHI MINIMIZE)
-    local ContentContainer = Create("Frame", {
-        Name = "ContentContainer",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 0, 0, 40),
+    Create("UICorner", {Parent = ThemeButton, CornerRadius = UDim.new(0, 4)})
+    
+    local SpecialThemeButton = Create("TextButton", {
+        Parent = TitleBar,
+        Size = UDim2.new(0, 30, 0, 30),
+        Position = UDim2.new(1, -140, 0.5, -15),
+        BackgroundColor3 = Themes[Theme].Secondary,
+        Text = "🌟",
+        TextColor3 = Themes[Theme].Text,
+        TextSize = 14,
+        Font = Enum.Font.GothamBold
+    })
+    
+    Create("UICorner", {Parent = SpecialThemeButton, CornerRadius = UDim.new(0, 4)})
+    
+    -- Content area
+    local ContentArea = Create("Frame", {
+        Parent = MainFrame,
         Size = UDim2.new(1, 0, 1, -40),
-        Parent = MainFrame
+        Position = UDim2.new(0, 0, 0, 40),
+        BackgroundTransparency = 1
     })
     
-    -- Left Sidebar (Tabs)
+    -- Left sidebar (transparent)
     local LeftSidebar = Create("Frame", {
-        Name = "LeftSidebar",
-        BackgroundColor3 = Themes[CurrentTheme].Secondary,
-        BackgroundTransparency = CurrentTheme == "AMOLED" and 0 or 0.3,
-        BorderSizePixel = 0,
+        Parent = ContentArea,
         Size = UDim2.new(0, 180, 1, 0),
-        Parent = ContentContainer
+        BackgroundTransparency = 0.95,
+        BackgroundColor3 = Themes[Theme].Secondary,
+        BorderSizePixel = 0
     })
     
-    local SidebarUICorner = Create("UICorner", {
-        CornerRadius = UDim.new(0, 8),
-        Parent = LeftSidebar
-    })
+    Create("UICorner", {Parent = LeftSidebar, CornerRadius = UDim.new(0, 8)})
     
-    -- User Info Section
+    -- User info section
     local UserInfoFrame = Create("Frame", {
-        Name = "UserInfoFrame",
-        BackgroundColor3 = Themes[CurrentTheme].Tertiary,
-        BackgroundTransparency = CurrentTheme == "AMOLED" and 0.1 or 0.2,
-        BorderSizePixel = 0,
+        Parent = LeftSidebar,
         Size = UDim2.new(1, -10, 0, 80),
         Position = UDim2.new(0, 5, 0, 5),
-        Parent = LeftSidebar
+        BackgroundTransparency = 1
     })
     
-    local UserInfoUICorner = Create("UICorner", {
-        CornerRadius = UDim.new(0, 6),
-        Parent = UserInfoFrame
-    })
-    
+    -- Avatar (rounded)
     local Avatar = Create("ImageLabel", {
-        Name = "Avatar",
-        BackgroundColor3 = Themes[CurrentTheme].Secondary,
+        Parent = UserInfoFrame,
+        Size = UDim2.new(0, 50, 0, 50),
+        Position = UDim2.new(0, 5, 0, 5),
+        BackgroundColor3 = Themes[Theme].Secondary,
         BorderSizePixel = 0,
-        Position = UDim2.new(0, 10, 0, 10),
-        Size = UDim2.new(0, 40, 0, 40),
-        Image = "https://www.roblox.com/headshot-thumbnail/image?userId="..LocalPlayer.UserId.."&width=150&height=150&format=png"
+        Image = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. localPlayer.UserId .. "&width=150&height=150&format=png"
     })
     
-    local AvatarUICorner = Create("UICorner", {
-        CornerRadius = UDim.new(0, 20),
-        Parent = Avatar
-    })
+    Create("UICorner", {Parent = Avatar, CornerRadius = UDim.new(1, 0)})
     
+    -- Username
     local UsernameLabel = Create("TextLabel", {
-        Name = "UsernameLabel",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 60, 0, 15),
+        Parent = UserInfoFrame,
         Size = UDim2.new(1, -65, 0, 20),
+        Position = UDim2.new(0, 60, 0, 15),
+        BackgroundTransparency = 1,
+        Text = localPlayer.Name,
+        TextColor3 = Themes[Theme].Text,
+        TextSize = 14,
         Font = Enum.Font.GothamSemibold,
-        Text = LocalPlayer.Name,
-        TextColor3 = Themes[CurrentTheme].Text,
-        TextSize = 12,
         TextXAlignment = Enum.TextXAlignment.Left,
         TextTruncate = Enum.TextTruncate.AtEnd
     })
     
-    local UserIdLabel = Create("TextLabel", {
-        Name = "UserIdLabel",
-        BackgroundTransparency = 1,
+    -- Display name
+    local DisplayNameLabel = Create("TextLabel", {
+        Parent = UserInfoFrame,
+        Size = UDim2.new(1, -65, 0, 18),
         Position = UDim2.new(0, 60, 0, 35),
-        Size = UDim2.new(1, -65, 0, 15),
+        BackgroundTransparency = 1,
+        Text = "@" .. localPlayer.DisplayName,
+        TextColor3 = Themes[Theme].Text,
+        TextTransparency = 0.5,
+        TextSize = 12,
         Font = Enum.Font.Gotham,
-        Text = "ID: "..LocalPlayer.UserId,
-        TextColor3 = Themes[CurrentTheme].SubText,
-        TextSize = 10,
-        TextXAlignment = Enum.TextXAlignment.Left
+        TextXAlignment = Enum.TextXAlignment.Left,
+        TextTruncate = Enum.TextTruncate.AtEnd
     })
     
-    Avatar.Parent = UserInfoFrame
-    UsernameLabel.Parent = UserInfoFrame
-    UserIdLabel.Parent = UserInfoFrame
-    
-    -- Search Bar
+    -- Search bar
     local SearchContainer = Create("Frame", {
-        Name = "SearchContainer",
-        BackgroundColor3 = Themes[CurrentTheme].Tertiary,
-        BackgroundTransparency = CurrentTheme == "AMOLED" and 0.1 or 0.2,
-        BorderSizePixel = 0,
+        Parent = LeftSidebar,
         Size = UDim2.new(1, -10, 0, 35),
         Position = UDim2.new(0, 5, 0, 90),
-        Parent = LeftSidebar
+        BackgroundColor3 = Themes[Theme].Main,
+        BorderSizePixel = 0
     })
     
-    local SearchUICorner = Create("UICorner", {
-        CornerRadius = UDim.new(0, 6),
-        Parent = SearchContainer
-    })
+    Create("UICorner", {Parent = SearchContainer, CornerRadius = UDim.new(0, 6)})
     
     local SearchBox = Create("TextBox", {
-        Name = "SearchBox",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 10, 0, 0),
+        Parent = SearchContainer,
         Size = UDim2.new(1, -40, 1, 0),
+        Position = UDim2.new(0, 35, 0, 0),
+        BackgroundTransparency = 1,
+        Text = "Search...",
+        PlaceholderText = "Search...",
+        TextColor3 = Themes[Theme].Text,
+        PlaceholderColor3 = Themes[Theme].Text,
+        TextTransparency = 0.3,
+        TextSize = 14,
         Font = Enum.Font.Gotham,
-        PlaceholderText = "Tìm kiếm...",
-        PlaceholderColor3 = Themes[CurrentTheme].SubText,
-        Text = "",
-        TextColor3 = Themes[CurrentTheme].Text,
-        TextSize = 12,
-        TextXAlignment = Enum.TextXAlignment.Left
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ClearTextOnFocus = false
     })
     
     local SearchIcon = Create("ImageLabel", {
-        Name = "SearchIcon",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(1, -25, 0, 7),
+        Parent = SearchContainer,
         Size = UDim2.new(0, 20, 0, 20),
+        Position = UDim2.new(0, 8, 0.5, -10),
+        BackgroundTransparency = 1,
         Image = "rbxassetid://3926305904",
-        ImageColor3 = Themes[CurrentTheme].SubText,
         ImageRectOffset = Vector2.new(964, 324),
-        ImageRectSize = Vector2.new(36, 36)
+        ImageRectSize = Vector2.new(36, 36),
+        ImageColor3 = Themes[Theme].Text,
+        ImageTransparency = 0.3
     })
     
-    SearchBox.Parent = SearchContainer
-    SearchIcon.Parent = SearchContainer
-    
-    -- Tabs Container
+    -- Tabs container
     local TabsContainer = Create("ScrollingFrame", {
-        Name = "TabsContainer",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 5, 0, 130),
+        Parent = LeftSidebar,
         Size = UDim2.new(1, -10, 1, -135),
-        CanvasSize = UDim2.new(0, 0, 0, 0),
-        ScrollBarThickness = 3,
-        ScrollBarImageColor3 = Themes[CurrentTheme].Tertiary,
-        Parent = LeftSidebar
-    })
-    
-    local TabsListLayout = Create("UIListLayout", {
-        Padding = UDim.new(0, 5),
-        Parent = TabsContainer
-    })
-    
-    -- Right Content Area
-    local RightContent = Create("Frame", {
-        Name = "RightContent",
+        Position = UDim2.new(0, 5, 0, 130),
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 185, 0, 0),
-        Size = UDim2.new(1, -185, 1, 0),
-        Parent = ContentContainer
-    })
-    
-    -- Animation for loading spinner
-    local LoadingRotation = 0
-    local LoadingConnection = RunService.Heartbeat:Connect(function(delta)
-        LoadingRotation = (LoadingRotation + 180 * delta) % 360
-        LoadingSpinner.Rotation = LoadingRotation
-    end)
-
-    -- Minimize State
-    local IsMinimized = false
-    local OriginalSize = Size
-
-    -- Theme Management
-    local function ApplyTheme(themeName)
-        CurrentTheme = themeName
-        local theme = Themes[themeName]
-        
-        -- Apply colors to all elements
-        MainFrame.BackgroundColor3 = theme.Background
-        TitleBar.BackgroundColor3 = theme.Secondary
-        LeftSidebar.BackgroundColor3 = theme.Secondary
-        UserInfoFrame.BackgroundColor3 = theme.Tertiary
-        SearchContainer.BackgroundColor3 = theme.Tertiary
-        LoadingContainer.BackgroundColor3 = theme.Background
-        
-        -- Điều chỉnh độ trong suốt cho AMOLED
-        if themeName == "AMOLED" then
-            LeftSidebar.BackgroundTransparency = 0
-            UserInfoFrame.BackgroundTransparency = 0.1
-            SearchContainer.BackgroundTransparency = 0.1
-        else
-            LeftSidebar.BackgroundTransparency = 0.3
-            UserInfoFrame.BackgroundTransparency = 0.2
-            SearchContainer.BackgroundTransparency = 0.2
-        end
-        
-        -- Text colors
-        TitleLabel.TextColor3 = theme.Text
-        SubtitleLabel.TextColor3 = theme.SubText
-        UsernameLabel.TextColor3 = theme.Text
-        UserIdLabel.TextColor3 = theme.SubText
-        SearchBox.TextColor3 = theme.Text
-        SearchBox.PlaceholderColor3 = theme.SubText
-        SearchIcon.ImageColor3 = theme.SubText
-        LoadingText.TextColor3 = theme.Text
-        LoadingSpinner.ImageColor3 = theme.Accent
-        
-        -- Buttons
-        ChangeThemeButton.BackgroundColor3 = theme.Accent
-        ChangeThemeButton.TextColor3 = themeName == "AMOLED" and Color3.fromRGB(0, 0, 0) or Color3.fromRGB(255, 255, 255)
-        
-        -- Update all tab buttons
-        for _, tabButton in pairs(TabsContainer:GetChildren()) do
-            if tabButton:IsA("TextButton") then
-                if tabButton.BackgroundColor3 == Themes[CurrentTheme].Accent then
-                    tabButton.BackgroundColor3 = theme.Accent
-                    tabButton.TextColor3 = themeName == "AMOLED" and Color3.fromRGB(0, 0, 0) or Color3.fromRGB(255, 255, 255)
-                else
-                    tabButton.BackgroundColor3 = theme.Tertiary
-                    tabButton.TextColor3 = theme.SubText
-                end
-            end
-        end
-        
-        -- Update scroll bars
-        TabsContainer.ScrollBarImageColor3 = theme.Tertiary
-    end
-
-    -- Theme Selection Popup
-    local ThemePopup = Create("Frame", {
-        Name = "ThemePopup",
-        BackgroundColor3 = Themes[CurrentTheme].Secondary,
         BorderSizePixel = 0,
-        Position = UDim2.new(0.5, -100, 0.5, -150),
-        Size = UDim2.new(0, 200, 0, 250),
-        Visible = false,
-        ZIndex = 20,
-        Parent = ScreenGui
-    })
-    
-    local ThemePopupCorner = Create("UICorner", {
-        CornerRadius = UDim.new(0, 12),
-        Parent = ThemePopup
-    })
-    
-    local ThemePopupShadow = Create("ImageLabel", {
-        Name = "ThemePopupShadow",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, -15, 0, -15),
-        Size = UDim2.new(1, 30, 1, 30),
-        Image = "rbxassetid://6015897843",
-        ImageColor3 = Color3.fromRGB(0, 0, 0),
-        ImageTransparency = 0.5,
-        ScaleType = Enum.ScaleType.Slice,
-        SliceCenter = Rect.new(49, 49, 450, 450),
-        ZIndex = 19,
-        Parent = ThemePopup
-    })
-    
-    local ThemePopupTitle = Create("TextLabel", {
-        Name = "ThemePopupTitle",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 0, 0, 15),
-        Size = UDim2.new(1, 0, 0, 25),
-        Font = Enum.Font.GothamSemibold,
-        Text = "Chọn Theme",
-        TextColor3 = Themes[CurrentTheme].Text,
-        TextSize = 16,
-        ZIndex = 21,
-        Parent = ThemePopup
-    })
-    
-    local ThemesList = Create("ScrollingFrame", {
-        Name = "ThemesList",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 10, 0, 50),
-        Size = UDim2.new(1, -20, 1, -70),
-        CanvasSize = UDim2.new(0, 0, 0, 0),
         ScrollBarThickness = 3,
-        ScrollBarImageColor3 = Themes[CurrentTheme].Tertiary,
-        ZIndex = 21,
-        Parent = ThemePopup
+        ScrollBarImageColor3 = Themes[Theme].Accent,
+        CanvasSize = UDim2.new(0, 0, 0, 0),
+        AutomaticCanvasSize = Enum.AutomaticSize.Y
     })
     
-    local ThemesListLayout = Create("UIListLayout", {
-        Padding = UDim.new(0, 8),
-        Parent = ThemesList
+    Create("UIListLayout", {
+        Parent = TabsContainer,
+        SortOrder = Enum.SortOrder.LayoutOrder,
+        Padding = UDim.new(0, 5)
     })
     
-    -- Create theme buttons
-    for themeName, themeData in pairs(Themes) do
-        local ThemeButton = Create("TextButton", {
-            Name = themeName .. "ThemeButton",
-            BackgroundColor3 = themeData.Accent,
-            BorderSizePixel = 0,
-            Size = UDim2.new(1, 0, 0, 35),
-            Font = Enum.Font.Gotham,
-            Text = themeData.Name,
-            TextColor3 = themeName == "AMOLED" and Color3.fromRGB(0, 0, 0) or Color3.fromRGB(255, 255, 255),
-            TextSize = 12,
-            AutoButtonColor = false,
-            ZIndex = 22,
-            Parent = ThemesList
-        })
-        
-        local ThemeButtonCorner = Create("UICorner", {
-            CornerRadius = UDim.new(0, 6),
-            Parent = ThemeButton
-        })
-        
-        ThemeButton.MouseButton1Click:Connect(function()
-            ApplyTheme(themeName)
-            ThemePopup.Visible = false
-        end)
-        
-        ThemeButton.MouseEnter:Connect(function()
-            if themeName == "AMOLED" then
-                Tween(ThemeButton, {BackgroundColor3 = Color3.fromRGB(50, 50, 50)}, 0.2)
-                Tween(ThemeButton, {TextColor3 = Color3.fromRGB(255, 255, 255)}, 0.2)
-            else
-                Tween(ThemeButton, {BackgroundColor3 = Color3.fromRGB(
-                    math.min(themeData.Accent.R * 255 + 30, 255),
-                    math.min(themeData.Accent.G * 255 + 30, 255),
-                    math.min(themeData.Accent.B * 255 + 30, 255)
-                )}, 0.2)
-            end
-        end)
-        
-        ThemeButton.MouseLeave:Connect(function()
-            ThemeButton.BackgroundColor3 = themeData.Accent
-            ThemeButton.TextColor3 = themeName == "AMOLED" and Color3.fromRGB(0, 0, 0) or Color3.fromRGB(255, 255, 255)
-        end)
-    end
+    -- Right content area
+    local RightContent = Create("Frame", {
+        Parent = ContentArea,
+        Size = UDim2.new(1, -185, 1, -10),
+        Position = UDim2.new(0, 185, 0, 5),
+        BackgroundColor3 = Themes[Theme].Secondary,
+        BorderSizePixel = 0
+    })
     
-    -- Update themes list size
-    ThemesListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        ThemesList.CanvasSize = UDim2.new(0, 0, 0, ThemesListLayout.AbsoluteContentSize.Y)
+    Create("UICorner", {Parent = RightContent, CornerRadius = UDim.new(0, 8)})
+    
+    -- Loading screen
+    local LoadingScreen = Create("Frame", {
+        Parent = ScreenGui,
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundColor3 = Themes[Theme].Main,
+        Visible = true,
+        ZIndex = 20
+    })
+    
+    local LoadingSpinner = Create("ImageLabel", {
+        Parent = LoadingScreen,
+        Size = UDim2.new(0, 80, 0, 80),
+        Position = UDim2.new(0.5, -40, 0.5, -40),
+        BackgroundTransparency = 1,
+        Image = "rbxassetid://11983264153",
+        ImageColor3 = Themes[Theme].Accent,
+        ZIndex = 21
+    })
+    
+    local LoadingText = Create("TextLabel", {
+        Parent = LoadingScreen,
+        Size = UDim2.new(1, 0, 0, 30),
+        Position = UDim2.new(0, 0, 0.5, 60),
+        BackgroundTransparency = 1,
+        Text = "Loading NazuX Library...",
+        TextColor3 = Themes[Theme].Text,
+        TextSize = 18,
+        Font = Enum.Font.GothamSemibold,
+        ZIndex = 21
+    })
+    
+    -- Simulate loading
+    spawn(function()
+        local rotation = 0
+        while LoadingScreen.Visible do
+            rotation = rotation + 2
+            LoadingSpinner.Rotation = rotation
+            wait()
+        end
     end)
-
-    -- Functions
-    function NazuXLibrary:ToggleUI()
-        MainFrame.Visible = not MainFrame.Visible
-    end
     
-    function NazuXLibrary:Minimize()
-        IsMinimized = not IsMinimized
-        
+    wait(2) -- Simulate loading time
+    LoadingScreen.Visible = false
+    
+    -- Window state
+    local IsMinimized = false
+    local OriginalSize = MainFrame.Size
+    local OriginalPosition = MainFrame.Position
+    
+    -- Minimize functionality
+    MinimizeButton.MouseButton1Click:Connect(function()
         if IsMinimized then
-            -- Thu nhỏ: ẩn TOÀN BỘ ContentContainer, chỉ còn TitleBar
-            Tween(ContentContainer, {
-                Size = UDim2.new(1, 0, 0, 0)
-            }, 0.3)
-            
-            Tween(MainFrame, {
-                Size = UDim2.new(OriginalSize.X.Scale, OriginalSize.X.Offset, 0, 40)
-            }, 0.3)
+            -- Restore
+            Tween(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = OriginalSize})
+            ContentArea.Visible = true
+            IsMinimized = false
         else
-            -- Mở rộng: hiện lại TOÀN BỘ ContentContainer
-            Tween(ContentContainer, {
-                Size = UDim2.new(1, 0, 1, -40)
-            }, 0.3)
-            
-            Tween(MainFrame, {
-                Size = OriginalSize
-            }, 0.3)
+            -- Minimize
+            OriginalSize = MainFrame.Size
+            OriginalPosition = MainFrame.Position
+            Tween(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, 550, 0, 40)})
+            ContentArea.Visible = false
+            IsMinimized = true
         end
-    end
+    end)
     
-    function NazuXLibrary:ShowLoading(duration, text)
-        if text then
-            LoadingText.Text = text
-        end
-        LoadingScreen.Visible = true
-        
-        if duration then
-            delay(duration, function()
-                self:HideLoading()
-            end)
-        end
-    end
-    
-    function NazuXLibrary:HideLoading()
-        LoadingScreen.Visible = false
-    end
-    
-    function NazuXLibrary:ChangeTheme(themeName)
-        if Themes[themeName] then
-            ApplyTheme(themeName)
-        end
-    end
-    
-    -- Close Button Event
+    -- Close functionality
     CloseButton.MouseButton1Click:Connect(function()
-        if LoadingConnection then
-            LoadingConnection:Disconnect()
-        end
         ScreenGui:Destroy()
     end)
     
-    CloseButton.MouseEnter:Connect(function()
-        Tween(CloseButton, {BackgroundColor3 = Color3.fromRGB(241, 112, 122)}, 0.2)
-    end)
-    
-    CloseButton.MouseLeave:Connect(function()
-        Tween(CloseButton, {BackgroundColor3 = Color3.fromRGB(232, 17, 35)}, 0.2)
-    end)
-    
-    -- Minimize Button Event
-    MinimizeButton.MouseButton1Click:Connect(function()
-        NazuXLibrary:Minimize()
-    end)
-    
-    MinimizeButton.MouseEnter:Connect(function()
-        Tween(MinimizeButton, {BackgroundColor3 = Color3.fromRGB(255, 213, 0)}, 0.2)
-    end)
-    
-    MinimizeButton.MouseLeave:Connect(function()
-        Tween(MinimizeButton, {BackgroundColor3 = Color3.fromRGB(255, 196, 0)}, 0.2)
-    end)
-    
-    -- Change Theme Button Event
-    ChangeThemeButton.MouseButton1Click:Connect(function()
-        ThemePopup.Visible = not ThemePopup.Visible
-    end)
-    
-    ChangeThemeButton.MouseEnter:Connect(function()
-        if CurrentTheme == "AMOLED" then
-            Tween(ChangeThemeButton, {BackgroundColor3 = Color3.fromRGB(50, 50, 50)}, 0.2)
-            Tween(ChangeThemeButton, {TextColor3 = Color3.fromRGB(255, 255, 255)}, 0.2)
-        else
-            Tween(ChangeThemeButton, {BackgroundColor3 = Color3.fromRGB(
-                math.min(Themes[CurrentTheme].Accent.R * 255 + 30, 255),
-                math.min(Themes[CurrentTheme].Accent.G * 255 + 30, 255),
-                math.min(Themes[CurrentTheme].Accent.B * 255 + 30, 255)
-            )}, 0.2)
-        end
-    end)
-    
-    ChangeThemeButton.MouseLeave:Connect(function()
-        ChangeThemeButton.BackgroundColor3 = Themes[CurrentTheme].Accent
-        ChangeThemeButton.TextColor3 = CurrentTheme == "AMOLED" and Color3.fromRGB(0, 0, 0) or Color3.fromRGB(255, 255, 255)
-    end)
-    
-    -- Close theme popup when clicking outside
-    UserInputService.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 and ThemePopup.Visible then
-            local mousePos = UserInputService:GetMouseLocation()
-            local themePopupAbsPos = ThemePopup.AbsolutePosition
-            local themePopupSize = ThemePopup.AbsoluteSize
-            
-            if mousePos.X < themePopupAbsPos.X or mousePos.X > themePopupAbsPos.X + themePopupSize.X or
-               mousePos.Y < themePopupAbsPos.Y or mousePos.Y > themePopupAbsPos.Y + themePopupSize.Y then
-                ThemePopup.Visible = false
-            end
-        end
-    end)
-    
-    -- Search Functionality
-    local function FilterElements(searchText)
-        for _, tabButton in pairs(TabsContainer:GetChildren()) do
-            if tabButton:IsA("TextButton") then
-                local tabName = tabButton.Name:gsub("TabButton", "")
-                if string.find(string.lower(tabName), string.lower(searchText)) or searchText == "" then
-                    tabButton.Visible = true
-                else
-                    tabButton.Visible = false
-                end
-            end
+    -- Theme changing functionality
+    local function ApplyTheme(themeName)
+        local theme = Themes[themeName]
+        if not theme then return end
+        
+        -- Apply theme to all elements
+        MainFrame.BackgroundColor3 = theme.Main
+        TitleBar.BackgroundColor3 = theme.Secondary
+        TitleLabel.TextColor3 = theme.Text
+        MinimizeButton.BackgroundColor3 = theme.Secondary
+        MinimizeButton.TextColor3 = theme.Text
+        ThemeButton.BackgroundColor3 = theme.Secondary
+        ThemeButton.TextColor3 = theme.Text
+        SpecialThemeButton.BackgroundColor3 = theme.Secondary
+        SpecialThemeButton.TextColor3 = theme.Text
+        LeftSidebar.BackgroundColor3 = theme.Secondary
+        UsernameLabel.TextColor3 = theme.Text
+        DisplayNameLabel.TextColor3 = theme.Text
+        SearchContainer.BackgroundColor3 = theme.Main
+        SearchBox.TextColor3 = theme.Text
+        SearchBox.PlaceholderColor3 = theme.Text
+        SearchIcon.ImageColor3 = theme.Text
+        RightContent.BackgroundColor3 = theme.Secondary
+        TabsContainer.ScrollBarImageColor3 = theme.Accent
+        
+        -- Update loading screen if visible
+        if LoadingScreen.Visible then
+            LoadingScreen.BackgroundColor3 = theme.Main
+            LoadingText.TextColor3 = theme.Text
+            LoadingSpinner.ImageColor3 = theme.Accent
         end
     end
     
-    SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
-        FilterElements(SearchBox.Text)
+    -- Theme selection popup
+    local function ShowThemeSelector(isSpecial)
+        local ThemePopup = Create("Frame", {
+            Parent = ScreenGui,
+            Size = UDim2.new(0, 200, 0, 250),
+            Position = UDim2.new(0.5, -100, 0.5, -125),
+            BackgroundColor3 = Themes[Theme].Main,
+            ZIndex = 30
+        })
+        
+        Create("UICorner", {Parent = ThemePopup, CornerRadius = UDim.new(0, 8)})
+        
+        local ThemeList = Create("ScrollingFrame", {
+            Parent = ThemePopup,
+            Size = UDim2.new(1, -10, 1, -40),
+            Position = UDim2.new(0, 5, 0, 35),
+            BackgroundTransparency = 1,
+            ScrollBarThickness = 3,
+            CanvasSize = UDim2.new(0, 0, 0, 0),
+            AutomaticCanvasSize = Enum.AutomaticSize.Y
+        })
+        
+        Create("UIListLayout", {
+            Parent = ThemeList,
+            SortOrder = Enum.SortOrder.LayoutOrder,
+            Padding = UDim.new(0, 5)
+        })
+        
+        local Title = Create("TextLabel", {
+            Parent = ThemePopup,
+            Size = UDim2.new(1, 0, 0, 30),
+            Position = UDim2.new(0, 0, 0, 0),
+            BackgroundTransparency = 1,
+            Text = isSpecial and "Special Themes" or "Color Themes",
+            TextColor3 = Themes[Theme].Text,
+            TextSize = 16,
+            Font = Enum.Font.GothamSemibold,
+            ZIndex = 31
+        })
+        
+        local themesToShow = isSpecial and {AMOLED = "AMOLED", Rose = "Rose"} or {Dark = "Dark", Light = "Light", Red = "Red", Yellow = "Yellow"}
+        
+        for themeName, displayName in pairs(themesToShow) do
+            local ThemeButton = Create("TextButton", {
+                Parent = ThemeList,
+                Size = UDim2.new(1, 0, 0, 35),
+                BackgroundColor3 = Themes[Theme].Secondary,
+                Text = displayName,
+                TextColor3 = Themes[Theme].Text,
+                TextSize = 14,
+                Font = Enum.Font.Gotham,
+                LayoutOrder = #ThemeList:GetChildren()
+            })
+            
+            Create("UICorner", {Parent = ThemeButton, CornerRadius = UDim.new(0, 6)})
+            
+            ThemeButton.MouseButton1Click:Connect(function()
+                ApplyTheme(themeName)
+                Theme = themeName
+                ThemePopup:Destroy()
+            end)
+        end
+        
+        -- Close when clicking outside
+        local BackgroundOverlay = Create("TextButton", {
+            Parent = ScreenGui,
+            Size = UDim2.new(1, 0, 1, 0),
+            Position = UDim2.new(0, 0, 0, 0),
+            BackgroundTransparency = 1,
+            Text = "",
+            ZIndex = 25
+        })
+        
+        BackgroundOverlay.MouseButton1Click:Connect(function()
+            ThemePopup:Destroy()
+            BackgroundOverlay:Destroy()
+        end)
+    end
+    
+    ThemeButton.MouseButton1Click:Connect(function()
+        ShowThemeSelector(false)
     end)
     
-    -- Tab Management
-    local CurrentTab = nil
-    local TabContents = {}
+    SpecialThemeButton.MouseButton1Click:Connect(function()
+        ShowThemeSelector(true)
+    end)
     
-    function NazuXLibrary:CreateTab(TabName)
+    -- Tab management
+    local Tabs = {}
+    local CurrentTab = nil
+    
+    local Window = {
+        ScreenGui = ScreenGui,
+        MainFrame = MainFrame,
+        TabsContainer = TabsContainer,
+        RightContent = RightContent,
+        CurrentTheme = Theme
+    }
+    
+    function Window:CreateTab(name)
         local TabButton = Create("TextButton", {
-            Name = TabName .. "TabButton",
-            BackgroundColor3 = Themes[CurrentTheme].Tertiary,
-            BackgroundTransparency = 0.2,
-            BorderSizePixel = 0,
-            Size = UDim2.new(1, 0, 0, 35),
-            Font = Enum.Font.Gotham,
-            Text = TabName,
-            TextColor3 = Themes[CurrentTheme].SubText,
-            TextSize = 12,
+            Parent = TabsContainer,
+            Size = UDim2.new(1, 0, 0, 40),
+            BackgroundColor3 = Themes[Theme].Main,
+            Text = name,
+            TextColor3 = Themes[Theme].Text,
+            TextSize = 14,
+            Font = Enum.Font.GothamSemibold,
             AutoButtonColor = false
         })
         
-        local TabButtonUICorner = Create("UICorner", {
-            CornerRadius = UDim.new(0, 6),
-            Parent = TabButton
-        })
+        Create("UICorner", {Parent = TabButton, CornerRadius = UDim.new(0, 6)})
         
         local TabContent = Create("ScrollingFrame", {
-            Name = TabName .. "Content",
+            Parent = RightContent,
+            Size = UDim2.new(1, -10, 1, -10),
+            Position = UDim2.new(0, 5, 0, 5),
             BackgroundTransparency = 1,
-            Size = UDim2.new(1, 0, 1, 0),
-            CanvasSize = UDim2.new(0, 0, 0, 0),
+            BorderSizePixel = 0,
             ScrollBarThickness = 3,
-            ScrollBarImageColor3 = Themes[CurrentTheme].Tertiary,
+            ScrollBarImageColor3 = Themes[Theme].Accent,
+            CanvasSize = UDim2.new(0, 0, 0, 0),
+            AutomaticCanvasSize = Enum.AutomaticSize.Y,
             Visible = false
         })
         
-        local TabContentListLayout = Create("UIListLayout", {
-            Padding = UDim.new(0, 10),
-            Parent = TabContent
+        Create("UIListLayout", {
+            Parent = TabContent,
+            SortOrder = Enum.SortOrder.LayoutOrder,
+            Padding = UDim.new(0, 10)
         })
         
-        TabContentListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-            TabContent.CanvasSize = UDim2.new(0, 0, 0, TabContentListLayout.AbsoluteContentSize.Y + 10)
-        end)
+        local Tab = {
+            Name = name,
+            Button = TabButton,
+            Content = TabContent,
+            Elements = {}
+        }
         
-        TabContent.Parent = RightContent
-        TabButton.Parent = TabsContainer
-        
-        -- Update tabs container size
-        TabsContainer.CanvasSize = UDim2.new(0, 0, 0, TabsListLayout.AbsoluteContentSize.Y)
+        table.insert(Tabs, Tab)
         
         TabButton.MouseButton1Click:Connect(function()
             if CurrentTab then
-                CurrentTab.Visible = false
-                -- Reset all tab buttons
-                for _, btn in pairs(TabsContainer:GetChildren()) do
-                    if btn:IsA("TextButton") then
-                        Tween(btn, {BackgroundColor3 = Themes[CurrentTheme].Tertiary, TextColor3 = Themes[CurrentTheme].SubText}, 0.2)
+                CurrentTab.Content.Visible = false
+                Tween(CurrentTab.Button, TweenInfo.new(0.2), {BackgroundColor3 = Themes[Theme].Main})
+            end
+            
+            CurrentTab = Tab
+            TabContent.Visible = true
+            Tween(TabButton, TweenInfo.new(0.2), {BackgroundColor3 = Themes[Theme].Accent})
+        end)
+        
+        -- Select first tab by default
+        if #Tabs == 1 then
+            TabButton:MouseButton1Click()
+        end
+        
+        -- Search functionality
+        SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
+            local searchText = string.lower(SearchBox.Text)
+            
+            for _, element in pairs(Tab.Elements) do
+                if element.Name then
+                    local elementName = string.lower(element.Name)
+                    if searchText == "" or string.find(elementName, searchText, 1, true) then
+                        element.Visible = true
+                    else
+                        element.Visible = false
                     end
                 end
             end
-            
-            CurrentTab = TabContent
-            TabContent.Visible = true
-            Tween(TabButton, {BackgroundColor3 = Themes[CurrentTheme].Accent, TextColor3 = CurrentTheme == "AMOLED" and Color3.fromRGB(0, 0, 0) or Color3.fromRGB(255, 255, 255)}, 0.2)
         end)
         
-        TabButton.MouseEnter:Connect(function()
-            if CurrentTab ~= TabContent then
-                Tween(TabButton, {BackgroundColor3 = Color3.fromRGB(
-                    math.min(Themes[CurrentTheme].Tertiary.R * 255 + 10, 255),
-                    math.min(Themes[CurrentTheme].Tertiary.G * 255 + 10, 255),
-                    math.min(Themes[CurrentTheme].Tertiary.B * 255 + 10, 255)
-                )}, 0.2)
-            end
-        end)
-        
-        TabButton.MouseLeave:Connect(function()
-            if CurrentTab ~= TabContent then
-                Tween(TabButton, {BackgroundColor3 = Themes[CurrentTheme].Tertiary}, 0.2)
-            end
-        end)
-        
-        local TabFunctions = {}
-        
-        -- AddButton Function
-        function TabFunctions:AddButton(ButtonConfig)
-            ButtonConfig = ButtonConfig or {}
-            local ButtonName = ButtonConfig.Name or "Button"
-            local Callback = ButtonConfig.Callback or function() end
-            
-            local ButtonContainer = Create("Frame", {
-                Name = ButtonName .. "Container",
-                BackgroundColor3 = Themes[CurrentTheme].Secondary,
-                BackgroundTransparency = 0.2,
-                BorderSizePixel = 0,
-                Size = UDim2.new(1, -20, 0, 35),
-                Parent = TabContent
-            })
-            
-            local ButtonContainerUICorner = Create("UICorner", {
-                CornerRadius = UDim.new(0, 6),
-                Parent = ButtonContainer
-            })
-            
-            local Button = Create("TextButton", {
-                Name = ButtonName .. "Button",
-                BackgroundTransparency = 1,
-                Size = UDim2.new(1, 0, 1, 0),
-                Font = Enum.Font.Gotham,
-                Text = ButtonName,
-                TextColor3 = Themes[CurrentTheme].Text,
-                TextSize = 12,
-                Parent = ButtonContainer
-            })
-            
-            Button.MouseButton1Click:Connect(function()
-                Callback()
-                Tween(ButtonContainer, {BackgroundColor3 = Themes[CurrentTheme].Accent}, 0.1)
-                wait(0.1)
-                Tween(ButtonContainer, {BackgroundColor3 = Themes[CurrentTheme].Secondary}, 0.1)
-            end)
-            
-            Button.MouseEnter:Connect(function()
-                Tween(ButtonContainer, {BackgroundColor3 = Color3.fromRGB(
-                    math.min(Themes[CurrentTheme].Secondary.R * 255 + 10, 255),
-                    math.min(Themes[CurrentTheme].Secondary.G * 255 + 10, 255),
-                    math.min(Themes[CurrentTheme].Secondary.B * 255 + 10, 255)
-                )}, 0.2)
-            end)
-            
-            Button.MouseLeave:Connect(function()
-                Tween(ButtonContainer, {BackgroundColor3 = Themes[CurrentTheme].Secondary}, 0.2)
-            end)
-            
-            return ButtonContainer
-        end
-        
-        -- Auto-select first tab
-        if not CurrentTab then
-            CurrentTab = TabContent
-            TabContent.Visible = true
-            Tween(TabButton, {BackgroundColor3 = Themes[CurrentTheme].Accent, TextColor3 = CurrentTheme == "AMOLED" and Color3.fromRGB(0, 0, 0) or Color3.fromRGB(255, 255, 255)}, 0.2)
-        end
-        
-        return TabFunctions
+        return Tab
     end
     
-    -- Tự động ẩn loading sau 2 giây
-    delay(2, function()
-        NazuXLibrary:HideLoading()
-    end)
+    function Window:AddButton(tab, options)
+        options = options or {}
+        local name = options.Name or "Button"
+        local callback = options.Callback or function() end
+        
+        local Button = Create("TextButton", {
+            Parent = tab.Content,
+            Size = UDim2.new(1, 0, 0, 40),
+            BackgroundColor3 = Themes[Theme].Main,
+            Text = name,
+            TextColor3 = Themes[Theme].Text,
+            TextSize = 14,
+            Font = Enum.Font.GothamSemibold,
+            AutoButtonColor = false,
+            LayoutOrder = #tab.Elements + 1
+        })
+        
+        Create("UICorner", {Parent = Button, CornerRadius = UDim.new(0, 6)})
+        
+        Button.MouseEnter:Connect(function()
+            Tween(Button, TweenInfo.new(0.2), {BackgroundColor3 = Themes[Theme].Accent})
+        end)
+        
+        Button.MouseLeave:Connect(function()
+            Tween(Button, TweenInfo.new(0.2), {BackgroundColor3 = Themes[Theme].Main})
+        end)
+        
+        Button.MouseButton1Click:Connect(function()
+            callback()
+        end)
+        
+        table.insert(tab.Elements, Button)
+        
+        return Button
+    end
     
-    return NazuXLibrary
+    function Window:AddToggle(tab, options)
+        options = options or {}
+        local name = options.Name or "Toggle"
+        local default = options.Default or false
+        local callback = options.Callback or function() end
+        
+        local ToggleFrame = Create("Frame", {
+            Parent = tab.Content,
+            Size = UDim2.new(1, 0, 0, 40),
+            BackgroundTransparency = 1,
+            LayoutOrder = #tab.Elements + 1
+        })
+        
+        local ToggleLabel = Create("TextLabel", {
+            Parent = ToggleFrame,
+            Size = UDim2.new(0.7, 0, 1, 0),
+            BackgroundTransparency = 1,
+            Text = name,
+            TextColor3 = Themes[Theme].Text,
+            TextSize = 14,
+            Font = Enum.Font.GothamSemibold,
+            TextXAlignment = Enum.TextXAlignment.Left
+        })
+        
+        local ToggleButton = Create("TextButton", {
+            Parent = ToggleFrame,
+            Size = UDim2.new(0, 50, 0, 25),
+            Position = UDim2.new(1, -55, 0.5, -12.5),
+            BackgroundColor3 = default and Themes[Theme].Accent or Themes[Theme].Main,
+            Text = "",
+            AutoButtonColor = false
+        })
+        
+        Create("UICorner", {Parent = ToggleButton, CornerRadius = UDim.new(1, 0)})
+        
+        local ToggleKnob = Create("Frame", {
+            Parent = ToggleButton,
+            Size = UDim2.new(0, 19, 0, 19),
+            Position = UDim2.new(0, default and 27 or 3, 0.5, -9.5),
+            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+            AnchorPoint = Vector2.new(0, 0.5)
+        })
+        
+        Create("UICorner", {Parent = ToggleKnob, CornerRadius = UDim.new(1, 0)})
+        
+        local isToggled = default
+        
+        ToggleButton.MouseButton1Click:Connect(function()
+            isToggled = not isToggled
+            
+            if isToggled then
+                Tween(ToggleButton, TweenInfo.new(0.2), {BackgroundColor3 = Themes[Theme].Accent})
+                Tween(ToggleKnob, TweenInfo.new(0.2), {Position = UDim2.new(0, 27, 0.5, -9.5)})
+            else
+                Tween(ToggleButton, TweenInfo.new(0.2), {BackgroundColor3 = Themes[Theme].Main})
+                Tween(ToggleKnob, TweenInfo.new(0.2), {Position = UDim2.new(0, 3, 0.5, -9.5)})
+            end
+            
+            callback(isToggled)
+        end)
+        
+        table.insert(tab.Elements, ToggleFrame)
+        
+        return {
+            Set = function(value)
+                isToggled = value
+                if isToggled then
+                    ToggleButton.BackgroundColor3 = Themes[Theme].Accent
+                    ToggleKnob.Position = UDim2.new(0, 27, 0.5, -9.5)
+                else
+                    ToggleButton.BackgroundColor3 = Themes[Theme].Main
+                    ToggleKnob.Position = UDim2.new(0, 3, 0.5, -9.5)
+                end
+            end,
+            Get = function()
+                return isToggled
+            end
+        }
+    end
+    
+    function Window:AddSlider(tab, options)
+        options = options or {}
+        local name = options.Name or "Slider"
+        local min = options.Min or 0
+        local max = options.Max or 100
+        local default = options.Default or min
+        local callback = options.Callback or function() end
+        
+        local SliderFrame = Create("Frame", {
+            Parent = tab.Content,
+            Size = UDim2.new(1, 0, 0, 60),
+            BackgroundTransparency = 1,
+            LayoutOrder = #tab.Elements + 1
+        })
+        
+        local SliderLabel = Create("TextLabel", {
+            Parent = SliderFrame,
+            Size = UDim2.new(1, 0, 0, 20),
+            BackgroundTransparency = 1,
+            Text = name,
+            TextColor3 = Themes[Theme].Text,
+            TextSize = 14,
+            Font = Enum.Font.GothamSemibold,
+            TextXAlignment = Enum.TextXAlignment.Left
+        })
+        
+        local ValueLabel = Create("TextLabel", {
+            Parent = SliderFrame,
+            Size = UDim2.new(0, 50, 0, 20),
+            Position = UDim2.new(1, -50, 0, 0),
+            BackgroundTransparency = 1,
+            Text = tostring(default),
+            TextColor3 = Themes[Theme].Text,
+            TextSize = 14,
+            Font = Enum.Font.Gotham,
+            TextXAlignment = Enum.TextXAlignment.Right
+        })
+        
+        local SliderTrack = Create("Frame", {
+            Parent = SliderFrame,
+            Size = UDim2.new(1, 0, 0, 5),
+            Position = UDim2.new(0, 0, 0, 35),
+            BackgroundColor3 = Themes[Theme].Main
+        })
+        
+        Create("UICorner", {Parent = SliderTrack, CornerRadius = UDim.new(1, 0)})
+        
+        local SliderFill = Create("Frame", {
+            Parent = SliderTrack,
+            Size = UDim2.new((default - min) / (max - min), 0, 1, 0),
+            BackgroundColor3 = Themes[Theme].Accent
+        })
+        
+        Create("UICorner", {Parent = SliderFill, CornerRadius = UDim.new(1, 0)})
+        
+        local SliderButton = Create("TextButton", {
+            Parent = SliderTrack,
+            Size = UDim2.new(0, 15, 0, 15),
+            Position = UDim2.new((default - min) / (max - min), -7.5, 0.5, -7.5),
+            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+            Text = "",
+            AutoButtonColor = false,
+            ZIndex = 2
+        })
+        
+        Create("UICorner", {Parent = SliderButton, CornerRadius = UDim.new(1, 0)})
+        
+        local isDragging = false
+        
+        local function UpdateSlider(value)
+            local percentage = math.clamp((value - min) / (max - min), 0, 1)
+            SliderFill.Size = UDim2.new(percentage, 0, 1, 0)
+            SliderButton.Position = UDim2.new(percentage, -7.5, 0.5, -7.5)
+            ValueLabel.Text = tostring(math.floor(value))
+            callback(value)
+        end
+        
+        SliderButton.MouseButton1Down:Connect(function()
+            isDragging = true
+        end)
+        
+        UserInputService.InputEnded:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                isDragging = false
+            end
+        end)
+        
+        SliderTrack.MouseButton1Down:Connect(function(x, y)
+            local percentage = math.clamp((x - SliderTrack.AbsolutePosition.X) / SliderTrack.AbsoluteSize.X, 0, 1)
+            local value = min + (max - min) * percentage
+            UpdateSlider(value)
+        end)
+        
+        mouse.Move:Connect(function()
+            if isDragging then
+                local percentage = math.clamp((mouse.X - SliderTrack.AbsolutePosition.X) / SliderTrack.AbsoluteSize.X, 0, 1)
+                local value = min + (max - min) * percentage
+                UpdateSlider(value)
+            end
+        end)
+        
+        table.insert(tab.Elements, SliderFrame)
+        
+        return {
+            Set = function(value)
+                UpdateSlider(math.clamp(value, min, max))
+            end,
+            Get = function()
+                return tonumber(ValueLabel.Text)
+            end
+        }
+    end
+    
+    function Window:AddLabel(tab, options)
+        options = options or {}
+        local text = options.Text or "Label"
+        
+        local Label = Create("TextLabel", {
+            Parent = tab.Content,
+            Size = UDim2.new(1, 0, 0, 30),
+            BackgroundTransparency = 1,
+            Text = text,
+            TextColor3 = Themes[Theme].Text,
+            TextSize = 14,
+            Font = Enum.Font.Gotham,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            LayoutOrder = #tab.Elements + 1
+        })
+        
+        table.insert(tab.Elements, Label)
+        
+        return Label
+    end
+    
+    function Window:AddDropdown(tab, options)
+        options = options or {}
+        local name = options.Name or "Dropdown"
+        local list = options.List or {}
+        local default = options.Default or list[1]
+        local callback = options.Callback or function() end
+        
+        local DropdownFrame = Create("Frame", {
+            Parent = tab.Content,
+            Size = UDim2.new(1, 0, 0, 40),
+            BackgroundTransparency = 1,
+            LayoutOrder = #tab.Elements + 1
+        })
+        
+        local DropdownLabel = Create("TextLabel", {
+            Parent = DropdownFrame,
+            Size = UDim2.new(1, -60, 1, 0),
+            BackgroundTransparency = 1,
+            Text = name,
+            TextColor3 = Themes[Theme].Text,
+            TextSize = 14,
+            Font = Enum.Font.GothamSemibold,
+            TextXAlignment = Enum.TextXAlignment.Left
+        })
+        
+        local DropdownButton = Create("TextButton", {
+            Parent = DropdownFrame,
+            Size = UDim2.new(0, 120, 0, 30),
+            Position = UDim2.new(1, -120, 0.5, -15),
+            BackgroundColor3 = Themes[Theme].Main,
+            Text = default or "Select...",
+            TextColor3 = Themes[Theme].Text,
+            TextSize = 12,
+            Font = Enum.Font.Gotham,
+            AutoButtonColor = false
+        })
+        
+        Create("UICorner", {Parent = DropdownButton, CornerRadius = UDim.new(0, 6)})
+        
+        local DropdownArrow = Create("ImageLabel", {
+            Parent = DropdownButton,
+            Size = UDim2.new(0, 15, 0, 15),
+            Position = UDim2.new(1, -20, 0.5, -7.5),
+            BackgroundTransparency = 1,
+            Image = "rbxassetid://3926305904",
+            ImageRectOffset = Vector2.new(964, 324),
+            ImageRectSize = Vector2.new(36, 36),
+            ImageColor3 = Themes[Theme].Text
+        })
+        
+        local DropdownList = Create("ScrollingFrame", {
+            Parent = DropdownFrame,
+            Size = UDim2.new(0, 120, 0, 100),
+            Position = UDim2.new(1, -120, 1, 5),
+            BackgroundColor3 = Themes[Theme].Main,
+            BorderSizePixel = 0,
+            ScrollBarThickness = 3,
+            CanvasSize = UDim2.new(0, 0, 0, 0),
+            AutomaticCanvasSize = Enum.AutomaticSize.Y,
+            Visible = false,
+            ZIndex = 10
+        })
+        
+        Create("UICorner", {Parent = DropdownList, CornerRadius = UDim.new(0, 6)})
+        Create("UIListLayout", {Parent = DropdownList, SortOrder = Enum.SortOrder.LayoutOrder})
+        
+        local isOpen = false
+        local selected = default
+        
+        local function UpdateDropdown()
+            DropdownButton.Text = selected or "Select..."
+            callback(selected)
+        end
+        
+        local function ToggleDropdown()
+            isOpen = not isOpen
+            DropdownList.Visible = isOpen
+            
+            if isOpen then
+                -- Populate dropdown
+                DropdownList:ClearAllChildren()
+                
+                for _, item in pairs(list) do
+                    local OptionButton = Create("TextButton", {
+                        Parent = DropdownList,
+                        Size = UDim2.new(1, -10, 0, 25),
+                        Position = UDim2.new(0, 5, 0, 0),
+                        BackgroundColor3 = Themes[Theme].Secondary,
+                        Text = item,
+                        TextColor3 = Themes[Theme].Text,
+                        TextSize = 12,
+                        Font = Enum.Font.Gotham,
+                        AutoButtonColor = false,
+                        LayoutOrder = #DropdownList:GetChildren()
+                    })
+                    
+                    Create("UICorner", {Parent = OptionButton, CornerRadius = UDim.new(0, 4)})
+                    
+                    OptionButton.MouseButton1Click:Connect(function()
+                        selected = item
+                        UpdateDropdown()
+                        isOpen = false
+                        DropdownList.Visible = false
+                    end)
+                end
+            end
+        end
+        
+        DropdownButton.MouseButton1Click:Connect(ToggleDropdown)
+        
+        -- Close dropdown when clicking outside
+        UserInputService.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 and isOpen then
+                if not (DropdownButton:IsDescendantOf(mouse.Target) or DropdownList:IsDescendantOf(mouse.Target)) then
+                    isOpen = false
+                    DropdownList.Visible = false
+                end
+            end
+        end)
+        
+        table.insert(tab.Elements, DropdownFrame)
+        
+        return {
+            Set = function(value)
+                if table.find(list, value) then
+                    selected = value
+                    UpdateDropdown()
+                end
+            end,
+            Get = function()
+                return selected
+            end,
+            Refresh = function(newList)
+                list = newList or list
+                if not table.find(list, selected) then
+                    selected = list[1]
+                    UpdateDropdown()
+                end
+            end
+        }
+    end
+    
+    return Window
 end
 
 return NazuX
