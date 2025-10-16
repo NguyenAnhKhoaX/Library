@@ -1,7 +1,7 @@
 --[[
     NazuX Library
     Created by NazuX
-    Version: 1.0
+    Version: 1.1
 --]]
 
 local NazuX = {}
@@ -333,7 +333,7 @@ function NazuX:CreateWindow(options)
     
     Create("UICorner", {Parent = RightContent, CornerRadius = UDim.new(0, 8)})
     
-    -- Loading screen
+    -- Loading screen với logo
     local LoadingScreen = Create("Frame", {
         Parent = ScreenGui,
         Size = UDim2.new(1, 0, 1, 0),
@@ -342,40 +342,82 @@ function NazuX:CreateWindow(options)
         ZIndex = 20
     })
     
-    local LoadingSpinner = Create("ImageLabel", {
+    -- Logo container
+    local LogoContainer = Create("Frame", {
         Parent = LoadingScreen,
-        Size = UDim2.new(0, 80, 0, 80),
-        Position = UDim2.new(0.5, -40, 0.5, -40),
+        Size = UDim2.new(0, 120, 0, 120),
+        Position = UDim2.new(0.5, -60, 0.5, -60),
         BackgroundTransparency = 1,
-        Image = "rbxassetid://11983264153",
-        ImageColor3 = Themes[Theme].Accent,
         ZIndex = 21
     })
     
-    local LoadingText = Create("TextLabel", {
-        Parent = LoadingScreen,
-        Size = UDim2.new(1, 0, 0, 30),
-        Position = UDim2.new(0, 0, 0.5, 60),
+    -- Logo chính (NazuX)
+    local MainLogo = Create("TextLabel", {
+        Parent = LogoContainer,
+        Size = UDim2.new(1, 0, 0, 60),
         BackgroundTransparency = 1,
-        Text = "Loading NazuX Library...",
+        Text = "NazuX",
+        TextColor3 = Themes[Theme].Accent,
+        TextSize = 32,
+        Font = Enum.Font.GothamBold,
+        ZIndex = 22
+    })
+    
+    -- Logo phụ (Library)
+    local SubLogo = Create("TextLabel", {
+        Parent = LogoContainer,
+        Size = UDim2.new(1, 0, 0, 30),
+        Position = UDim2.new(0, 0, 0, 60),
+        BackgroundTransparency = 1,
+        Text = "Library",
         TextColor3 = Themes[Theme].Text,
         TextSize = 18,
         Font = Enum.Font.GothamSemibold,
+        ZIndex = 22
+    })
+    
+    -- Loading bar container
+    local LoadingBarContainer = Create("Frame", {
+        Parent = LoadingScreen,
+        Size = UDim2.new(0, 200, 0, 4),
+        Position = UDim2.new(0.5, -100, 0.5, 40),
+        BackgroundColor3 = Themes[Theme].Secondary,
         ZIndex = 21
     })
     
-    -- Simulate loading
-    spawn(function()
-        local rotation = 0
-        while LoadingScreen.Visible do
-            rotation = rotation + 2
-            LoadingSpinner.Rotation = rotation
-            wait()
-        end
-    end)
+    Create("UICorner", {Parent = LoadingBarContainer, CornerRadius = UDim.new(1, 0)})
     
-    wait(2) -- Simulate loading time
-    LoadingScreen.Visible = false
+    local LoadingBar = Create("Frame", {
+        Parent = LoadingBarContainer,
+        Size = UDim2.new(0, 0, 1, 0),
+        BackgroundColor3 = Themes[Theme].Accent,
+        ZIndex = 22
+    })
+    
+    Create("UICorner", {Parent = LoadingBar, CornerRadius = UDim.new(1, 0)})
+    
+    local LoadingPercent = Create("TextLabel", {
+        Parent = LoadingScreen,
+        Size = UDim2.new(0, 100, 0, 20),
+        Position = UDim2.new(0.5, -50, 0.5, 50),
+        BackgroundTransparency = 1,
+        Text = "0%",
+        TextColor3 = Themes[Theme].Text,
+        TextSize = 14,
+        Font = Enum.Font.Gotham,
+        ZIndex = 21
+    })
+    
+    -- Simulate loading với progress bar
+    spawn(function()
+        for i = 1, 100 do
+            LoadingBar.Size = UDim2.new(i/100, 0, 1, 0)
+            LoadingPercent.Text = i .. "%"
+            wait(0.02)
+        end
+        wait(0.5)
+        LoadingScreen.Visible = false
+    end)
     
     -- Window state
     local IsMinimized = false
@@ -432,88 +474,175 @@ function NazuX:CreateWindow(options)
         -- Update loading screen if visible
         if LoadingScreen.Visible then
             LoadingScreen.BackgroundColor3 = theme.Main
-            LoadingText.TextColor3 = theme.Text
-            LoadingSpinner.ImageColor3 = theme.Accent
+            MainLogo.TextColor3 = theme.Accent
+            SubLogo.TextColor3 = theme.Text
+            LoadingBarContainer.BackgroundColor3 = theme.Secondary
+            LoadingBar.BackgroundColor3 = theme.Accent
+            LoadingPercent.TextColor3 = theme.Text
         end
     end
     
-    -- Theme selection popup
+    -- Theme selection popup với màu sắc thực tế
     local function ShowThemeSelector(isSpecial)
         local ThemePopup = Create("Frame", {
             Parent = ScreenGui,
-            Size = UDim2.new(0, 200, 0, 250),
-            Position = UDim2.new(0.5, -100, 0.5, -125),
+            Size = UDim2.new(0, 250, 0, 300),
+            Position = UDim2.new(0.5, -125, 0.5, -150),
             BackgroundColor3 = Themes[Theme].Main,
             ZIndex = 30
         })
         
         Create("UICorner", {Parent = ThemePopup, CornerRadius = UDim.new(0, 8)})
         
-        local ThemeList = Create("ScrollingFrame", {
+        -- Title bar cho popup
+        local PopupTitleBar = Create("Frame", {
             Parent = ThemePopup,
-            Size = UDim2.new(1, -10, 1, -40),
-            Position = UDim2.new(0, 5, 0, 35),
-            BackgroundTransparency = 1,
-            ScrollBarThickness = 3,
-            CanvasSize = UDim2.new(0, 0, 0, 0),
-            AutomaticCanvasSize = Enum.AutomaticSize.Y
+            Size = UDim2.new(1, 0, 0, 40),
+            BackgroundColor3 = Themes[Theme].Secondary,
+            BorderSizePixel = 0
         })
         
-        Create("UIListLayout", {
-            Parent = ThemeList,
-            SortOrder = Enum.SortOrder.LayoutOrder,
-            Padding = UDim.new(0, 5)
-        })
+        Create("UICorner", {Parent = PopupTitleBar, CornerRadius = UDim.new(0, 8)})
         
-        local Title = Create("TextLabel", {
-            Parent = ThemePopup,
-            Size = UDim2.new(1, 0, 0, 30),
-            Position = UDim2.new(0, 0, 0, 0),
+        local PopupTitle = Create("TextLabel", {
+            Parent = PopupTitleBar,
+            Size = UDim2.new(1, -40, 1, 0),
+            Position = UDim2.new(0, 10, 0, 0),
             BackgroundTransparency = 1,
             Text = isSpecial and "Special Themes" or "Color Themes",
             TextColor3 = Themes[Theme].Text,
             TextSize = 16,
             Font = Enum.Font.GothamSemibold,
+            TextXAlignment = Enum.TextXAlignment.Left,
             ZIndex = 31
         })
         
-        local themesToShow = isSpecial and {AMOLED = "AMOLED", Rose = "Rose"} or {Dark = "Dark", Light = "Light", Red = "Red", Yellow = "Yellow"}
+        -- Close button cho popup
+        local PopupCloseButton = Create("TextButton", {
+            Parent = PopupTitleBar,
+            Size = UDim2.new(0, 30, 0, 30),
+            Position = UDim2.new(1, -35, 0.5, -15),
+            BackgroundColor3 = Color3.fromRGB(232, 72, 72),
+            Text = "X",
+            TextColor3 = Color3.fromRGB(255, 255, 255),
+            TextSize = 14,
+            Font = Enum.Font.GothamBold,
+            ZIndex = 31
+        })
         
-        for themeName, displayName in pairs(themesToShow) do
-            local ThemeButton = Create("TextButton", {
+        Create("UICorner", {Parent = PopupCloseButton, CornerRadius = UDim.new(0, 4)})
+        
+        local ThemeList = Create("ScrollingFrame", {
+            Parent = ThemePopup,
+            Size = UDim2.new(1, -10, 1, -50),
+            Position = UDim2.new(0, 5, 0, 45),
+            BackgroundTransparency = 1,
+            ScrollBarThickness = 3,
+            CanvasSize = UDim2.new(0, 0, 0, 0),
+            AutomaticCanvasSize = Enum.AutomaticSize.Y,
+            ZIndex = 31
+        })
+        
+        Create("UIListLayout", {
+            Parent = ThemeList,
+            SortOrder = Enum.SortOrder.LayoutOrder,
+            Padding = UDim.new(0, 8)
+        })
+        
+        local themesToShow = isSpecial and {
+            AMOLED = {Name = "AMOLED", Color = Themes.AMOLED.Main},
+            Rose = {Name = "Rose", Color = Themes.Rose.Accent}
+        } or {
+            Dark = {Name = "Dark", Color = Themes.Dark.Main},
+            Light = {Name = "Light", Color = Themes.Light.Main},
+            Red = {Name = "Red", Color = Themes.Red.Accent},
+            Yellow = {Name = "Yellow", Color = Themes.Yellow.Accent}
+        }
+        
+        for themeName, themeData in pairs(themesToShow) do
+            local ThemeItem = Create("Frame", {
                 Parent = ThemeList,
-                Size = UDim2.new(1, 0, 0, 35),
+                Size = UDim2.new(1, 0, 0, 50),
                 BackgroundColor3 = Themes[Theme].Secondary,
-                Text = displayName,
-                TextColor3 = Themes[Theme].Text,
-                TextSize = 14,
-                Font = Enum.Font.Gotham,
-                LayoutOrder = #ThemeList:GetChildren()
+                LayoutOrder = #ThemeList:GetChildren(),
+                ZIndex = 31
             })
             
-            Create("UICorner", {Parent = ThemeButton, CornerRadius = UDim.new(0, 6)})
+            Create("UICorner", {Parent = ThemeItem, CornerRadius = UDim.new(0, 6)})
             
-            ThemeButton.MouseButton1Click:Connect(function()
+            -- Color preview
+            local ColorPreview = Create("Frame", {
+                Parent = ThemeItem,
+                Size = UDim2.new(0, 30, 0, 30),
+                Position = UDim2.new(0, 10, 0.5, -15),
+                BackgroundColor3 = themeData.Color,
+                ZIndex = 32
+            })
+            
+            Create("UICorner", {Parent = ColorPreview, CornerRadius = UDim.new(0, 4)})
+            
+            -- Theme name
+            local ThemeNameLabel = Create("TextLabel", {
+                Parent = ThemeItem,
+                Size = UDim2.new(1, -50, 1, 0),
+                Position = UDim2.new(0, 50, 0, 0),
+                BackgroundTransparency = 1,
+                Text = themeData.Name,
+                TextColor3 = Themes[Theme].Text,
+                TextSize = 14,
+                Font = Enum.Font.GothamSemibold,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                ZIndex = 32
+            })
+            
+            -- Select button
+            local SelectButton = Create("TextButton", {
+                Parent = ThemeItem,
+                Size = UDim2.new(0, 60, 0, 25),
+                Position = UDim2.new(1, -70, 0.5, -12.5),
+                BackgroundColor3 = Themes[Theme].Accent,
+                Text = "Apply",
+                TextColor3 = Themes[Theme].Text,
+                TextSize = 12,
+                Font = Enum.Font.Gotham,
+                AutoButtonColor = false,
+                ZIndex = 32
+            })
+            
+            Create("UICorner", {Parent = SelectButton, CornerRadius = UDim.new(0, 4)})
+            
+            SelectButton.MouseButton1Click:Connect(function()
                 ApplyTheme(themeName)
                 Theme = themeName
                 ThemePopup:Destroy()
+                if BackgroundOverlay then
+                    BackgroundOverlay:Destroy()
+                end
             end)
         end
+        
+        -- Close functionality
+        local function ClosePopup()
+            ThemePopup:Destroy()
+            if BackgroundOverlay then
+                BackgroundOverlay:Destroy()
+            end
+        end
+        
+        PopupCloseButton.MouseButton1Click:Connect(ClosePopup)
         
         -- Close when clicking outside
         local BackgroundOverlay = Create("TextButton", {
             Parent = ScreenGui,
             Size = UDim2.new(1, 0, 1, 0),
             Position = UDim2.new(0, 0, 0, 0),
-            BackgroundTransparency = 1,
+            BackgroundTransparency = 0.5,
+            BackgroundColor3 = Color3.new(0, 0, 0),
             Text = "",
             ZIndex = 25
         })
         
-        BackgroundOverlay.MouseButton1Click:Connect(function()
-            ThemePopup:Destroy()
-            BackgroundOverlay:Destroy()
-        end)
+        BackgroundOverlay.MouseButton1Click:Connect(ClosePopup)
     end
     
     ThemeButton.MouseButton1Click:Connect(function()
@@ -630,6 +759,8 @@ function NazuX:CreateWindow(options)
             LayoutOrder = #tab.Elements + 1
         })
         
+        Button.Name = name
+        
         Create("UICorner", {Parent = Button, CornerRadius = UDim.new(0, 6)})
         
         Button.MouseEnter:Connect(function()
@@ -661,6 +792,8 @@ function NazuX:CreateWindow(options)
             BackgroundTransparency = 1,
             LayoutOrder = #tab.Elements + 1
         })
+        
+        ToggleFrame.Name = name
         
         local ToggleLabel = Create("TextLabel", {
             Parent = ToggleFrame,
@@ -743,6 +876,8 @@ function NazuX:CreateWindow(options)
             BackgroundTransparency = 1,
             LayoutOrder = #tab.Elements + 1
         })
+        
+        SliderFrame.Name = name
         
         local SliderLabel = Create("TextLabel", {
             Parent = SliderFrame,
@@ -858,6 +993,8 @@ function NazuX:CreateWindow(options)
             LayoutOrder = #tab.Elements + 1
         })
         
+        Label.Name = text
+        
         table.insert(tab.Elements, Label)
         
         return Label
@@ -876,6 +1013,8 @@ function NazuX:CreateWindow(options)
             BackgroundTransparency = 1,
             LayoutOrder = #tab.Elements + 1
         })
+        
+        DropdownFrame.Name = name
         
         local DropdownLabel = Create("TextLabel", {
             Parent = DropdownFrame,
