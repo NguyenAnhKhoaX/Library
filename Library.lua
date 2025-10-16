@@ -183,7 +183,7 @@ function NazuX:CreateWindow(options)
         ZIndex = -1
     })
     
-    -- Title Bar
+    -- Title Bar (SIMPLIFIED - chỉ chứa các thành phần cần thiết)
     local TitleBar = Create("Frame", {
         Parent = MainFrame,
         Name = "TitleBar",
@@ -197,16 +197,6 @@ function NazuX:CreateWindow(options)
         CornerRadius = UDim.new(0, 8)
     })
     
-    -- Drag Frame (for dragging the window)
-    local DragFrame = Create("Frame", {
-        Parent = TitleBar,
-        Name = "DragFrame",
-        Size = UDim2.new(1, -100, 1, 0),
-        Position = UDim2.new(0, 50, 0, 0),
-        BackgroundTransparency = 1,
-        BorderSizePixel = 0
-    })
-    
     -- Logo (Left)
     local Logo = Create("ImageLabel", {
         Parent = TitleBar,
@@ -218,44 +208,18 @@ function NazuX:CreateWindow(options)
         ImageColor3 = Colors[Window.CurrentTheme].Accent
     })
     
-    -- Title (Left Center)
+    -- Title (Center)
     local Title = Create("TextLabel", {
         Parent = TitleBar,
         Name = "Title",
-        Size = UDim2.new(0, 150, 1, 0),
+        Size = UDim2.new(1, -100, 1, 0),
         Position = UDim2.new(0, 40, 0, 0),
         BackgroundTransparency = 1,
         Text = options.Title or "NazuX Library",
         TextColor3 = Colors[Window.CurrentTheme].Text,
         TextSize = 16,
         Font = Enum.Font.GothamSemibold,
-        TextXAlignment = Enum.TextXAlignment.Left
-    })
-    
-    -- Theme Button (Center)
-    local ThemeButton = Create("TextButton", {
-        Parent = TitleBar,
-        Name = "ThemeButton",
-        Size = UDim2.new(0, 30, 0, 30),
-        Position = UDim2.new(0.5, -15, 0.5, -15),
-        BackgroundColor3 = Colors[Window.CurrentTheme].Secondary,
-        Text = "",
-        AutoButtonColor = false
-    })
-    
-    local ThemeIcon = Create("ImageLabel", {
-        Parent = ThemeButton,
-        Name = "ThemeIcon",
-        Size = UDim2.new(0, 20, 0, 20),
-        Position = UDim2.new(0.5, -10, 0.5, -10),
-        BackgroundTransparency = 1,
-        Image = Icons[ThemeIcons[Window.CurrentTheme]],
-        ImageColor3 = Colors[Window.CurrentTheme].Accent
-    })
-    
-    local ThemeButtonCorner = Create("UICorner", {
-        Parent = ThemeButton,
-        CornerRadius = UDim.new(0, 4)
+        TextXAlignment = Enum.TextXAlignment.Center
     })
     
     -- Control Buttons (Right)
@@ -513,13 +477,6 @@ function NazuX:CreateWindow(options)
     LoadingScreen.Visible = false
     LoadingConnection:Disconnect()
     
-    -- Function to cycle through themes
-    local function CycleTheme()
-        Window.CurrentThemeIndex = (Window.CurrentThemeIndex % #ThemeOrder) + 1
-        local newTheme = ThemeOrder[Window.CurrentThemeIndex]
-        Window:ChangeTheme(newTheme)
-    end
-    
     -- Button Hover Effects
     local function SetupButtonHover(button, icon)
         button.MouseEnter:Connect(function()
@@ -537,14 +494,8 @@ function NazuX:CreateWindow(options)
         end)
     end
     
-    SetupButtonHover(ThemeButton, ThemeIcon)
     SetupButtonHover(MinimizeButton, MinimizeIcon)
     SetupButtonHover(CloseButton, CloseIcon)
-    
-    -- Theme Button Functionality
-    ThemeButton.MouseButton1Click:Connect(function()
-        CycleTheme()
-    end)
     
     -- Minimize Functionality
     MinimizeButton.MouseButton1Click:Connect(function()
@@ -552,9 +503,11 @@ function NazuX:CreateWindow(options)
         if Window.Minimized then
             Tween(MainFrame, {Size = UDim2.new(0, 600, 0, 40)}, 0.3)
             Tween(Shadow, {Size = UDim2.new(0, 620, 0, 60)}, 0.3)
+            Tween(TitleBarCorner, {CornerRadius = UDim.new(0, 8)}, 0.3)
         else
             Tween(MainFrame, {Size = UDim2.new(0, 600, 0, 400)}, 0.3)
             Tween(Shadow, {Size = UDim2.new(0, 620, 0, 420)}, 0.3)
+            Tween(TitleBarCorner, {CornerRadius = UDim.new(0, 8)}, 0.3)
         end
     end)
     
@@ -590,7 +543,7 @@ function NazuX:CreateWindow(options)
         end
     end)
     
-    -- Make Window Draggable
+    -- Make Window Draggable (SIMPLE VERSION - chỉ dùng TitleBar)
     local Dragging, DragInput, DragStart, StartPos
     
     local function Update(input)
@@ -599,7 +552,7 @@ function NazuX:CreateWindow(options)
         Shadow.Position = UDim2.new(StartPos.X.Scale, StartPos.X.Offset + Delta.X - 10, StartPos.Y.Scale, StartPos.Y.Offset + Delta.Y - 10)
     end
     
-    DragFrame.InputBegan:Connect(function(input)
+    TitleBar.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             Dragging = true
             DragStart = input.Position
@@ -613,7 +566,7 @@ function NazuX:CreateWindow(options)
         end
     end)
     
-    DragFrame.InputChanged:Connect(function(input)
+    TitleBar.InputChanged:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseMovement then
             DragInput = input
         end
@@ -638,7 +591,6 @@ function NazuX:CreateWindow(options)
             Tween(SearchFrame, {BackgroundColor3 = theme.Secondary}, 0.3)
             
             -- Update button backgrounds
-            Tween(ThemeButton, {BackgroundColor3 = theme.Secondary}, 0.3)
             Tween(MinimizeButton, {BackgroundColor3 = theme.Secondary}, 0.3)
             Tween(CloseButton, {BackgroundColor3 = theme.Secondary}, 0.3)
             
@@ -654,14 +606,10 @@ function NazuX:CreateWindow(options)
             MinimizeIcon.ImageColor3 = theme.Text
             CloseIcon.ImageColor3 = theme.Text
             Logo.ImageColor3 = theme.Accent
-            ThemeIcon.ImageColor3 = theme.Accent
             
             -- Update accent colors
             AvatarStroke.Color = theme.Accent
             ContentScrolling.ScrollBarImageColor3 = theme.Accent
-            
-            -- Update theme icon
-            ThemeIcon.Image = Icons[ThemeIcons[themeName]]
             
             -- Update all tab buttons
             for _, tab in pairs(Window.Tabs) do
