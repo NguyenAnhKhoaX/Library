@@ -170,17 +170,17 @@ function NazuX:CreateWindow(options)
     
     -- Drop Shadow
     local Shadow = Create("ImageLabel", {
-        Parent = MainFrame,
+        Parent = ScreenGui,
         Name = "Shadow",
+        Size = UDim2.new(0, 620, 0, 420),
+        Position = UDim2.new(0.5, -310, 0.5, -210),
         BackgroundTransparency = 1,
-        Size = UDim2.new(1, 0, 1, 0),
-        Position = UDim2.new(0, 0, 0, 0),
         Image = "rbxassetid://1316045217",
         ImageColor3 = Color3.new(0, 0, 0),
         ImageTransparency = 0.8,
         ScaleType = Enum.ScaleType.Slice,
         SliceCenter = Rect.new(10, 10, 118, 118),
-        ZIndex = 0
+        ZIndex = -1
     })
     
     -- Title Bar
@@ -197,7 +197,17 @@ function NazuX:CreateWindow(options)
         CornerRadius = UDim.new(0, 8)
     })
     
-    -- Logo (Left) - Sử dụng icon từ options hoặc mặc định
+    -- Drag Frame (for dragging the window)
+    local DragFrame = Create("Frame", {
+        Parent = TitleBar,
+        Name = "DragFrame",
+        Size = UDim2.new(1, -100, 1, 0),
+        Position = UDim2.new(0, 50, 0, 0),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0
+    })
+    
+    -- Logo (Left)
     local Logo = Create("ImageLabel", {
         Parent = TitleBar,
         Name = "Logo",
@@ -541,18 +551,21 @@ function NazuX:CreateWindow(options)
         Window.Minimized = not Window.Minimized
         if Window.Minimized then
             Tween(MainFrame, {Size = UDim2.new(0, 600, 0, 40)}, 0.3)
-            Tween(TitleBarCorner, {CornerRadius = UDim.new(0, 8)}, 0.3)
+            Tween(Shadow, {Size = UDim2.new(0, 620, 0, 60)}, 0.3)
         else
             Tween(MainFrame, {Size = UDim2.new(0, 600, 0, 400)}, 0.3)
-            Tween(TitleBarCorner, {CornerRadius = UDim.new(0, 8)}, 0.3)
+            Tween(Shadow, {Size = UDim2.new(0, 620, 0, 420)}, 0.3)
         end
     end)
     
     -- Close Functionality
     CloseButton.MouseButton1Click:Connect(function()
         Tween(ScreenGui, {BackgroundTransparency = 1}, 0.3)
+        Tween(Shadow, {ImageTransparency = 1}, 0.3)
         for _, child in ipairs(ScreenGui:GetChildren()) do
-            Tween(child, {BackgroundTransparency = 1}, 0.3)
+            if child:IsA("Frame") then
+                Tween(child, {BackgroundTransparency = 1}, 0.3)
+            end
         end
         task.wait(0.3)
         ScreenGui:Destroy()
@@ -583,9 +596,10 @@ function NazuX:CreateWindow(options)
     local function Update(input)
         local Delta = input.Position - DragStart
         MainFrame.Position = UDim2.new(StartPos.X.Scale, StartPos.X.Offset + Delta.X, StartPos.Y.Scale, StartPos.Y.Offset + Delta.Y)
+        Shadow.Position = UDim2.new(StartPos.X.Scale, StartPos.X.Offset + Delta.X - 10, StartPos.Y.Scale, StartPos.Y.Offset + Delta.Y - 10)
     end
     
-    TitleBar.InputBegan:Connect(function(input)
+    DragFrame.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             Dragging = true
             DragStart = input.Position
@@ -599,7 +613,7 @@ function NazuX:CreateWindow(options)
         end
     end)
     
-    TitleBar.InputChanged:Connect(function(input)
+    DragFrame.InputChanged:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseMovement then
             DragInput = input
         end
@@ -676,7 +690,7 @@ function NazuX:CreateWindow(options)
         }
         
         -- Get icon for tab
-        local tabIcon = Icons[iconName] or Icons.Code
+        local tabIcon = Icons[iconName] or Icons.Scripts
         
         -- Tab Button
         local TabButton = Create("TextButton", {
@@ -756,6 +770,18 @@ function NazuX:CreateWindow(options)
             TabContent.CanvasSize = UDim2.new(0, 0, 0, TabContentLayout.AbsoluteContentSize.Y)
         end)
         
+        -- Store tab data
+        local tabData = {
+            Button = TabButton,
+            Highlight = TabHighlight,
+            Label = TabLabel,
+            Icon = TabIcon,
+            Content = TabContent,
+            Elements = Tab.Elements
+        }
+        
+        table.insert(Window.Tabs, tabData)
+        
         -- Tab Selection
         TabButton.MouseButton1Click:Connect(function()
             if Window.CurrentTab then
@@ -766,13 +792,7 @@ function NazuX:CreateWindow(options)
                 Tween(Window.CurrentTab.Icon, {ImageColor3 = Colors[Window.CurrentTheme].Text}, 0.2)
             end
             
-            Window.CurrentTab = {
-                Button = TabButton,
-                Highlight = TabHighlight,
-                Label = TabLabel,
-                Icon = TabIcon,
-                Content = TabContent
-            }
+            Window.CurrentTab = tabData
             
             Tween(TabButton, {BackgroundColor3 = Color3.fromRGB(
                 Colors[Window.CurrentTheme].Accent.R * 0.2 + Colors[Window.CurrentTheme].Secondary.R * 0.8,
@@ -808,14 +828,6 @@ function NazuX:CreateWindow(options)
                 Tween(TabButton, {BackgroundColor3 = Colors[Window.CurrentTheme].Secondary}, 0.2)
             end
         end)
-        
-        table.insert(Window.Tabs, {
-            Button = TabButton,
-            Highlight = TabHighlight,
-            Label = TabLabel,
-            Icon = TabIcon,
-            Elements = Tab.Elements
-        })
         
         -- Return tab methods
         local TabMethods = {}
@@ -1147,7 +1159,7 @@ function NazuX:CreateWindow(options)
                 Visible = false,
                 ClipsDescendants = true
             })
-    
+            
             local ListLayout = Create("UIListLayout", {
                 Parent = DropdownList,
                 SortOrder = Enum.SortOrder.LayoutOrder
