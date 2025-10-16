@@ -1,7 +1,7 @@
 --[[
     NazuX Library
     Created by NazuX
-    Version: 1.1
+    Version: 1.2
 --]]
 
 local NazuX = {}
@@ -18,43 +18,49 @@ local HttpService = game:GetService("HttpService")
 local localPlayer = Players.LocalPlayer
 local mouse = localPlayer:GetMouse()
 
--- Color themes
+-- Color themes với độ trong suốt
 local Themes = {
     Dark = {
         Main = Color3.fromRGB(32, 34, 37),
         Secondary = Color3.fromRGB(47, 49, 54),
         Text = Color3.fromRGB(255, 255, 255),
-        Accent = Color3.fromRGB(88, 101, 242)
+        Accent = Color3.fromRGB(88, 101, 242),
+        Transparency = 0.1
     },
     Light = {
         Main = Color3.fromRGB(240, 240, 240),
         Secondary = Color3.fromRGB(255, 255, 255),
         Text = Color3.fromRGB(0, 0, 0),
-        Accent = Color3.fromRGB(0, 122, 255)
+        Accent = Color3.fromRGB(0, 122, 255),
+        Transparency = 0.1
     },
     Red = {
         Main = Color3.fromRGB(54, 23, 23),
         Secondary = Color3.fromRGB(82, 32, 32),
         Text = Color3.fromRGB(255, 255, 255),
-        Accent = Color3.fromRGB(220, 53, 69)
+        Accent = Color3.fromRGB(220, 53, 69),
+        Transparency = 0.1
     },
     Yellow = {
         Main = Color3.fromRGB(54, 47, 23),
         Secondary = Color3.fromRGB(82, 71, 32),
         Text = Color3.fromRGB(255, 255, 255),
-        Accent = Color3.fromRGB(255, 193, 7)
+        Accent = Color3.fromRGB(255, 193, 7),
+        Transparency = 0.1
     },
     AMOLED = {
         Main = Color3.fromRGB(0, 0, 0),
         Secondary = Color3.fromRGB(10, 10, 10),
         Text = Color3.fromRGB(255, 255, 255),
-        Accent = Color3.fromRGB(255, 255, 255)
+        Accent = Color3.fromRGB(255, 255, 255),
+        Transparency = 0.15
     },
     Rose = {
         Main = Color3.fromRGB(40, 20, 29),
         Secondary = Color3.fromRGB(60, 30, 44),
         Text = Color3.fromRGB(255, 255, 255),
-        Accent = Color3.fromRGB(235, 150, 178)
+        Accent = Color3.fromRGB(235, 150, 178),
+        Transparency = 0.1
     }
 }
 
@@ -92,42 +98,69 @@ function NazuX:CreateWindow(options)
     
     ScreenGui.Parent = game:GetService("CoreGui")
     
-    -- Main container
+    -- Main container - Trong suốt hoàn toàn
     local MainFrame = Create("Frame", {
         Parent = ScreenGui,
         Size = UDim2.new(0, 550, 0, 400),
         Position = UDim2.new(0.5, -275, 0.5, -200),
         BackgroundColor3 = Themes[Theme].Main,
+        BackgroundTransparency = Themes[Theme].Transparency, -- Trong suốt
         ClipsDescendants = true,
         Active = true,
-        Draggable = true
+        Draggable = false -- Đặt false để chỉ kéo qua titlebar
     })
     
     -- Corner radius
-    Create("UICorner", {Parent = MainFrame, CornerRadius = UDim.new(0, 8)})
+    Create("UICorner", {Parent = MainFrame, CornerRadius = UDim.new(0, 12)})
     
-    -- Drop shadow
-    local Shadow = Create("ImageLabel", {
-        Parent = MainFrame,
-        Size = UDim2.new(1, 0, 1, 0),
-        Position = UDim2.new(0, 0, 0, 0),
-        BackgroundTransparency = 1,
-        Image = "rbxassetid://1316045217",
-        ImageColor3 = Color3.new(0, 0, 0),
-        ImageTransparency = 0.8,
-        ScaleType = Enum.ScaleType.Slice,
-        SliceCenter = Rect.new(10, 10, 118, 118)
-    })
-    
-    -- Title bar
+    -- Title bar - Trong suốt và có thể kéo
     local TitleBar = Create("Frame", {
         Parent = MainFrame,
         Size = UDim2.new(1, 0, 0, 40),
         BackgroundColor3 = Themes[Theme].Secondary,
-        BorderSizePixel = 0
+        BackgroundTransparency = Themes[Theme].Transparency, -- Trong suốt
+        BorderSizePixel = 0,
+        Active = true
     })
     
-    Create("UICorner", {Parent = TitleBar, CornerRadius = UDim.new(0, 8)})
+    Create("UICorner", {Parent = TitleBar, CornerRadius = UDim.new(0, 12)})
+    
+    -- Thêm drag functionality cho titlebar
+    local dragging
+    local dragInput
+    local dragStart
+    local startPos
+
+    local function update(input)
+        local delta = input.Position - dragStart
+        MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+
+    TitleBar.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = MainFrame.Position
+            
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+
+    TitleBar.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            update(input)
+        end
+    end)
     
     -- Title text
     local TitleLabel = Create("TextLabel", {
@@ -148,26 +181,30 @@ function NazuX:CreateWindow(options)
         Size = UDim2.new(0, 30, 0, 30),
         Position = UDim2.new(1, -70, 0.5, -15),
         BackgroundColor3 = Themes[Theme].Secondary,
+        BackgroundTransparency = Themes[Theme].Transparency,
         Text = "-",
         TextColor3 = Themes[Theme].Text,
         TextSize = 18,
-        Font = Enum.Font.GothamBold
+        Font = Enum.Font.GothamBold,
+        AutoButtonColor = false
     })
     
-    Create("UICorner", {Parent = MinimizeButton, CornerRadius = UDim.new(0, 4)})
+    Create("UICorner", {Parent = MinimizeButton, CornerRadius = UDim.new(0, 6)})
     
     local CloseButton = Create("TextButton", {
         Parent = TitleBar,
         Size = UDim2.new(0, 30, 0, 30),
         Position = UDim2.new(1, -35, 0.5, -15),
         BackgroundColor3 = Color3.fromRGB(232, 72, 72),
+        BackgroundTransparency = 0.3,
         Text = "X",
         TextColor3 = Color3.fromRGB(255, 255, 255),
         TextSize = 14,
-        Font = Enum.Font.GothamBold
+        Font = Enum.Font.GothamBold,
+        AutoButtonColor = false
     })
     
-    Create("UICorner", {Parent = CloseButton, CornerRadius = UDim.new(0, 4)})
+    Create("UICorner", {Parent = CloseButton, CornerRadius = UDim.new(0, 6)})
     
     -- Color change buttons in title bar (Win11 style)
     local ThemeButton = Create("TextButton", {
@@ -175,26 +212,30 @@ function NazuX:CreateWindow(options)
         Size = UDim2.new(0, 30, 0, 30),
         Position = UDim2.new(1, -105, 0.5, -15),
         BackgroundColor3 = Themes[Theme].Secondary,
+        BackgroundTransparency = Themes[Theme].Transparency,
         Text = "🎨",
         TextColor3 = Themes[Theme].Text,
         TextSize = 14,
-        Font = Enum.Font.GothamBold
+        Font = Enum.Font.GothamBold,
+        AutoButtonColor = false
     })
     
-    Create("UICorner", {Parent = ThemeButton, CornerRadius = UDim.new(0, 4)})
+    Create("UICorner", {Parent = ThemeButton, CornerRadius = UDim.new(0, 6)})
     
     local SpecialThemeButton = Create("TextButton", {
         Parent = TitleBar,
         Size = UDim2.new(0, 30, 0, 30),
         Position = UDim2.new(1, -140, 0.5, -15),
         BackgroundColor3 = Themes[Theme].Secondary,
+        BackgroundTransparency = Themes[Theme].Transparency,
         Text = "🌟",
         TextColor3 = Themes[Theme].Text,
         TextSize = 14,
-        Font = Enum.Font.GothamBold
+        Font = Enum.Font.GothamBold,
+        AutoButtonColor = false
     })
     
-    Create("UICorner", {Parent = SpecialThemeButton, CornerRadius = UDim.new(0, 4)})
+    Create("UICorner", {Parent = SpecialThemeButton, CornerRadius = UDim.new(0, 6)})
     
     -- Content area
     local ContentArea = Create("Frame", {
@@ -204,12 +245,12 @@ function NazuX:CreateWindow(options)
         BackgroundTransparency = 1
     })
     
-    -- Left sidebar (transparent)
+    -- Left sidebar (trong suốt)
     local LeftSidebar = Create("Frame", {
         Parent = ContentArea,
         Size = UDim2.new(0, 180, 1, 0),
-        BackgroundTransparency = 0.95,
         BackgroundColor3 = Themes[Theme].Secondary,
+        BackgroundTransparency = Themes[Theme].Transparency, -- Trong suốt
         BorderSizePixel = 0
     })
     
@@ -229,6 +270,7 @@ function NazuX:CreateWindow(options)
         Size = UDim2.new(0, 50, 0, 50),
         Position = UDim2.new(0, 5, 0, 5),
         BackgroundColor3 = Themes[Theme].Secondary,
+        BackgroundTransparency = Themes[Theme].Transparency,
         BorderSizePixel = 0,
         Image = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. localPlayer.UserId .. "&width=150&height=150&format=png"
     })
@@ -270,6 +312,7 @@ function NazuX:CreateWindow(options)
         Size = UDim2.new(1, -10, 0, 35),
         Position = UDim2.new(0, 5, 0, 90),
         BackgroundColor3 = Themes[Theme].Main,
+        BackgroundTransparency = Themes[Theme].Transparency, -- Trong suốt
         BorderSizePixel = 0
     })
     
@@ -322,102 +365,17 @@ function NazuX:CreateWindow(options)
         Padding = UDim.new(0, 5)
     })
     
-    -- Right content area
+    -- Right content area (trong suốt)
     local RightContent = Create("Frame", {
         Parent = ContentArea,
         Size = UDim2.new(1, -185, 1, -10),
         Position = UDim2.new(0, 185, 0, 5),
         BackgroundColor3 = Themes[Theme].Secondary,
+        BackgroundTransparency = Themes[Theme].Transparency, -- Trong suốt
         BorderSizePixel = 0
     })
     
     Create("UICorner", {Parent = RightContent, CornerRadius = UDim.new(0, 8)})
-    
-    -- Loading screen với logo
-    local LoadingScreen = Create("Frame", {
-        Parent = ScreenGui,
-        Size = UDim2.new(1, 0, 1, 0),
-        BackgroundColor3 = Themes[Theme].Main,
-        Visible = true,
-        ZIndex = 20
-    })
-    
-    -- Logo container
-    local LogoContainer = Create("Frame", {
-        Parent = LoadingScreen,
-        Size = UDim2.new(0, 120, 0, 120),
-        Position = UDim2.new(0.5, -60, 0.5, -60),
-        BackgroundTransparency = 1,
-        ZIndex = 21
-    })
-    
-    -- Logo chính (NazuX)
-    local MainLogo = Create("TextLabel", {
-        Parent = LogoContainer,
-        Size = UDim2.new(1, 0, 0, 60),
-        BackgroundTransparency = 1,
-        Text = "NazuX",
-        TextColor3 = Themes[Theme].Accent,
-        TextSize = 32,
-        Font = Enum.Font.GothamBold,
-        ZIndex = 22
-    })
-    
-    -- Logo phụ (Library)
-    local SubLogo = Create("TextLabel", {
-        Parent = LogoContainer,
-        Size = UDim2.new(1, 0, 0, 30),
-        Position = UDim2.new(0, 0, 0, 60),
-        BackgroundTransparency = 1,
-        Text = "Library",
-        TextColor3 = Themes[Theme].Text,
-        TextSize = 18,
-        Font = Enum.Font.GothamSemibold,
-        ZIndex = 22
-    })
-    
-    -- Loading bar container
-    local LoadingBarContainer = Create("Frame", {
-        Parent = LoadingScreen,
-        Size = UDim2.new(0, 200, 0, 4),
-        Position = UDim2.new(0.5, -100, 0.5, 40),
-        BackgroundColor3 = Themes[Theme].Secondary,
-        ZIndex = 21
-    })
-    
-    Create("UICorner", {Parent = LoadingBarContainer, CornerRadius = UDim.new(1, 0)})
-    
-    local LoadingBar = Create("Frame", {
-        Parent = LoadingBarContainer,
-        Size = UDim2.new(0, 0, 1, 0),
-        BackgroundColor3 = Themes[Theme].Accent,
-        ZIndex = 22
-    })
-    
-    Create("UICorner", {Parent = LoadingBar, CornerRadius = UDim.new(1, 0)})
-    
-    local LoadingPercent = Create("TextLabel", {
-        Parent = LoadingScreen,
-        Size = UDim2.new(0, 100, 0, 20),
-        Position = UDim2.new(0.5, -50, 0.5, 50),
-        BackgroundTransparency = 1,
-        Text = "0%",
-        TextColor3 = Themes[Theme].Text,
-        TextSize = 14,
-        Font = Enum.Font.Gotham,
-        ZIndex = 21
-    })
-    
-    -- Simulate loading với progress bar
-    spawn(function()
-        for i = 1, 100 do
-            LoadingBar.Size = UDim2.new(i/100, 0, 1, 0)
-            LoadingPercent.Text = i .. "%"
-            wait(0.02)
-        end
-        wait(0.5)
-        LoadingScreen.Visible = false
-    end)
     
     -- Window state
     local IsMinimized = false
@@ -453,33 +411,33 @@ function NazuX:CreateWindow(options)
         
         -- Apply theme to all elements
         MainFrame.BackgroundColor3 = theme.Main
+        MainFrame.BackgroundTransparency = theme.Transparency
         TitleBar.BackgroundColor3 = theme.Secondary
+        TitleBar.BackgroundTransparency = theme.Transparency
         TitleLabel.TextColor3 = theme.Text
         MinimizeButton.BackgroundColor3 = theme.Secondary
+        MinimizeButton.BackgroundTransparency = theme.Transparency
         MinimizeButton.TextColor3 = theme.Text
         ThemeButton.BackgroundColor3 = theme.Secondary
+        ThemeButton.BackgroundTransparency = theme.Transparency
         ThemeButton.TextColor3 = theme.Text
         SpecialThemeButton.BackgroundColor3 = theme.Secondary
+        SpecialThemeButton.BackgroundTransparency = theme.Transparency
         SpecialThemeButton.TextColor3 = theme.Text
         LeftSidebar.BackgroundColor3 = theme.Secondary
+        LeftSidebar.BackgroundTransparency = theme.Transparency
         UsernameLabel.TextColor3 = theme.Text
         DisplayNameLabel.TextColor3 = theme.Text
         SearchContainer.BackgroundColor3 = theme.Main
+        SearchContainer.BackgroundTransparency = theme.Transparency
         SearchBox.TextColor3 = theme.Text
         SearchBox.PlaceholderColor3 = theme.Text
         SearchIcon.ImageColor3 = theme.Text
         RightContent.BackgroundColor3 = theme.Secondary
+        RightContent.BackgroundTransparency = theme.Transparency
         TabsContainer.ScrollBarImageColor3 = theme.Accent
-        
-        -- Update loading screen if visible
-        if LoadingScreen.Visible then
-            LoadingScreen.BackgroundColor3 = theme.Main
-            MainLogo.TextColor3 = theme.Accent
-            SubLogo.TextColor3 = theme.Text
-            LoadingBarContainer.BackgroundColor3 = theme.Secondary
-            LoadingBar.BackgroundColor3 = theme.Accent
-            LoadingPercent.TextColor3 = theme.Text
-        end
+        Avatar.BackgroundColor3 = theme.Secondary
+        Avatar.BackgroundTransparency = theme.Transparency
     end
     
     -- Theme selection popup với màu sắc thực tế
@@ -489,6 +447,7 @@ function NazuX:CreateWindow(options)
             Size = UDim2.new(0, 250, 0, 300),
             Position = UDim2.new(0.5, -125, 0.5, -150),
             BackgroundColor3 = Themes[Theme].Main,
+            BackgroundTransparency = Themes[Theme].Transparency,
             ZIndex = 30
         })
         
@@ -499,6 +458,7 @@ function NazuX:CreateWindow(options)
             Parent = ThemePopup,
             Size = UDim2.new(1, 0, 0, 40),
             BackgroundColor3 = Themes[Theme].Secondary,
+            BackgroundTransparency = Themes[Theme].Transparency,
             BorderSizePixel = 0
         })
         
@@ -523,6 +483,7 @@ function NazuX:CreateWindow(options)
             Size = UDim2.new(0, 30, 0, 30),
             Position = UDim2.new(1, -35, 0.5, -15),
             BackgroundColor3 = Color3.fromRGB(232, 72, 72),
+            BackgroundTransparency = 0.3,
             Text = "X",
             TextColor3 = Color3.fromRGB(255, 255, 255),
             TextSize = 14,
@@ -564,6 +525,7 @@ function NazuX:CreateWindow(options)
                 Parent = ThemeList,
                 Size = UDim2.new(1, 0, 0, 50),
                 BackgroundColor3 = Themes[Theme].Secondary,
+                BackgroundTransparency = Themes[Theme].Transparency,
                 LayoutOrder = #ThemeList:GetChildren(),
                 ZIndex = 31
             })
@@ -601,6 +563,7 @@ function NazuX:CreateWindow(options)
                 Size = UDim2.new(0, 60, 0, 25),
                 Position = UDim2.new(1, -70, 0.5, -12.5),
                 BackgroundColor3 = Themes[Theme].Accent,
+                BackgroundTransparency = 0.3,
                 Text = "Apply",
                 TextColor3 = Themes[Theme].Text,
                 TextSize = 12,
@@ -670,6 +633,7 @@ function NazuX:CreateWindow(options)
             Parent = TabsContainer,
             Size = UDim2.new(1, 0, 0, 40),
             BackgroundColor3 = Themes[Theme].Main,
+            BackgroundTransparency = Themes[Theme].Transparency,
             Text = name,
             TextColor3 = Themes[Theme].Text,
             TextSize = 14,
@@ -710,12 +674,12 @@ function NazuX:CreateWindow(options)
         TabButton.MouseButton1Click:Connect(function()
             if CurrentTab then
                 CurrentTab.Content.Visible = false
-                Tween(CurrentTab.Button, TweenInfo.new(0.2), {BackgroundColor3 = Themes[Theme].Main})
+                Tween(CurrentTab.Button, TweenInfo.new(0.2), {BackgroundColor3 = Themes[Theme].Main, BackgroundTransparency = Themes[Theme].Transparency})
             end
             
             CurrentTab = Tab
             TabContent.Visible = true
-            Tween(TabButton, TweenInfo.new(0.2), {BackgroundColor3 = Themes[Theme].Accent})
+            Tween(TabButton, TweenInfo.new(0.2), {BackgroundColor3 = Themes[Theme].Accent, BackgroundTransparency = 0.3})
         end)
         
         -- Select first tab by default
@@ -751,6 +715,7 @@ function NazuX:CreateWindow(options)
             Parent = tab.Content,
             Size = UDim2.new(1, 0, 0, 40),
             BackgroundColor3 = Themes[Theme].Main,
+            BackgroundTransparency = Themes[Theme].Transparency,
             Text = name,
             TextColor3 = Themes[Theme].Text,
             TextSize = 14,
@@ -764,11 +729,11 @@ function NazuX:CreateWindow(options)
         Create("UICorner", {Parent = Button, CornerRadius = UDim.new(0, 6)})
         
         Button.MouseEnter:Connect(function()
-            Tween(Button, TweenInfo.new(0.2), {BackgroundColor3 = Themes[Theme].Accent})
+            Tween(Button, TweenInfo.new(0.2), {BackgroundColor3 = Themes[Theme].Accent, BackgroundTransparency = 0.3})
         end)
         
         Button.MouseLeave:Connect(function()
-            Tween(Button, TweenInfo.new(0.2), {BackgroundColor3 = Themes[Theme].Main})
+            Tween(Button, TweenInfo.new(0.2), {BackgroundColor3 = Themes[Theme].Main, BackgroundTransparency = Themes[Theme].Transparency})
         end)
         
         Button.MouseButton1Click:Connect(function()
@@ -811,6 +776,7 @@ function NazuX:CreateWindow(options)
             Size = UDim2.new(0, 50, 0, 25),
             Position = UDim2.new(1, -55, 0.5, -12.5),
             BackgroundColor3 = default and Themes[Theme].Accent or Themes[Theme].Main,
+            BackgroundTransparency = default and 0.3 or Themes[Theme].Transparency,
             Text = "",
             AutoButtonColor = false
         })
@@ -833,10 +799,10 @@ function NazuX:CreateWindow(options)
             isToggled = not isToggled
             
             if isToggled then
-                Tween(ToggleButton, TweenInfo.new(0.2), {BackgroundColor3 = Themes[Theme].Accent})
+                Tween(ToggleButton, TweenInfo.new(0.2), {BackgroundColor3 = Themes[Theme].Accent, BackgroundTransparency = 0.3})
                 Tween(ToggleKnob, TweenInfo.new(0.2), {Position = UDim2.new(0, 27, 0.5, -9.5)})
             else
-                Tween(ToggleButton, TweenInfo.new(0.2), {BackgroundColor3 = Themes[Theme].Main})
+                Tween(ToggleButton, TweenInfo.new(0.2), {BackgroundColor3 = Themes[Theme].Main, BackgroundTransparency = Themes[Theme].Transparency})
                 Tween(ToggleKnob, TweenInfo.new(0.2), {Position = UDim2.new(0, 3, 0.5, -9.5)})
             end
             
@@ -850,9 +816,11 @@ function NazuX:CreateWindow(options)
                 isToggled = value
                 if isToggled then
                     ToggleButton.BackgroundColor3 = Themes[Theme].Accent
+                    ToggleButton.BackgroundTransparency = 0.3
                     ToggleKnob.Position = UDim2.new(0, 27, 0.5, -9.5)
                 else
                     ToggleButton.BackgroundColor3 = Themes[Theme].Main
+                    ToggleButton.BackgroundTransparency = Themes[Theme].Transparency
                     ToggleKnob.Position = UDim2.new(0, 3, 0.5, -9.5)
                 end
             end,
@@ -906,7 +874,8 @@ function NazuX:CreateWindow(options)
             Parent = SliderFrame,
             Size = UDim2.new(1, 0, 0, 5),
             Position = UDim2.new(0, 0, 0, 35),
-            BackgroundColor3 = Themes[Theme].Main
+            BackgroundColor3 = Themes[Theme].Main,
+            BackgroundTransparency = Themes[Theme].Transparency
         })
         
         Create("UICorner", {Parent = SliderTrack, CornerRadius = UDim.new(1, 0)})
@@ -914,7 +883,8 @@ function NazuX:CreateWindow(options)
         local SliderFill = Create("Frame", {
             Parent = SliderTrack,
             Size = UDim2.new((default - min) / (max - min), 0, 1, 0),
-            BackgroundColor3 = Themes[Theme].Accent
+            BackgroundColor3 = Themes[Theme].Accent,
+            BackgroundTransparency = 0.3
         })
         
         Create("UICorner", {Parent = SliderFill, CornerRadius = UDim.new(1, 0)})
@@ -1032,6 +1002,7 @@ function NazuX:CreateWindow(options)
             Size = UDim2.new(0, 120, 0, 30),
             Position = UDim2.new(1, -120, 0.5, -15),
             BackgroundColor3 = Themes[Theme].Main,
+            BackgroundTransparency = Themes[Theme].Transparency,
             Text = default or "Select...",
             TextColor3 = Themes[Theme].Text,
             TextSize = 12,
@@ -1057,6 +1028,7 @@ function NazuX:CreateWindow(options)
             Size = UDim2.new(0, 120, 0, 100),
             Position = UDim2.new(1, -120, 1, 5),
             BackgroundColor3 = Themes[Theme].Main,
+            BackgroundTransparency = Themes[Theme].Transparency,
             BorderSizePixel = 0,
             ScrollBarThickness = 3,
             CanvasSize = UDim2.new(0, 0, 0, 0),
@@ -1090,6 +1062,7 @@ function NazuX:CreateWindow(options)
                         Size = UDim2.new(1, -10, 0, 25),
                         Position = UDim2.new(0, 5, 0, 0),
                         BackgroundColor3 = Themes[Theme].Secondary,
+                        BackgroundTransparency = Themes[Theme].Transparency,
                         Text = item,
                         TextColor3 = Themes[Theme].Text,
                         TextSize = 12,
