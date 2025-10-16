@@ -97,17 +97,6 @@ local Colors = {
     }
 }
 
--- Theme cycle order
-local ThemeOrder = {"Dark", "Light", "Red", "Yellow", "AMOLED", "Rose"}
-local ThemeIcons = {
-    Dark = "Moon",
-    Light = "Sun", 
-    Red = "Red",
-    Yellow = "Yellow",
-    AMOLED = "Amoled",
-    Rose = "Rose"
-}
-
 -- Utility Functions
 local function Create(class, properties)
     local instance = Instance.new(class)
@@ -131,17 +120,8 @@ function NazuX:CreateWindow(options)
         Tabs = {},
         CurrentTab = nil,
         Minimized = false,
-        CurrentTheme = options.Theme or "Dark",
-        CurrentThemeIndex = 1
+        CurrentTheme = options.Theme or "Dark"
     }
-    
-    -- Find current theme index
-    for i, theme in ipairs(ThemeOrder) do
-        if theme == Window.CurrentTheme then
-            Window.CurrentThemeIndex = i
-            break
-        end
-    end
     
     setmetatable(Window, self)
     
@@ -183,7 +163,7 @@ function NazuX:CreateWindow(options)
         ZIndex = -1
     })
     
-    -- Title Bar (SIMPLIFIED - chỉ chứa các thành phần cần thiết)
+    -- Title Bar
     local TitleBar = Create("Frame", {
         Parent = MainFrame,
         Name = "TitleBar",
@@ -527,8 +507,8 @@ function NazuX:CreateWindow(options)
     -- Search Functionality
     SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
         local searchText = string.lower(SearchBox.Text)
-        for _, tab in pairs(Window.Tabs) do
-            for _, element in pairs(tab.Elements) do
+        for _, tabData in pairs(Window.Tabs) do
+            for _, element in pairs(tabData.Elements) do
                 if element:IsA("TextLabel") or element:IsA("TextButton") then
                     local elementText = string.lower(element.Text)
                     if string.find(elementText, searchText) then
@@ -543,7 +523,7 @@ function NazuX:CreateWindow(options)
         end
     end)
     
-    -- Make Window Draggable (SIMPLE VERSION - chỉ dùng TitleBar)
+    -- Make Window Draggable
     local Dragging, DragInput, DragStart, StartPos
     
     local function Update(input)
@@ -612,31 +592,26 @@ function NazuX:CreateWindow(options)
             ContentScrolling.ScrollBarImageColor3 = theme.Accent
             
             -- Update all tab buttons
-            for _, tab in pairs(Window.Tabs) do
-                if Window.CurrentTab and Window.CurrentTab.Button == tab.Button then
-                    Tween(tab.Button, {BackgroundColor3 = Color3.fromRGB(
+            for _, tabData in pairs(Window.Tabs) do
+                if Window.CurrentTab and Window.CurrentTab.Button == tabData.Button then
+                    Tween(tabData.Button, {BackgroundColor3 = Color3.fromRGB(
                         theme.Accent.R * 0.2 + theme.Secondary.R * 0.8,
                         theme.Accent.G * 0.2 + theme.Secondary.G * 0.8,
                         theme.Accent.B * 0.2 + theme.Secondary.B * 0.8
                     )}, 0.3)
-                    Tween(tab.Label, {TextColor3 = theme.Accent}, 0.3)
-                    Tween(tab.Icon, {ImageColor3 = theme.Accent}, 0.3)
+                    Tween(tabData.Label, {TextColor3 = theme.Accent}, 0.3)
+                    Tween(tabData.Icon, {ImageColor3 = theme.Accent}, 0.3)
                 else
-                    Tween(tab.Button, {BackgroundColor3 = theme.Secondary}, 0.3)
-                    Tween(tab.Label, {TextColor3 = theme.Text}, 0.3)
-                    Tween(tab.Icon, {ImageColor3 = theme.Text}, 0.3)
+                    Tween(tabData.Button, {BackgroundColor3 = theme.Secondary}, 0.3)
+                    Tween(tabData.Label, {TextColor3 = theme.Text}, 0.3)
+                    Tween(tabData.Icon, {ImageColor3 = theme.Text}, 0.3)
                 end
-                tab.Highlight.BackgroundColor3 = theme.Accent
+                tabData.Highlight.BackgroundColor3 = theme.Accent
             end
         end
     end
     
     function Window:AddTab(tabName, iconName)
-        local Tab = {
-            Name = tabName,
-            Elements = {}
-        }
-        
         -- Get icon for tab
         local tabIcon = Icons[iconName] or Icons.Scripts
         
@@ -725,7 +700,7 @@ function NazuX:CreateWindow(options)
             Label = TabLabel,
             Icon = TabIcon,
             Content = TabContent,
-            Elements = Tab.Elements
+            Elements = {}
         }
         
         table.insert(Window.Tabs, tabData)
@@ -839,7 +814,7 @@ function NazuX:CreateWindow(options)
                 end
             end)
             
-            table.insert(Tab.Elements, ButtonLabel)
+            table.insert(tabData.Elements, ButtonLabel)
             return Button
         end
         
@@ -921,7 +896,7 @@ function NazuX:CreateWindow(options)
             end)
             
             UpdateToggle()
-            table.insert(Tab.Elements, ToggleLabel)
+            table.insert(tabData.Elements, ToggleLabel)
             return Toggle
         end
         
@@ -1043,7 +1018,7 @@ function NazuX:CreateWindow(options)
             end)
             
             UpdateSlider(Slider.Value)
-            table.insert(Tab.Elements, SliderLabel)
+            table.insert(tabData.Elements, SliderLabel)
             return Slider
         end
         
@@ -1165,7 +1140,7 @@ function NazuX:CreateWindow(options)
                 end)
             end
             
-            table.insert(Tab.Elements, DropdownLabel)
+            table.insert(tabData.Elements, DropdownLabel)
             return Dropdown
         end
         
@@ -1199,7 +1174,7 @@ function NazuX:CreateWindow(options)
                 BorderSizePixel = 0
             })
             
-            table.insert(Tab.Elements, SectionLabel)
+            table.insert(tabData.Elements, SectionLabel)
             return SectionFrame
         end
         
