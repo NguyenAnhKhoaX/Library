@@ -41,126 +41,14 @@ local Icons = {
     Server = "rbxassetid://10734949856", -- lucide-server
     Info = "rbxassetid://10723415903", -- lucide-info
     Star = "rbxassetid://10734966248", -- lucide-star
-    Heart = "rbxassetid://10723406885", -- lucide-heart
-    Shield = "rbxassetid://10734951847", -- lucide-shield
-    Zap = "rbxassetid://10723345749", -- lucide-electricity
-    Crown = "rbxassetid://10709818626", -- lucide-crown
-    Bot = "rbxassetid://10709782230", -- lucide-bot
-    Code = "rbxassetid://10709810463", -- lucide-code
-    Database = "rbxassetid://10709818996", -- lucide-database
-    Network = "rbxassetid://10734906975", -- lucide-network
-    Security = "rbxassetid://10734951847", -- lucide-shield
-    Performance = "rbxassetid://10723395708", -- lucide-gauge
-    Audio = "rbxassetid://10734965419", -- lucide-speaker
-    Video = "rbxassetid://10747374938", -- lucide-video
-    Image = "rbxassetid://10723415040", -- lucide-image
-    File = "rbxassetid://10723374641", -- lucide-file
-    Folder = "rbxassetid://10723387563", -- lucide-folder
-    Download = "rbxassetid://10723344270", -- lucide-download
-    Upload = "rbxassetid://10747366434", -- lucide-upload
-    Refresh = "rbxassetid://10734933056", -- lucide-refresh-ccw
-    Trash = "rbxassetid://10747362393", -- lucide-trash
-    Edit = "rbxassetid://10734883598", -- lucide-edit
-    Copy = "rbxassetid://10709812159", -- lucide-copy
-    Paste = "rbxassetid://10747362393", -- lucide-paste
-    Save = "rbxassetid://10734941499", -- lucide-save
-    Lock = "rbxassetid://10723434711", -- lucide-lock
-    Unlock = "rbxassetid://10747366027", -- lucide-unlock
-    Eye = "rbxassetid://10723346959", -- lucide-eye
-    EyeOff = "rbxassetid://10723346871", -- lucide-eye-off
-    Bell = "rbxassetid://10709775704", -- lucide-bell
-    Mail = "rbxassetid://10734885430", -- lucide-mail
-    Message = "rbxassetid://10734888000", -- lucide-message-circle
-    Users = "rbxassetid://10747373426", -- lucide-users
-    UserPlus = "rbxassetid://10747372702", -- lucide-user-plus
-    UserMinus = "rbxassetid://10747372346", -- lucide-user-minus
-    UserX = "rbxassetid://10747372992", -- lucide-user-x
-    UserCheck = "rbxassetid://10747371901", -- lucide-user-check
-    Camera = "rbxassetid://10709789686", -- lucide-camera
-    Mic = "rbxassetid://10734888864", -- lucide-mic
-    Phone = "rbxassetid://10734921524", -- lucide-phone
-    Map = "rbxassetid://10734886202", -- lucide-map
-    Navigation = "rbxassetid://10734906744", -- lucide-navigation
-    Compass = "rbxassetid://10709811445", -- lucide-compass
-    Clock = "rbxassetid://10709805144", -- lucide-clock
-    Calendar = "rbxassetid://10709789505", -- lucide-calendar
-    Sun = "rbxassetid://10734974297", -- lucide-sun
     Moon = "rbxassetid://10734897102", -- lucide-moon
-    Cloud = "rbxassetid://10709806740", -- lucide-cloud
-    CloudRain = "rbxassetid://10709806277", -- lucide-cloud-rain
-    CloudSnow = "rbxassetid://10709806374", -- lucide-cloud-snow
-    CloudLightning = "rbxassetid://10709805727", -- lucide-cloud-lightning
-    Wind = "rbxassetid://10747382750", -- lucide-wind
-    Umbrella = "rbxassetid://10747364971", -- lucide-umbrella
-    Flame = "rbxassetid://10723376114", -- lucide-flame
-    Droplet = "rbxassetid://10723344432", -- lucide-droplet
-    Tree = "rbxassetid://10747362534", -- lucide-tree-deciduous
-    Flower = "rbxassetid://10747830374", -- lucide-flower
-    Leaf = "rbxassetid://10723425539", -- lucide-leaf
-    Mountain = "rbxassetid://10734897956", -- lucide-mountain
-    Trophy = "rbxassetid://10747363809", -- lucide-trophy
-    Award = "rbxassetid://10709769406", -- lucide-award
-    Medal = "rbxassetid://10734887072", -- lucide-medal
-    Gift = "rbxassetid://10723396402", -- lucide-gift
-    ShoppingCart = "rbxassetid://10734952479", -- lucide-shopping-cart
-    CreditCard = "rbxassetid://10747362393", -- lucide-credit-card
-    Coin = "rbxassetid://10709811110", -- lucide-coins
-    Banknote = "rbxassetid://10709770178", -- lucide-banknote
-    Bitcoin = "rbxassetid://10709776126", -- lucide-bitcoin
-    TrendingUp = "rbxassetid://10747363465", -- lucide-trending-up
-    TrendingDown = "rbxassetid://10747363205", -- lucide-trending-down",
-    BarChart = "rbxassetid://10709773755", -- lucide-bar-chart
-    PieChart = "rbxassetid://10734921727", -- lucide-pie-chart
-    LineChart = "rbxassetid://10723426393", -- lucide-line-chart
-    Cpu = "rbxassetid://10709813383", -- lucide-cpu
-    Memory = "rbxassetid://10723405749", -- lucide-hard-drive
-    Wifi = "rbxassetid://10747382504", -- lucide-wifi
-    Bluetooth = "rbxassetid://10709776655", -- lucide-bluetooth
-    Signal = "rbxassetid://10734961133", -- lucide-signal
-    Battery = "rbxassetid://10709774640", -- lucide-battery
-    BatteryCharging = "rbxassetid://10709774068", -- lucide-battery-charging
-    Power = "rbxassetid://10734930466", -- lucide-power
-    Plug = "rbxassetid://10747362393", -- lucide-plug
-    Tool = "rbxassetid://10734919503", -- lucide-pen-tool
-    Scissors = "rbxassetid://10734942778", -- lucide-scissors
-    Box = "rbxassetid://10709782497", -- lucide-box
-    Package = "rbxassetid://10734909540", -- lucide-package
-    Truck = "rbxassetid://10747364031", -- lucide-truck
-    Car = "rbxassetid://10709789810", -- lucide-car
-    Bike = "rbxassetid://10709775894", -- lucide-bike
-    Train = "rbxassetid://10747362105", -- lucide-train
-    Plane = "rbxassetid://10734922971", -- lucide-plane
-    Ship = "rbxassetid://10734941354", -- lucide-sailboat
-    Rocket = "rbxassetid://10734934585", -- lucide-rocket
-    Building = "rbxassetid://10709783051", -- lucide-building
-    Home = "rbxassetid://10723407389", -- lucide-home
-    Hotel = "rbxassetid://10747362393", -- lucide-hotel
-    Store = "rbxassetid://10734952273", -- lucide-shopping-bag
-    Factory = "rbxassetid://10723347051", -- lucide-factory
-    Hospital = "rbxassetid://10747362393", -- lucide-hospital
-    School = "rbxassetid://10723404691", -- lucide-graduation-cap
-    Book = "rbxassetid://10709781824", -- lucide-book
-    BookOpen = "rbxassetid://10709781717", -- lucide-book-open
-    Newspaper = "rbxassetid://10734907168", -- lucide-newspaper
-    Pen = "rbxassetid://10734919691", -- lucide-pencil
-    Brush = "rbxassetid://10709782758", -- lucide-brush
-    Palette = "rbxassetid://10734910430", -- lucide-palette
-    Music = "rbxassetid://10734905958", -- lucide-music
-    Video = "rbxassetid://10747374938", -- lucide-video
-    Film = "rbxassetid://10723374981", -- lucide-film
-    Camera = "rbxassetid://10709789686", -- lucide-camera
-    Headphones = "rbxassetid://10723406165", -- lucide-headphones
-    Tv = "rbxassetid://10747364593", -- lucide-tv
-    Monitor = "rbxassetid://10734896881", -- lucide-monitor
-    Smartphone = "rbxassetid://10734963940", -- lucide-smartphone
-    Tablet = "rbxassetid://10734976394", -- lucide-tablet
-    Watch = "rbxassetid://10747376722", -- lucide-watch
-    Laptop = "rbxassetid://10723423881", -- lucide-laptop
-    Printer = "rbxassetid://10734930632", -- lucide-printer
-    Keyboard = "rbxassetid://10723416765", -- lucide-keyboard
-    Mouse = "rbxassetid://10734898592", -- lucide-mouse
-    Gamepad = "rbxassetid://10723395457", -- lucide-gamepad-2
-    VirtualReality = "rbxassetid://10747362393" -- lucide-vr
+    Sun = "rbxassetid://10734974297", -- lucide-sun
+    Amoled = "rbxassetid://10734962068", -- lucide-skull
+    Rose = "rbxassetid://10747830374", -- lucide-flower
+    Light = "rbxassetid://10734974297", -- lucide-sun
+    Dark = "rbxassetid://10734897102", -- lucide-moon
+    Red = "rbxassetid://10723376114", -- lucide-flame
+    Yellow = "rbxassetid://10734966248", -- lucide-star
 }
 
 -- Colors
@@ -209,6 +97,17 @@ local Colors = {
     }
 }
 
+-- Theme cycle order
+local ThemeOrder = {"Dark", "Light", "Red", "Yellow", "AMOLED", "Rose"}
+local ThemeIcons = {
+    Dark = "Moon",
+    Light = "Sun", 
+    Red = "Red",
+    Yellow = "Yellow",
+    AMOLED = "Amoled",
+    Rose = "Rose"
+}
+
 -- Utility Functions
 local function Create(class, properties)
     local instance = Instance.new(class)
@@ -232,8 +131,18 @@ function NazuX:CreateWindow(options)
         Tabs = {},
         CurrentTab = nil,
         Minimized = false,
-        CurrentTheme = options.Theme or "Dark"
+        CurrentTheme = options.Theme or "Dark",
+        CurrentThemeIndex = 1
     }
+    
+    -- Find current theme index
+    for i, theme in ipairs(ThemeOrder) do
+        if theme == Window.CurrentTheme then
+            Window.CurrentThemeIndex = i
+            break
+        end
+    end
+    
     setmetatable(Window, self)
     
     -- Main ScreenGui
@@ -288,29 +197,55 @@ function NazuX:CreateWindow(options)
         CornerRadius = UDim.new(0, 8)
     })
     
-    -- Logo (Left)
+    -- Logo (Left) - Sử dụng icon từ options hoặc mặc định
     local Logo = Create("ImageLabel", {
         Parent = TitleBar,
         Name = "Logo",
         Size = UDim2.new(0, 25, 0, 25),
         Position = UDim2.new(0, 10, 0.5, -12.5),
         BackgroundTransparency = 1,
-        Image = Icons.Logo,
+        Image = options.Icon or Icons.Logo,
         ImageColor3 = Colors[Window.CurrentTheme].Accent
     })
     
-    -- Title (Center)
+    -- Title (Left Center)
     local Title = Create("TextLabel", {
         Parent = TitleBar,
         Name = "Title",
-        Size = UDim2.new(1, -120, 1, 0),
+        Size = UDim2.new(0, 150, 1, 0),
         Position = UDim2.new(0, 40, 0, 0),
         BackgroundTransparency = 1,
         Text = options.Title or "NazuX Library",
         TextColor3 = Colors[Window.CurrentTheme].Text,
         TextSize = 16,
         Font = Enum.Font.GothamSemibold,
-        TextXAlignment = Enum.TextXAlignment.Center
+        TextXAlignment = Enum.TextXAlignment.Left
+    })
+    
+    -- Theme Button (Center)
+    local ThemeButton = Create("TextButton", {
+        Parent = TitleBar,
+        Name = "ThemeButton",
+        Size = UDim2.new(0, 30, 0, 30),
+        Position = UDim2.new(0.5, -15, 0.5, -15),
+        BackgroundColor3 = Colors[Window.CurrentTheme].Secondary,
+        Text = "",
+        AutoButtonColor = false
+    })
+    
+    local ThemeIcon = Create("ImageLabel", {
+        Parent = ThemeButton,
+        Name = "ThemeIcon",
+        Size = UDim2.new(0, 20, 0, 20),
+        Position = UDim2.new(0.5, -10, 0.5, -10),
+        BackgroundTransparency = 1,
+        Image = Icons[ThemeIcons[Window.CurrentTheme]],
+        ImageColor3 = Colors[Window.CurrentTheme].Accent
+    })
+    
+    local ThemeButtonCorner = Create("UICorner", {
+        Parent = ThemeButton,
+        CornerRadius = UDim.new(0, 4)
     })
     
     -- Control Buttons (Right)
@@ -568,6 +503,13 @@ function NazuX:CreateWindow(options)
     LoadingScreen.Visible = false
     LoadingConnection:Disconnect()
     
+    -- Function to cycle through themes
+    local function CycleTheme()
+        Window.CurrentThemeIndex = (Window.CurrentThemeIndex % #ThemeOrder) + 1
+        local newTheme = ThemeOrder[Window.CurrentThemeIndex]
+        Window:ChangeTheme(newTheme)
+    end
+    
     -- Button Hover Effects
     local function SetupButtonHover(button, icon)
         button.MouseEnter:Connect(function()
@@ -585,8 +527,14 @@ function NazuX:CreateWindow(options)
         end)
     end
     
+    SetupButtonHover(ThemeButton, ThemeIcon)
     SetupButtonHover(MinimizeButton, MinimizeIcon)
     SetupButtonHover(CloseButton, CloseIcon)
+    
+    -- Theme Button Functionality
+    ThemeButton.MouseButton1Click:Connect(function()
+        CycleTheme()
+    end)
     
     -- Minimize Functionality
     MinimizeButton.MouseButton1Click:Connect(function()
@@ -634,7 +582,7 @@ function NazuX:CreateWindow(options)
     
     local function Update(input)
         local Delta = input.Position - DragStart
-        Tween(MainFrame, {Position = UDim2.new(StartPos.X.Scale, StartPos.X.Offset + Delta.X, StartPos.Y.Scale, StartPos.Y.Offset + Delta.Y)}, 0.1)
+        MainFrame.Position = UDim2.new(StartPos.X.Scale, StartPos.X.Offset + Delta.X, StartPos.Y.Scale, StartPos.Y.Offset + Delta.Y)
     end
     
     TitleBar.InputBegan:Connect(function(input)
@@ -669,10 +617,16 @@ function NazuX:CreateWindow(options)
             Window.CurrentTheme = themeName
             local theme = Colors[themeName]
             
+            -- Update main colors
             Tween(MainFrame, {BackgroundColor3 = theme.Background}, 0.3)
             Tween(TitleBar, {BackgroundColor3 = theme.Secondary}, 0.3)
             Tween(ContentContainer, {BackgroundColor3 = theme.Secondary}, 0.3)
             Tween(SearchFrame, {BackgroundColor3 = theme.Secondary}, 0.3)
+            
+            -- Update button backgrounds
+            Tween(ThemeButton, {BackgroundColor3 = theme.Secondary}, 0.3)
+            Tween(MinimizeButton, {BackgroundColor3 = theme.Secondary}, 0.3)
+            Tween(CloseButton, {BackgroundColor3 = theme.Secondary}, 0.3)
             
             -- Update text colors
             Title.TextColor3 = theme.Text
@@ -680,14 +634,38 @@ function NazuX:CreateWindow(options)
             UserId.TextColor3 = theme.Text
             SearchBox.TextColor3 = theme.Text
             SearchBox.PlaceholderColor3 = theme.Text
+            
+            -- Update icon colors
             SearchIcon.ImageColor3 = theme.Text
             MinimizeIcon.ImageColor3 = theme.Text
             CloseIcon.ImageColor3 = theme.Text
+            Logo.ImageColor3 = theme.Accent
+            ThemeIcon.ImageColor3 = theme.Accent
             
             -- Update accent colors
             AvatarStroke.Color = theme.Accent
             ContentScrolling.ScrollBarImageColor3 = theme.Accent
-            Logo.ImageColor3 = theme.Accent
+            
+            -- Update theme icon
+            ThemeIcon.Image = Icons[ThemeIcons[themeName]]
+            
+            -- Update all tab buttons
+            for _, tab in pairs(Window.Tabs) do
+                if Window.CurrentTab and Window.CurrentTab.Button == tab.Button then
+                    Tween(tab.Button, {BackgroundColor3 = Color3.fromRGB(
+                        theme.Accent.R * 0.2 + theme.Secondary.R * 0.8,
+                        theme.Accent.G * 0.2 + theme.Secondary.G * 0.8,
+                        theme.Accent.B * 0.2 + theme.Secondary.B * 0.8
+                    )}, 0.3)
+                    Tween(tab.Label, {TextColor3 = theme.Accent}, 0.3)
+                    Tween(tab.Icon, {ImageColor3 = theme.Accent}, 0.3)
+                else
+                    Tween(tab.Button, {BackgroundColor3 = theme.Secondary}, 0.3)
+                    Tween(tab.Label, {TextColor3 = theme.Text}, 0.3)
+                    Tween(tab.Icon, {ImageColor3 = theme.Text}, 0.3)
+                end
+                tab.Highlight.BackgroundColor3 = theme.Accent
+            end
         end
     end
     
@@ -831,7 +809,13 @@ function NazuX:CreateWindow(options)
             end
         end)
         
-        table.insert(Window.Tabs, Tab)
+        table.insert(Window.Tabs, {
+            Button = TabButton,
+            Highlight = TabHighlight,
+            Label = TabLabel,
+            Icon = TabIcon,
+            Elements = Tab.Elements
+        })
         
         -- Return tab methods
         local TabMethods = {}
@@ -1163,7 +1147,7 @@ function NazuX:CreateWindow(options)
                 Visible = false,
                 ClipsDescendants = true
             })
-            
+    
             local ListLayout = Create("UIListLayout", {
                 Parent = DropdownList,
                 SortOrder = Enum.SortOrder.LayoutOrder
@@ -1265,18 +1249,6 @@ function NazuX:CreateWindow(options)
         end
         
         return TabMethods
-    end
-    
-    -- Theme Changer Button
-    function Window:AddThemeChanger()
-        local ThemeDropdown = Window.Tabs[1]:AddDropdown({
-            Name = "Change Theme",
-            Options = {"Dark", "Light", "Red", "Yellow", "AMOLED", "Rose"},
-            Default = Window.CurrentTheme,
-            Callback = function(theme)
-                Window:ChangeTheme(theme)
-            end
-        })
     end
     
     ScreenGui.Parent = game.CoreGui
