@@ -1,235 +1,90 @@
---[[
-    NazuX Library - FIXED VERSION
-    Đã sửa lỗi không hiển thị tab và nút
-]]
-
+-- NazuX Library - SIMPLE WORKING VERSION
 local NazuX = {}
-NazuX.__index = NazuX
 
--- Services
-local TweenService = game:GetService("TweenService")
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
-
--- Local Variables
-local LocalPlayer = Players.LocalPlayer
-
--- Icon Assets
-local Icons = {
-    Logo = "rbxassetid://10709761813",
-    Search = "rbxassetid://10734943674",
-    Fingerprint = "rbxassetid://10723375250",
-    Home = "rbxassetid://10723407389",
-    Settings = "rbxassetid://10734950309",
-    Scripts = "rbxassetid://10734951038",
-    Player = "rbxassetid://10747373176",
-    Check = "rbxassetid://10709790644",
-    Minimize = "rbxassetid://10734895698",
-    Close = "rbxassetid://10747384394",
-    Game = "rbxassetid://10723395457",
-    Visual = "rbxassetid://10723375128",
-    Combat = "rbxassetid://10734975692",
-    Movement = "rbxassetid://10709775894",
-    Teleport = "rbxassetid://10734922971",
-}
-
--- Colors
-local Colors = {
-    Dark = {
-        Background = Color3.fromRGB(30, 30, 30),
-        Secondary = Color3.fromRGB(40, 40, 40),
-        Accent = Color3.fromRGB(0, 120, 215),
-        Text = Color3.fromRGB(255, 255, 255),
-        Border = Color3.fromRGB(60, 60, 60)
-    }
-}
-
--- Utility Functions
-local function Create(class, properties)
-    local instance = Instance.new(class)
-    for property, value in pairs(properties) do
-        instance[property] = value
-    end
-    return instance
-end
-
-local function Tween(Object, Properties, Duration)
-    local TweenInfo = TweenInfo.new(Duration or 0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-    local Tween = TweenService:Create(Object, TweenInfo, Properties)
-    Tween:Play()
-    return Tween
-end
-
--- Main Library Function
 function NazuX:CreateWindow(options)
     options = options or {}
-    local Window = {
-        Tabs = {},
-        CurrentTab = nil,
-        Minimized = false,
-        CurrentTheme = "Dark"
-    }
     
-    setmetatable(Window, self)
+    local ScreenGui = Instance.new("ScreenGui")
+    ScreenGui.Name = "NazuXLib"
+    ScreenGui.Parent = game.CoreGui
     
-    -- Main ScreenGui
-    local ScreenGui = Create("ScreenGui", {
-        Name = "NazuXLibrary",
-        DisplayOrder = 10,
-        ResetOnSpawn = false
-    })
+    local MainFrame = Instance.new("Frame")
+    MainFrame.Size = UDim2.new(0, 500, 0, 400)
+    MainFrame.Position = UDim2.new(0.5, -250, 0.5, -200)
+    MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    MainFrame.Parent = ScreenGui
     
-    -- Main Container
-    local MainFrame = Create("Frame", {
-        Parent = ScreenGui,
-        Size = UDim2.new(0, 600, 0, 400),
-        Position = UDim2.new(0.5, -300, 0.5, -200),
-        BackgroundColor3 = Colors.Dark.Background,
-        BorderSizePixel = 0,
-        ClipsDescendants = true
-    })
-    
-    Create("UICorner", {Parent = MainFrame, CornerRadius = UDim.new(0, 8)})
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0, 8)
+    UICorner.Parent = MainFrame
     
     -- Title Bar
-    local TitleBar = Create("Frame", {
-        Parent = MainFrame,
-        Name = "TitleBar",
-        Size = UDim2.new(1, 0, 0, 40),
-        BackgroundColor3 = Colors.Dark.Secondary,
-        BorderSizePixel = 0
-    })
+    local TitleBar = Instance.new("Frame")
+    TitleBar.Size = UDim2.new(1, 0, 0, 40)
+    TitleBar.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    TitleBar.Parent = MainFrame
     
-    Create("UICorner", {Parent = TitleBar, CornerRadius = UDim.new(0, 8)})
+    local Title = Instance.new("TextLabel")
+    Title.Size = UDim2.new(1, 0, 1, 0)
+    Title.BackgroundTransparency = 1
+    Title.Text = options.Title or "NazuX Library"
+    Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Title.TextSize = 16
+    Title.Font = Enum.Font.GothamBold
+    Title.Parent = TitleBar
     
-    -- Logo
-    Create("ImageLabel", {
-        Parent = TitleBar,
-        Size = UDim2.new(0, 25, 0, 25),
-        Position = UDim2.new(0, 10, 0.5, -12.5),
-        BackgroundTransparency = 1,
-        Image = options.Icon or Icons.Logo,
-        ImageColor3 = Colors.Dark.Accent
-    })
-    
-    -- Title
-    Create("TextLabel", {
-        Parent = TitleBar,
-        Size = UDim2.new(1, -100, 1, 0),
-        Position = UDim2.new(0, 40, 0, 0),
-        BackgroundTransparency = 1,
-        Text = options.Title or "NazuX Library",
-        TextColor3 = Colors.Dark.Text,
-        TextSize = 16,
-        Font = Enum.Font.GothamSemibold,
-        TextXAlignment = Enum.TextXAlignment.Center
-    })
-    
-    -- Control Buttons
-    local MinimizeButton = Create("TextButton", {
-        Parent = TitleBar,
-        Size = UDim2.new(0, 30, 0, 30),
-        Position = UDim2.new(1, -70, 0.5, -15),
-        BackgroundColor3 = Colors.Dark.Secondary,
-        Text = "",
-        AutoButtonColor = false
-    })
-    
-    Create("ImageLabel", {
-        Parent = MinimizeButton,
-        Size = UDim2.new(0, 20, 0, 20),
-        Position = UDim2.new(0.5, -10, 0.5, -10),
-        BackgroundTransparency = 1,
-        Image = Icons.Minimize,
-        ImageColor3 = Colors.Dark.Text
-    })
-    
-    local CloseButton = Create("TextButton", {
-        Parent = TitleBar,
-        Size = UDim2.new(0, 30, 0, 30),
-        Position = UDim2.new(1, -30, 0.5, -15),
-        BackgroundColor3 = Colors.Dark.Secondary,
-        Text = "",
-        AutoButtonColor = false
-    })
-    
-    Create("ImageLabel", {
-        Parent = CloseButton,
-        Size = UDim2.new(0, 20, 0, 20),
-        Position = UDim2.new(0.5, -10, 0.5, -10),
-        BackgroundTransparency = 1,
-        Image = Icons.Close,
-        ImageColor3 = Colors.Dark.Text
-    })
-    
-    Create("UICorner", {Parent = MinimizeButton, CornerRadius = UDim.new(0, 4)})
-    Create("UICorner", {Parent = CloseButton, CornerRadius = UDim.new(0, 4)})
-    
-    -- Tab Container
-    local TabContainer = Create("Frame", {
-        Parent = MainFrame,
-        Size = UDim2.new(0, 150, 1, -160),
-        Position = UDim2.new(0, 10, 0, 160),
-        BackgroundTransparency = 1
-    })
-    
-    Create("UIListLayout", {
-        Parent = TabContainer,
-        SortOrder = Enum.SortOrder.LayoutOrder,
-        Padding = UDim.new(0, 5)
-    })
-    
-    -- Content Container
-    local ContentContainer = Create("Frame", {
-        Parent = MainFrame,
-        Size = UDim2.new(1, -180, 1, -170),
-        Position = UDim2.new(0, 170, 0, 160),
-        BackgroundColor3 = Colors.Dark.Secondary,
-        BorderSizePixel = 0,
-        ClipsDescendants = true
-    })
-    
-    Create("UICorner", {Parent = ContentContainer, CornerRadius = UDim.new(0, 8)})
-    
-    local ContentScrolling = Create("ScrollingFrame", {
-        Parent = ContentContainer,
-        Size = UDim2.new(1, 0, 1, 0),
-        BackgroundTransparency = 1,
-        BorderSizePixel = 0,
-        ScrollBarThickness = 3,
-        ScrollBarImageColor3 = Colors.Dark.Accent,
-        CanvasSize = UDim2.new(0, 0, 0, 0),
-        AutomaticCanvasSize = Enum.AutomaticSize.Y
-    })
-    
-    Create("UIListLayout", {
-        Parent = ContentScrolling,
-        SortOrder = Enum.SortOrder.LayoutOrder,
-        Padding = UDim.new(0, 10)
-    })
-    
-    Create("UIPadding", {
-        Parent = ContentScrolling,
-        PaddingTop = UDim.new(0, 10),
-        PaddingLeft = UDim.new(0, 10),
-        PaddingRight = UDim.new(0, 10),
-        PaddingBottom = UDim.new(0, 10)
-    })
-    
-    -- Button functionality
-    MinimizeButton.MouseButton1Click:Connect(function()
-        Window.Minimized = not Window.Minimized
-        if Window.Minimized then
-            Tween(MainFrame, {Size = UDim2.new(0, 600, 0, 40)}, 0.3)
-        else
-            Tween(MainFrame, {Size = UDim2.new(0, 600, 0, 400)}, 0.3)
-        end
-    end)
+    -- Close Button
+    local CloseButton = Instance.new("TextButton")
+    CloseButton.Size = UDim2.new(0, 30, 0, 30)
+    CloseButton.Position = UDim2.new(1, -35, 0.5, -15)
+    CloseButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    CloseButton.Text = "X"
+    CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    CloseButton.Parent = TitleBar
     
     CloseButton.MouseButton1Click:Connect(function()
         ScreenGui:Destroy()
     end)
+    
+    -- Tab Buttons Container
+    local TabContainer = Instance.new("Frame")
+    TabContainer.Size = UDim2.new(0, 120, 1, -50)
+    TabContainer.Position = UDim2.new(0, 10, 0, 50)
+    TabContainer.BackgroundTransparency = 1
+    TabContainer.Parent = MainFrame
+    
+    local TabListLayout = Instance.new("UIListLayout")
+    TabListLayout.Padding = UDim.new(0, 5)
+    TabListLayout.Parent = TabContainer
+    
+    -- Content Container
+    local ContentContainer = Instance.new("Frame")
+    ContentContainer.Size = UDim2.new(1, -140, 1, -60)
+    ContentContainer.Position = UDim2.new(0, 130, 0, 50)
+    ContentContainer.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    ContentContainer.Parent = MainFrame
+    
+    local ContentCorner = Instance.new("UICorner")
+    ContentCorner.CornerRadius = UDim.new(0, 8)
+    ContentCorner.Parent = ContentContainer
+    
+    local ContentScrolling = Instance.new("ScrollingFrame")
+    ContentScrolling.Size = UDim2.new(1, -20, 1, -20)
+    ContentScrolling.Position = UDim2.new(0, 10, 0, 10)
+    ContentScrolling.BackgroundTransparency = 1
+    ContentScrolling.ScrollBarThickness = 3
+    ContentScrolling.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    ContentScrolling.Parent = ContentContainer
+    
+    local ContentLayout = Instance.new("UIListLayout")
+    ContentLayout.Padding = UDim.new(0, 10)
+    ContentLayout.Parent = ContentScrolling
+    
+    local ContentPadding = Instance.new("UIPadding")
+    ContentPadding.PaddingTop = UDim.new(0, 10)
+    ContentPadding.PaddingLeft = UDim.new(0, 10)
+    ContentPadding.PaddingRight = UDim.new(0, 10)
+    ContentPadding.Parent = ContentScrolling
     
     -- Make draggable
     local Dragging, DragInput, DragStart, StartPos
@@ -253,112 +108,78 @@ function NazuX:CreateWindow(options)
         end
     end)
     
-    UserInputService.InputChanged:Connect(function(input)
+    game:GetService("UserInputService").InputChanged:Connect(function(input)
         if input == DragInput and Dragging then
             Update(input)
         end
     end)
     
-    -- Public Methods
-    function Window:AddTab(tabName, iconName)
-        local tabIcon = Icons[iconName] or Icons.Scripts
-        
+    local Window = {
+        Tabs = {},
+        CurrentTab = nil
+    }
+    
+    function Window:AddTab(tabName)
         -- Tab Button
-        local TabButton = Create("TextButton", {
-            Parent = TabContainer,
-            Size = UDim2.new(1, 0, 0, 35),
-            BackgroundColor3 = Colors.Dark.Secondary,
-            Text = "",
-            AutoButtonColor = false
-        })
+        local TabButton = Instance.new("TextButton")
+        TabButton.Size = UDim2.new(1, 0, 0, 35)
+        TabButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        TabButton.Text = ""
+        TabButton.AutoButtonColor = false
+        TabButton.Parent = TabContainer
         
-        Create("UICorner", {Parent = TabButton, CornerRadius = UDim.new(0, 6)})
+        local TabCorner = Instance.new("UICorner")
+        TabCorner.CornerRadius = UDim.new(0, 6)
+        TabCorner.Parent = TabButton
         
-        -- Tab Icon
-        Create("ImageLabel", {
-            Parent = TabButton,
-            Size = UDim2.new(0, 20, 0, 20),
-            Position = UDim2.new(0, 10, 0.5, -10),
-            BackgroundTransparency = 1,
-            Image = tabIcon,
-            ImageColor3 = Colors.Dark.Text
-        })
-        
-        -- Tab Label
-        Create("TextLabel", {
-            Parent = TabButton,
-            Size = UDim2.new(1, -40, 1, 0),
-            Position = UDim2.new(0, 35, 0, 0),
-            BackgroundTransparency = 1,
-            Text = tabName,
-            TextColor3 = Colors.Dark.Text,
-            TextSize = 14,
-            Font = Enum.Font.GothamSemibold,
-            TextXAlignment = Enum.TextXAlignment.Left
-        })
-        
-        local TabHighlight = Create("Frame", {
-            Parent = TabButton,
-            Size = UDim2.new(0, 3, 0.6, 0),
-            Position = UDim2.new(0, 5, 0.2, 0),
-            BackgroundColor3 = Colors.Dark.Accent,
-            Visible = false,
-            BorderSizePixel = 0
-        })
-        
-        Create("UICorner", {Parent = TabHighlight, CornerRadius = UDim.new(1, 0)})
+        local TabLabel = Instance.new("TextLabel")
+        TabLabel.Size = UDim2.new(1, -10, 1, 0)
+        TabLabel.Position = UDim2.new(0, 10, 0, 0)
+        TabLabel.BackgroundTransparency = 1
+        TabLabel.Text = tabName
+        TabLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        TabLabel.TextSize = 14
+        TabLabel.Font = Enum.Font.GothamSemibold
+        TabLabel.TextXAlignment = Enum.TextXAlignment.Left
+        TabLabel.Parent = TabButton
         
         -- Tab Content
-        local TabContent = Create("ScrollingFrame", {
-            Parent = ContentScrolling,
-            Size = UDim2.new(1, 0, 0, 0),
-            BackgroundTransparency = 1,
-            BorderSizePixel = 0,
-            ScrollBarThickness = 0,
-            CanvasSize = UDim2.new(0, 0, 0, 0),
-            AutomaticCanvasSize = Enum.AutomaticSize.Y,
-            Visible = false
-        })
+        local TabContent = Instance.new("Frame")
+        TabContent.Size = UDim2.new(1, 0, 0, 0)
+        TabContent.BackgroundTransparency = 1
+        TabContent.Visible = false
+        TabContent.Parent = ContentScrolling
         
-        Create("UIListLayout", {
-            Parent = TabContent,
-            SortOrder = Enum.SortOrder.LayoutOrder,
-            Padding = UDim.new(0, 10)
-        })
+        local TabContentLayout = Instance.new("UIListLayout")
+        TabContentLayout.Padding = UDim.new(0, 10)
+        TabContentLayout.Parent = TabContent
         
-        -- Store tab data
-        local tabData = {
-            Button = TabButton,
-            Highlight = TabHighlight,
-            Content = TabContent
-        }
+        TabContentLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+            TabContent.Size = UDim2.new(1, 0, 0, TabContentLayout.AbsoluteContentSize.Y)
+        end)
         
-        table.insert(Window.Tabs, tabData)
-        
-        -- Tab selection function
-        local function SelectTab()
+        -- Tab selection
+        TabButton.MouseButton1Click:Connect(function()
             if Window.CurrentTab then
-                Window.CurrentTab.Button.BackgroundColor3 = Colors.Dark.Secondary
-                Window.CurrentTab.Highlight.Visible = false
+                Window.CurrentTab.Button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
                 Window.CurrentTab.Content.Visible = false
             end
             
-            Window.CurrentTab = tabData
-            TabButton.BackgroundColor3 = Color3.fromRGB(
-                Colors.Dark.Accent.R * 0.2 + Colors.Dark.Secondary.R * 0.8,
-                Colors.Dark.Accent.G * 0.2 + Colors.Dark.Secondary.G * 0.8,
-                Colors.Dark.Accent.B * 0.2 + Colors.Dark.Secondary.B * 0.8
-            )
-            TabHighlight.Visible = true
+            Window.CurrentTab = {
+                Button = TabButton,
+                Content = TabContent
+            }
+            
+            TabButton.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
             TabContent.Visible = true
-        end
-        
-        TabButton.MouseButton1Click:Connect(SelectTab)
+        end)
         
         -- Auto-select first tab
-        if #Window.Tabs == 1 then
-            SelectTab()
+        if #Window.Tabs == 0 then
+            TabButton.MouseButton1Click:Fire()
         end
+        
+        table.insert(Window.Tabs, {Button = TabButton, Content = TabContent})
         
         -- Return tab methods
         local TabMethods = {}
@@ -366,37 +187,27 @@ function NazuX:CreateWindow(options)
         function TabMethods:AddButton(options)
             options = options or {}
             
-            local Button = Create("TextButton", {
-                Parent = TabContent,
-                Size = UDim2.new(1, 0, 0, 35),
-                BackgroundColor3 = Colors.Dark.Secondary,
-                Text = "",
-                AutoButtonColor = false,
-                LayoutOrder = #TabContent:GetChildren()
-            })
+            local Button = Instance.new("TextButton")
+            Button.Size = UDim2.new(1, 0, 0, 35)
+            Button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+            Button.Text = ""
+            Button.AutoButtonColor = false
+            Button.Parent = TabContent
             
-            Create("UICorner", {Parent = Button, CornerRadius = UDim.new(0, 6)})
+            local ButtonCorner = Instance.new("UICorner")
+            ButtonCorner.CornerRadius = UDim.new(0, 6)
+            ButtonCorner.Parent = Button
             
-            Create("TextLabel", {
-                Parent = Button,
-                Size = UDim2.new(0.7, 0, 1, 0),
-                Position = UDim2.new(0, 10, 0, 0),
-                BackgroundTransparency = 1,
-                Text = options.Name or "Button",
-                TextColor3 = Colors.Dark.Text,
-                TextSize = 14,
-                Font = Enum.Font.GothamSemibold,
-                TextXAlignment = Enum.TextXAlignment.Left
-            })
-            
-            Create("ImageLabel", {
-                Parent = Button,
-                Size = UDim2.new(0, 20, 0, 20),
-                Position = UDim2.new(1, -30, 0.5, -10),
-                BackgroundTransparency = 1,
-                Image = Icons.Fingerprint,
-                ImageColor3 = Colors.Dark.Text
-            })
+            local ButtonLabel = Instance.new("TextLabel")
+            ButtonLabel.Size = UDim2.new(1, -20, 1, 0)
+            ButtonLabel.Position = UDim2.new(0, 10, 0, 0)
+            ButtonLabel.BackgroundTransparency = 1
+            ButtonLabel.Text = options.Name or "Button"
+            ButtonLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+            ButtonLabel.TextSize = 14
+            ButtonLabel.Font = Enum.Font.GothamSemibold
+            ButtonLabel.TextXAlignment = Enum.TextXAlignment.Left
+            ButtonLabel.Parent = Button
             
             Button.MouseButton1Click:Connect(function()
                 if options.Callback then
@@ -411,56 +222,51 @@ function NazuX:CreateWindow(options)
             options = options or {}
             local Toggle = {Value = options.Default or false}
             
-            local ToggleFrame = Create("Frame", {
-                Parent = TabContent,
-                Size = UDim2.new(1, 0, 0, 35),
-                BackgroundTransparency = 1,
-                LayoutOrder = #TabContent:GetChildren()
-            })
+            local ToggleFrame = Instance.new("Frame")
+            ToggleFrame.Size = UDim2.new(1, 0, 0, 35)
+            ToggleFrame.BackgroundTransparency = 1
+            ToggleFrame.Parent = TabContent
             
-            Create("TextLabel", {
-                Parent = ToggleFrame,
-                Size = UDim2.new(0.7, 0, 1, 0),
-                Position = UDim2.new(0, 0, 0, 0),
-                BackgroundTransparency = 1,
-                Text = options.Name or "Toggle",
-                TextColor3 = Colors.Dark.Text,
-                TextSize = 14,
-                Font = Enum.Font.GothamSemibold,
-                TextXAlignment = Enum.TextXAlignment.Left
-            })
+            local ToggleLabel = Instance.new("TextLabel")
+            ToggleLabel.Size = UDim2.new(0.7, 0, 1, 0)
+            ToggleLabel.Position = UDim2.new(0, 0, 0, 0)
+            ToggleLabel.BackgroundTransparency = 1
+            ToggleLabel.Text = options.Name or "Toggle"
+            ToggleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+            ToggleLabel.TextSize = 14
+            ToggleLabel.Font = Enum.Font.GothamSemibold
+            ToggleLabel.TextXAlignment = Enum.TextXAlignment.Left
+            ToggleLabel.Parent = ToggleFrame
             
-            local ToggleButton = Create("TextButton", {
-                Parent = ToggleFrame,
-                Size = UDim2.new(0, 40, 0, 20),
-                Position = UDim2.new(1, -40, 0.5, -10),
-                BackgroundColor3 = Colors.Dark.Secondary,
-                Text = "",
-                AutoButtonColor = false,
-                BorderSizePixel = 0
-            })
+            local ToggleButton = Instance.new("TextButton")
+            ToggleButton.Size = UDim2.new(0, 40, 0, 20)
+            ToggleButton.Position = UDim2.new(1, -40, 0.5, -10)
+            ToggleButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+            ToggleButton.Text = ""
+            ToggleButton.AutoButtonColor = false
+            ToggleButton.Parent = ToggleFrame
             
-            Create("UICorner", {Parent = ToggleButton, CornerRadius = UDim.new(1, 0)})
+            local ToggleCorner = Instance.new("UICorner")
+            ToggleCorner.CornerRadius = UDim.new(1, 0)
+            ToggleCorner.Parent = ToggleButton
             
-            local ToggleIndicator = Create("Frame", {
-                Parent = ToggleButton,
-                Size = UDim2.new(0, 16, 0, 16),
-                Position = UDim2.new(0, 2, 0.5, -8),
-                BackgroundColor3 = Colors.Dark.Text,
-                BorderSizePixel = 0
-            })
+            local ToggleIndicator = Instance.new("Frame")
+            ToggleIndicator.Size = UDim2.new(0, 16, 0, 16)
+            ToggleIndicator.Position = UDim2.new(0, 2, 0.5, -8)
+            ToggleIndicator.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            ToggleIndicator.Parent = ToggleButton
             
-            Create("UICorner", {Parent = ToggleIndicator, CornerRadius = UDim.new(1, 0)})
+            local IndicatorCorner = Instance.new("UICorner")
+            IndicatorCorner.CornerRadius = UDim.new(1, 0)
+            IndicatorCorner.Parent = ToggleIndicator
             
             local function UpdateToggle()
                 if Toggle.Value then
-                    ToggleButton.BackgroundColor3 = Colors.Dark.Accent
-                    ToggleIndicator.Position = UDim2.new(1, -18, 0.5, -8)
-                    ToggleIndicator.BackgroundColor3 = Color3.new(1, 1, 1)
+                    Tween(Indicator, {Position = UDim2.new(1, -18, 0.5, -8)}, 0.2)
+                    ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
                 else
-                    ToggleButton.BackgroundColor3 = Colors.Dark.Secondary
-                    ToggleIndicator.Position = UDim2.new(0, 2, 0.5, -8)
-                    ToggleIndicator.BackgroundColor3 = Colors.Dark.Text
+                    Tween(Indicator, {Position = UDim2.new(0, 2, 0.5, -8)}, 0.2)
+                    ToggleButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
                 end
             end
             
@@ -476,40 +282,8 @@ function NazuX:CreateWindow(options)
             return Toggle
         end
         
-        function TabMethods:AddSection(sectionName)
-            local SectionFrame = Create("Frame", {
-                Parent = TabContent,
-                Size = UDim2.new(1, 0, 0, 40),
-                BackgroundTransparency = 1,
-                LayoutOrder = #TabContent:GetChildren()
-            })
-            
-            Create("TextLabel", {
-                Parent = SectionFrame,
-                Size = UDim2.new(1, 0, 0, 20),
-                BackgroundTransparency = 1,
-                Text = sectionName,
-                TextColor3 = Colors.Dark.Text,
-                TextSize = 16,
-                Font = Enum.Font.GothamBold,
-                TextXAlignment = Enum.TextXAlignment.Center
-            })
-            
-            Create("Frame", {
-                Parent = SectionFrame,
-                Size = UDim2.new(1, 0, 0, 1),
-                Position = UDim2.new(0, 0, 1, -10),
-                BackgroundColor3 = Colors.Dark.Accent,
-                BorderSizePixel = 0
-            })
-            
-            return SectionFrame
-        end
-        
         return TabMethods
     end
-    
-    ScreenGui.Parent = game.CoreGui
     
     return Window
 end
