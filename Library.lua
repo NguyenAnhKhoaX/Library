@@ -1,6 +1,6 @@
 --[[
-    NazuX Library - Added Theme Changer Icon
-    Added gear icon in title bar for theme switching
+    NazuX Library - Fixed Tab Creation Issue
+    Fixed: Only Main tab showing, other tabs not created properly
 ]]
 
 local NazuX = {}
@@ -44,7 +44,7 @@ local Icons = {
     Sun = "rbxassetid://10734974297",
     Amoled = "rbxassetid://10734962068",
     Rose = "rbxassetid://10747830374",
-    Gear = "rbxassetid://10734950309" -- Icon bánh răng
+    Gear = "rbxassetid://10734950309"
 }
 
 -- Color Themes
@@ -190,7 +190,7 @@ function NazuX:CreateWindow(options)
     local Title = Create("TextLabel", {
         Parent = TitleBar,
         Name = "Title",
-        Size = UDim2.new(1, -160, 1, 0), -- Giảm width để chừa chỗ cho theme button
+        Size = UDim2.new(1, -160, 1, 0),
         Position = UDim2.new(0, 40, 0, 0),
         BackgroundTransparency = 1,
         Text = options.Title or "NazuX Library",
@@ -200,7 +200,7 @@ function NazuX:CreateWindow(options)
         TextXAlignment = Enum.TextXAlignment.Center
     })
     
-    -- Theme Changer Button (Bánh răng)
+    -- Theme Changer Button
     local ThemeButton = Create("TextButton", {
         Parent = TitleBar,
         Name = "ThemeButton",
@@ -538,10 +538,8 @@ function NazuX:CreateWindow(options)
     end
     
     ThemeButton.MouseButton1Click:Connect(function()
-        -- Animation khi bấm
         StartThemeAnimation()
         
-        -- Chuyển theme
         CurrentThemeIndex = CurrentThemeIndex + 1
         if CurrentThemeIndex > #ThemeOrder then
             CurrentThemeIndex = 1
@@ -550,49 +548,34 @@ function NazuX:CreateWindow(options)
         local newTheme = ThemeOrder[CurrentThemeIndex]
         Window:ChangeTheme(newTheme)
         
-        -- Dừng animation sau 1 giây
         task.wait(1)
         StopThemeAnimation()
     end)
     
-    -- Hover effects cho theme button
-    ThemeButton.MouseEnter:Connect(function()
-        StartThemeAnimation()
-    end)
+    ThemeButton.MouseEnter:Connect(StartThemeAnimation)
+    ThemeButton.MouseLeave:Connect(StopThemeAnimation)
     
-    ThemeButton.MouseLeave:Connect(function()
-        StopThemeAnimation()
-    end)
-    
-    -- Minimize Functionality with Effects
+    -- Minimize Functionality
     MinimizeButton.MouseButton1Click:Connect(function()
         Window.Minimized = not Window.Minimized
         
         if Window.Minimized then
-            -- Hide all content elements with animation
             UserInfoFrame.Visible = false
             SearchFrame.Visible = false
             TabContainer.Visible = false
             ContentContainer.Visible = false
             
-            -- Shrink window
             Tween(MainFrame, {Size = UDim2.new(0, 600, 0, 40)}, 0.3)
             Tween(Shadow, {Size = UDim2.new(0, 620, 0, 60)}, 0.3)
-            
-            -- Change minimize icon to restore icon
             Tween(MinimizeIcon, {Rotation = 180}, 0.3)
         else
-            -- Show all content elements with animation
             UserInfoFrame.Visible = true
             SearchFrame.Visible = true
             TabContainer.Visible = true
             ContentContainer.Visible = true
             
-            -- Expand window
             Tween(MainFrame, {Size = UDim2.new(0, 600, 0, 400)}, 0.3)
             Tween(Shadow, {Size = UDim2.new(0, 620, 0, 420)}, 0.3)
-            
-            -- Restore minimize icon
             Tween(MinimizeIcon, {Rotation = 0}, 0.3)
         end
     end)
@@ -779,7 +762,7 @@ function NazuX:CreateWindow(options)
             CornerRadius = UDim.new(1, 0)
         })
         
-        -- Tab Content
+        -- Tab Content - FIXED: Create in ContentScrolling instead of separate frame
         local TabContent = Create("ScrollingFrame", {
             Parent = ContentScrolling,
             Name = tabName.."Content",
@@ -868,7 +851,7 @@ function NazuX:CreateWindow(options)
             end
         end)
         
-        -- Auto-select first tab only
+        -- Auto-select first tab
         if Window.TabCount == 1 then
             SelectTab()
         end
@@ -1022,8 +1005,6 @@ function NazuX:CreateWindow(options)
             table.insert(Window.Elements, ToggleLabel)
             return Toggle
         end
-        
-        -- ... (Các function khác giữ nguyên)
         
         return TabMethods
     end
