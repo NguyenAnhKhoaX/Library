@@ -1,7 +1,6 @@
 --[[
-    NazuX Library - Complete Version
-    Advanced Roblox UI Library with Modern Design
-    Created with ❤️ for Roblox Developers
+    NazuX Library - Fixed Tab Selection
+    Fixed auto-select issue for multiple tabs
 ]]
 
 local NazuX = {}
@@ -117,7 +116,8 @@ function NazuX:CreateWindow(options)
         CurrentTab = nil,
         Minimized = false,
         CurrentTheme = options.Theme or "Dark",
-        Elements = {}
+        Elements = {},
+        TabCount = 0
     }
     
     setmetatable(Window, self)
@@ -266,7 +266,7 @@ function NazuX:CreateWindow(options)
         Size = UDim2.new(0, 50, 0, 50),
         Position = UDim2.new(0, 0, 0, 0),
         BackgroundColor3 = Colors[Window.CurrentTheme].Border,
-        Image = options.OwnerImage or "https://www.roblox.com/headshot-thumbnail/image?userId="..LocalPlayer.UserId.."&width=150&height=150&format=png"
+        Image = options.OwnerImage or "rbxassetid://10734951038"
     })
     
     Create("UICorner", {
@@ -287,7 +287,7 @@ function NazuX:CreateWindow(options)
         Size = UDim2.new(1, -60, 0.5, 0),
         Position = UDim2.new(0, 60, 0, 0),
         BackgroundTransparency = 1,
-        Text = options.Owner or LocalPlayer.Name,
+        Text = options.Owner or "NazuX Owner",
         TextColor3 = Colors[Window.CurrentTheme].Text,
         TextSize = 16,
         Font = Enum.Font.GothamSemibold,
@@ -300,7 +300,7 @@ function NazuX:CreateWindow(options)
         Size = UDim2.new(1, -60, 0.5, 0),
         Position = UDim2.new(0, 60, 0.5, 0),
         BackgroundTransparency = 1,
-        Text = "ID: "..LocalPlayer.UserId,
+        Text = "Library Owner",
         TextColor3 = Colors[Window.CurrentTheme].Text,
         TextTransparency = 0.3,
         TextSize = 12,
@@ -605,8 +605,8 @@ function NazuX:CreateWindow(options)
             ContentScrolling.ScrollBarImageColor3 = theme.Accent
             
             -- Update all tab buttons
-            for _, tabData in pairs(Window.Tabs) do
-                if Window.CurrentTab and Window.CurrentTab.Button == tabData.Button then
+            for tabName, tabData in pairs(Window.Tabs) do
+                if Window.CurrentTab and Window.CurrentTab == tabName then
                     Tween(tabData.Button, {BackgroundColor3 = Color3.fromRGB(
                         math.floor(theme.Accent.R * 0.2 + theme.Secondary.R * 0.8),
                         math.floor(theme.Accent.G * 0.2 + theme.Secondary.G * 0.8),
@@ -717,18 +717,22 @@ function NazuX:CreateWindow(options)
         }
         
         Window.Tabs[tabName] = tabData
+        Window.TabCount = Window.TabCount + 1
         
-        -- Tab Selection
-        TabButton.MouseButton1Click:Connect(function()
+        -- Tab Selection Function
+        local function SelectTab()
             if Window.CurrentTab then
-                Window.CurrentTab.Button.BackgroundColor3 = Colors[Window.CurrentTheme].Secondary
-                Window.CurrentTab.Highlight.Visible = false
-                Window.CurrentTab.Content.Visible = false
-                Tween(Window.CurrentTab.Label, {TextColor3 = Colors[Window.CurrentTheme].Text}, 0.2)
-                Tween(Window.CurrentTab.Icon, {ImageColor3 = Colors[Window.CurrentTheme].Text}, 0.2)
+                local previousTab = Window.Tabs[Window.CurrentTab]
+                if previousTab then
+                    previousTab.Button.BackgroundColor3 = Colors[Window.CurrentTheme].Secondary
+                    previousTab.Highlight.Visible = false
+                    previousTab.Content.Visible = false
+                    Tween(previousTab.Label, {TextColor3 = Colors[Window.CurrentTheme].Text}, 0.2)
+                    Tween(previousTab.Icon, {ImageColor3 = Colors[Window.CurrentTheme].Text}, 0.2)
+                end
             end
             
-            Window.CurrentTab = tabData
+            Window.CurrentTab = tabName
             
             Tween(TabButton, {BackgroundColor3 = Color3.fromRGB(
                 math.floor(Colors[Window.CurrentTheme].Accent.R * 0.2 + Colors[Window.CurrentTheme].Secondary.R * 0.8),
@@ -746,11 +750,14 @@ function NazuX:CreateWindow(options)
             TabIcon.Rotation = 5
             Tween(TabLabel, {Rotation = 0}, 0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
             Tween(TabIcon, {Rotation = 0}, 0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-        end)
+        end
+        
+        -- Tab button click event
+        TabButton.MouseButton1Click:Connect(SelectTab)
         
         -- Hover effects
         TabButton.MouseEnter:Connect(function()
-            if Window.CurrentTab and Window.CurrentTab.Button ~= TabButton then
+            if Window.CurrentTab ~= tabName then
                 Tween(TabButton, {BackgroundColor3 = Color3.fromRGB(
                     math.floor(Colors[Window.CurrentTheme].Secondary.R * 0.9),
                     math.floor(Colors[Window.CurrentTheme].Secondary.G * 0.9),
@@ -760,10 +767,15 @@ function NazuX:CreateWindow(options)
         end)
         
         TabButton.MouseLeave:Connect(function()
-            if Window.CurrentTab and Window.CurrentTab.Button ~= TabButton then
+            if Window.CurrentTab ~= tabName then
                 Tween(TabButton, {BackgroundColor3 = Colors[Window.CurrentTheme].Secondary}, 0.2)
             end
         end)
+        
+        -- Auto-select first tab only
+        if Window.TabCount == 1 then
+            SelectTab()
+        end
         
         -- Return tab methods
         local TabMethods = {}
@@ -1194,11 +1206,6 @@ function NazuX:CreateWindow(options)
             table.insert(tabData.Elements, SectionLabel)
             table.insert(Window.Elements, SectionLabel)
             return SectionFrame
-        end
-        
-        -- Auto-select first tab
-        if not Window.CurrentTab then
-            TabButton.MouseButton1Click()
         end
         
         return TabMethods
