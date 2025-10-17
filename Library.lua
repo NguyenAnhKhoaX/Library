@@ -1,6 +1,6 @@
 --[[
-    NazuX Library - Fixed Tab Creation Issue
-    Fixed: Only Main tab showing, other tabs not created properly
+    NazuX Library - Fixed Multiple Tab Creation Issue
+    Fixed: All tabs now properly created and visible
 ]]
 
 local NazuX = {}
@@ -383,13 +383,13 @@ function NazuX:CreateWindow(options)
         BackgroundTransparency = 1
     })
     
-    Create("UIListLayout", {
+    local TabListLayout = Create("UIListLayout", {
         Parent = TabContainer,
         SortOrder = Enum.SortOrder.LayoutOrder,
         Padding = UDim.new(0, 5)
     })
     
-    -- Content Container
+    -- Content Container - FIXED: Use Frame instead of ScrollingFrame for better tab management
     local ContentContainer = Create("Frame", {
         Parent = MainFrame,
         Name = "ContentContainer",
@@ -403,32 +403,6 @@ function NazuX:CreateWindow(options)
     Create("UICorner", {
         Parent = ContentContainer,
         CornerRadius = UDim.new(0, 8)
-    })
-    
-    local ContentScrolling = Create("ScrollingFrame", {
-        Parent = ContentContainer,
-        Name = "ContentScrolling",
-        Size = UDim2.new(1, 0, 1, 0),
-        BackgroundTransparency = 1,
-        BorderSizePixel = 0,
-        ScrollBarThickness = 3,
-        ScrollBarImageColor3 = Colors[Window.CurrentTheme].Accent,
-        CanvasSize = UDim2.new(0, 0, 0, 0),
-        AutomaticCanvasSize = Enum.AutomaticSize.Y
-    })
-    
-    Create("UIListLayout", {
-        Parent = ContentScrolling,
-        SortOrder = Enum.SortOrder.LayoutOrder,
-        Padding = UDim.new(0, 10)
-    })
-    
-    Create("UIPadding", {
-        Parent = ContentScrolling,
-        PaddingTop = UDim.new(0, 10),
-        PaddingLeft = UDim.new(0, 10),
-        PaddingRight = UDim.new(0, 10),
-        PaddingBottom = UDim.new(0, 10)
     })
     
     -- Loading Screen
@@ -677,10 +651,6 @@ function NazuX:CreateWindow(options)
             Logo.ImageColor3 = theme.Accent
             
             -- Update accent colors
-            ContentScrolling.ScrollBarImageColor3 = theme.Accent
-            
-            -- Update avatar border
-            Avatar.BackgroundColor3 = theme.Border
             Avatar.UIStroke.Color = theme.Accent
             
             -- Update all tab buttons
@@ -714,7 +684,8 @@ function NazuX:CreateWindow(options)
             Size = UDim2.new(1, 0, 0, 35),
             BackgroundColor3 = Colors[Window.CurrentTheme].Secondary,
             Text = "",
-            AutoButtonColor = false
+            AutoButtonColor = false,
+            LayoutOrder = Window.TabCount + 1
         })
         
         Create("UICorner", {
@@ -762,14 +733,15 @@ function NazuX:CreateWindow(options)
             CornerRadius = UDim.new(1, 0)
         })
         
-        -- Tab Content - FIXED: Create in ContentScrolling instead of separate frame
+        -- Tab Content - FIXED: Each tab gets its own ScrollingFrame inside ContentContainer
         local TabContent = Create("ScrollingFrame", {
-            Parent = ContentScrolling,
+            Parent = ContentContainer,
             Name = tabName.."Content",
-            Size = UDim2.new(1, 0, 0, 0),
+            Size = UDim2.new(1, 0, 1, 0),
             BackgroundTransparency = 1,
             BorderSizePixel = 0,
-            ScrollBarThickness = 0,
+            ScrollBarThickness = 3,
+            ScrollBarImageColor3 = Colors[Window.CurrentTheme].Accent,
             CanvasSize = UDim2.new(0, 0, 0, 0),
             AutomaticCanvasSize = Enum.AutomaticSize.Y,
             Visible = false
@@ -779,6 +751,14 @@ function NazuX:CreateWindow(options)
             Parent = TabContent,
             SortOrder = Enum.SortOrder.LayoutOrder,
             Padding = UDim.new(0, 10)
+        })
+        
+        Create("UIPadding", {
+            Parent = TabContent,
+            PaddingTop = UDim.new(0, 10),
+            PaddingLeft = UDim.new(0, 10),
+            PaddingRight = UDim.new(0, 10),
+            PaddingBottom = UDim.new(0, 10)
         })
         
         TabContentLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
@@ -800,17 +780,16 @@ function NazuX:CreateWindow(options)
         
         -- Tab Selection Function
         local function SelectTab()
-            if Window.CurrentTab then
-                local previousTab = Window.Tabs[Window.CurrentTab]
-                if previousTab then
-                    previousTab.Button.BackgroundColor3 = Colors[Window.CurrentTheme].Secondary
-                    previousTab.Highlight.Visible = false
-                    previousTab.Content.Visible = false
-                    Tween(previousTab.Label, {TextColor3 = Colors[Window.CurrentTheme].Text}, 0.2)
-                    Tween(previousTab.Icon, {ImageColor3 = Colors[Window.CurrentTheme].Text}, 0.2)
-                end
+            -- Hide all tab contents first
+            for name, data in pairs(Window.Tabs) do
+                data.Content.Visible = false
+                data.Highlight.Visible = false
+                Tween(data.Button, {BackgroundColor3 = Colors[Window.CurrentTheme].Secondary}, 0.2)
+                Tween(data.Label, {TextColor3 = Colors[Window.CurrentTheme].Text}, 0.2)
+                Tween(data.Icon, {ImageColor3 = Colors[Window.CurrentTheme].Text}, 0.2)
             end
             
+            -- Show selected tab
             Window.CurrentTab = tabName
             
             Tween(TabButton, {BackgroundColor3 = Color3.fromRGB(
@@ -868,7 +847,7 @@ function NazuX:CreateWindow(options)
                 BackgroundColor3 = Colors[Window.CurrentTheme].Secondary,
                 Text = "",
                 AutoButtonColor = false,
-                LayoutOrder = #TabContent:GetChildren() + 1
+                LayoutOrder = #TabContent:GetChildren()
             })
             
             Create("UICorner", {
@@ -934,7 +913,7 @@ function NazuX:CreateWindow(options)
                 Name = options.Name or "Toggle",
                 Size = UDim2.new(1, 0, 0, 35),
                 BackgroundTransparency = 1,
-                LayoutOrder = #TabContent:GetChildren() + 1
+                LayoutOrder = #TabContent:GetChildren()
             })
             
             local ToggleLabel = Create("TextLabel", {
