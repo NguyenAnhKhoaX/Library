@@ -1,6 +1,13 @@
 --[[
-    NazuX Library - Simple Working Version
-    Fixed: UI will show up immediately
+    ╔═══╗ ╔╗      ╔╗  ╔═══╗ ╔╗ ╔╗
+    ║╔═╗║ ║║      ║║  ║╔═╗║ ║║ ║║
+    ║║ ║║ ║║ ╔╗ ╔╗║║  ║║ ║║ ║║ ║║
+    ║╚═╝║ ║║ ║║ ║║║║  ║║ ║║ ║║ ║║ 
+    ║╔═╗║ ║╚═╝║ ║╚╝║  ║╚═╝║ ║╚═╝║
+    ║║ ║║ ║╔═╗║ ╚╗╔╝  ║╔═╗║ ╚╗╔╗║
+    ╚╝ ╚╝ ╚╝ ╚╝  ╚╝   ╚╝ ╚╝  ╚╝╚╝
+    
+    NazuX Library - Fixed Drag Issue
 ]]
 
 local NazuX = {}
@@ -11,6 +18,7 @@ local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
+local RunService = game:GetService("RunService")
 
 -- Utility Functions
 local function Create(class, properties)
@@ -45,7 +53,7 @@ function NazuX:CreateWindow(options)
     -- Main ScreenGui
     local ScreenGui = Create("ScreenGui", {
         Name = "NazuXLibrary",
-        DisplayOrder = 10,
+        DisplayOrder = 999, -- High priority to avoid conflicts
         ResetOnSpawn = false
     })
     
@@ -55,7 +63,8 @@ function NazuX:CreateWindow(options)
         Size = options.Size or UDim2.new(0, 600, 0, 400),
         Position = UDim2.new(0.5, -300, 0.5, -200),
         BackgroundColor3 = Colors.Dark.Background,
-        BorderSizePixel = 0
+        BorderSizePixel = 0,
+        Active = true -- Important for input
     })
     
     Create("UICorner", {
@@ -63,12 +72,14 @@ function NazuX:CreateWindow(options)
         CornerRadius = UDim.new(0, 8)
     })
     
-    -- Title Bar
+    -- Title Bar với ZIndex cao để tránh bị chặn
     local TitleBar = Create("Frame", {
         Parent = MainFrame,
         Size = UDim2.new(1, 0, 0, 40),
         BackgroundColor3 = Colors.Dark.Secondary,
-        BorderSizePixel = 0
+        BorderSizePixel = 0,
+        Active = true,
+        ZIndex = 10 -- High ZIndex
     })
     
     Create("UICorner", {
@@ -76,17 +87,18 @@ function NazuX:CreateWindow(options)
         CornerRadius = UDim.new(0, 8)
     })
     
-    -- Title
+    -- Title với chữ đặc biệt NazuX
     local Title = Create("TextLabel", {
         Parent = TitleBar,
         Size = UDim2.new(1, -80, 1, 0),
         Position = UDim2.new(0, 40, 0, 0),
         BackgroundTransparency = 1,
-        Text = options.Title or "NazuX Library",
-        TextColor3 = Colors.Dark.Text,
-        TextSize = 16,
+        Text = "🅽 🅰 🆉 🆄 🆇", -- Chữ đặc biệt NazuX
+        TextColor3 = Colors.Dark.Accent,
+        TextSize = 18,
         Font = Enum.Font.GothamBold,
-        TextXAlignment = Enum.TextXAlignment.Center
+        TextXAlignment = Enum.TextXAlignment.Center,
+        ZIndex = 11
     })
     
     -- Close Button
@@ -98,7 +110,8 @@ function NazuX:CreateWindow(options)
         Text = "X",
         TextColor3 = Colors.Dark.Text,
         TextSize = 14,
-        Font = Enum.Font.GothamBold
+        Font = Enum.Font.GothamBold,
+        ZIndex = 11
     })
     
     Create("UICorner", {
@@ -111,7 +124,8 @@ function NazuX:CreateWindow(options)
         Parent = MainFrame,
         Size = UDim2.new(0, 150, 1, -50),
         Position = UDim2.new(0, 10, 0, 50),
-        BackgroundTransparency = 1
+        BackgroundTransparency = 1,
+        ZIndex = 5
     })
     
     Create("UIListLayout", {
@@ -126,7 +140,8 @@ function NazuX:CreateWindow(options)
         Size = UDim2.new(1, -170, 1, -60),
         Position = UDim2.new(0, 170, 0, 50),
         BackgroundColor3 = Colors.Dark.Secondary,
-        BorderSizePixel = 0
+        BorderSizePixel = 0,
+        ZIndex = 5
     })
     
     Create("UICorner", {
@@ -142,7 +157,8 @@ function NazuX:CreateWindow(options)
         ScrollBarThickness = 3,
         ScrollBarImageColor3 = Colors.Dark.Accent,
         CanvasSize = UDim2.new(0, 0, 0, 0),
-        AutomaticCanvasSize = Enum.AutomaticSize.Y
+        AutomaticCanvasSize = Enum.AutomaticSize.Y,
+        ZIndex = 5
     })
     
     Create("UIListLayout", {
@@ -164,40 +180,45 @@ function NazuX:CreateWindow(options)
         ScreenGui:Destroy()
     end)
     
-    -- Make Window Draggable
+    -- FIXED DRAG SYSTEM - Sử dụng RenderStepped để tránh bị chặn
     local dragging = false
-    local dragInput
     local dragStart
     local startPos
     
-    local function update(input)
-        local delta = input.Position - dragStart
-        MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    local function updateDrag()
+        if dragging then
+            local mouse = UserInputService:GetMouseLocation()
+            local delta = Vector2.new(mouse.X, mouse.Y) - dragStart
+            local newX = startPos.X.Offset + delta.X
+            local newY = startPos.Y.Offset + delta.Y
+            
+            -- Boundary checking
+            newX = math.clamp(newX, 0, workspace.CurrentCamera.ViewportSize.X - MainFrame.AbsoluteSize.X)
+            newY = math.clamp(newY, 0, workspace.CurrentCamera.ViewportSize.Y - MainFrame.AbsoluteSize.Y)
+            
+            MainFrame.Position = UDim2.new(0, newX, 0, newY)
+        end
     end
     
+    -- Kết nối với RenderStepped thay vì InputChanged
+    local dragConnection
     TitleBar.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = true
-            dragStart = input.Position
+            dragStart = UserInputService:GetMouseLocation()
             startPos = MainFrame.Position
+            
+            -- Bắt đầu drag loop
+            dragConnection = RunService.RenderStepped:Connect(updateDrag)
             
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
                     dragging = false
+                    if dragConnection then
+                        dragConnection:Disconnect()
+                    end
                 end
             end)
-        end
-    end)
-    
-    TitleBar.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement then
-            dragInput = input
-        end
-    end)
-    
-    UserInputService.InputChanged:Connect(function(input)
-        if input == dragInput and dragging then
-            update(input)
         end
     end)
     
@@ -211,7 +232,8 @@ function NazuX:CreateWindow(options)
             Text = tabName,
             TextColor3 = Colors.Dark.Text,
             TextSize = 14,
-            Font = Enum.Font.GothamSemibold
+            Font = Enum.Font.GothamSemibold,
+            ZIndex = 6
         })
         
         Create("UICorner", {
@@ -228,7 +250,8 @@ function NazuX:CreateWindow(options)
             ScrollBarThickness = 0,
             CanvasSize = UDim2.new(0, 0, 0, 0),
             AutomaticCanvasSize = Enum.AutomaticSize.Y,
-            Visible = false
+            Visible = false,
+            ZIndex = 6
         })
         
         Create("UIListLayout", {
@@ -245,7 +268,7 @@ function NazuX:CreateWindow(options)
         
         table.insert(Window.Tabs, tabData)
         
-        -- Tab Selection
+        -- Tab Selection - FIXED: Không auto-select ngay lập tức
         TabButton.MouseButton1Click:Connect(function()
             if Window.CurrentTab then
                 Window.CurrentTab.Button.BackgroundColor3 = Colors.Dark.Secondary
@@ -269,7 +292,8 @@ function NazuX:CreateWindow(options)
                 Text = options.Name or "Button",
                 TextColor3 = Colors.Dark.Text,
                 TextSize = 14,
-                Font = Enum.Font.GothamSemibold
+                Font = Enum.Font.GothamSemibold,
+                ZIndex = 7
             })
             
             Create("UICorner", {
@@ -295,7 +319,8 @@ function NazuX:CreateWindow(options)
             local ToggleFrame = Create("Frame", {
                 Parent = TabContent,
                 Size = UDim2.new(1, 0, 0, 35),
-                BackgroundTransparency = 1
+                BackgroundTransparency = 1,
+                ZIndex = 7
             })
             
             local ToggleLabel = Create("TextLabel", {
@@ -306,7 +331,8 @@ function NazuX:CreateWindow(options)
                 TextColor3 = Colors.Dark.Text,
                 TextSize = 14,
                 Font = Enum.Font.GothamSemibold,
-                TextXAlignment = Enum.TextXAlignment.Left
+                TextXAlignment = Enum.TextXAlignment.Left,
+                ZIndex = 7
             })
             
             local ToggleButton = Create("TextButton", {
@@ -315,7 +341,8 @@ function NazuX:CreateWindow(options)
                 Position = UDim2.new(1, -40, 0.5, -10),
                 BackgroundColor3 = Colors.Dark.Secondary,
                 Text = "",
-                BorderSizePixel = 0
+                BorderSizePixel = 0,
+                ZIndex = 7
             })
             
             Create("UICorner", {
@@ -352,21 +379,17 @@ function NazuX:CreateWindow(options)
                 TextColor3 = Colors.Dark.Text,
                 TextSize = 14,
                 Font = Enum.Font.Gotham,
-                TextXAlignment = Enum.TextXAlignment.Left
+                TextXAlignment = Enum.TextXAlignment.Left,
+                ZIndex = 7
             })
             
             return Label
         end
         
-        -- Auto-select first tab
-        if #Window.Tabs == 1 then
-            TabButton.MouseButton1Click()
-        end
-        
         return TabMethods
     end
     
-    -- Parent to CoreGui at the END
+    -- Parent to CoreGui
     ScreenGui.Parent = CoreGui
     
     return Window
