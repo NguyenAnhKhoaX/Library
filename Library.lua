@@ -1,5 +1,5 @@
 --[[
-    NazuX Library - Enhanced Version with Theme Settings
+    NazuX Library - Fixed Titlebar Version
     Advanced Roblox UI Library with Modern Design
 ]]
 
@@ -71,7 +71,7 @@ function NazuX.new(Config)
     self.OwnerImage = Config.OwnerImage or "rbxassetid://0"
     self.OwnerInfo = Config.OwnerInfo or "Owner"
     self.Title = Config.Title or "NazuX Library"
-    self.Icon = Config.Icon or "rbxassetid://0" -- Icon bên trái title
+    self.Icon = Config.Icon or "rbxassetid://0"
     self.Theme = Config.Theme or "Dark"
     self.CurrentTab = nil
     self.Minimized = false
@@ -105,35 +105,21 @@ function NazuX:CreateMainUI()
     corner.CornerRadius = UDim.new(0, 8)
     corner.Parent = self.MainFrame
     
-    -- Enhanced Shadow with glow effect
+    -- Enhanced Shadow
     local shadow = Instance.new("ImageLabel")
     shadow.Name = "Shadow"
-    shadow.Size = UDim2.new(1, 30, 1, 30)
-    shadow.Position = UDim2.new(0, -15, 0, -15)
+    shadow.Size = UDim2.new(1, 24, 1, 24)
+    shadow.Position = UDim2.new(0, -12, 0, -12)
     shadow.BackgroundTransparency = 1
     shadow.Image = "rbxassetid://5554237731"
     shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-    shadow.ImageTransparency = 0.7
+    shadow.ImageTransparency = 0.8
     shadow.ScaleType = Enum.ScaleType.Slice
     shadow.SliceCenter = Rect.new(23, 23, 277, 277)
     shadow.Parent = self.MainFrame
     shadow.ZIndex = -1
     
-    -- Glow effect
-    local glow = Instance.new("ImageLabel")
-    glow.Name = "Glow"
-    glow.Size = UDim2.new(1, 40, 1, 40)
-    glow.Position = UDim2.new(0, -20, 0, -20)
-    glow.BackgroundTransparency = 1
-    glow.Image = "rbxassetid://5554237731"
-    glow.ImageColor3 = Colors[self.Theme].Accent
-    glow.ImageTransparency = 0.9
-    glow.ScaleType = Enum.ScaleType.Slice
-    glow.SliceCenter = Rect.new(23, 23, 277, 277)
-    glow.Parent = self.MainFrame
-    glow.ZIndex = -2
-    
-    -- Top Bar (Title Bar for dragging)
+    -- Top Bar (Title Bar for dragging) - FIXED STRUCTURE
     self:CreateTitleBar()
     
     -- Content Area
@@ -147,6 +133,7 @@ function NazuX:CreateMainUI()
 end
 
 function NazuX:CreateTitleBar()
+    -- Title Bar Container - FIXED
     self.TitleBar = Instance.new("Frame")
     self.TitleBar.Name = "TitleBar"
     self.TitleBar.Size = UDim2.new(1, 0, 0, 35)
@@ -154,7 +141,7 @@ function NazuX:CreateTitleBar()
     self.TitleBar.BorderSizePixel = 0
     self.TitleBar.Parent = self.MainFrame
     
-    -- Left Icon
+    -- Left Icon - FIXED POSITION
     local leftIcon = Instance.new("ImageLabel")
     leftIcon.Name = "LeftIcon"
     leftIcon.Size = UDim2.new(0, 20, 0, 20)
@@ -163,7 +150,7 @@ function NazuX:CreateTitleBar()
     leftIcon.Image = self.Icon
     leftIcon.Parent = self.TitleBar
     
-    -- Title (Centered with glow effect)
+    -- Title Container - PROPERLY CENTERED
     local titleContainer = Instance.new("Frame")
     titleContainer.Name = "TitleContainer"
     titleContainer.Size = UDim2.new(0, 200, 1, 0)
@@ -171,6 +158,7 @@ function NazuX:CreateTitleBar()
     titleContainer.BackgroundTransparency = 1
     titleContainer.Parent = self.TitleBar
     
+    -- Main Title - FIXED
     local title = Instance.new("TextLabel")
     title.Name = "Title"
     title.Size = UDim2.new(1, 0, 1, 0)
@@ -182,7 +170,7 @@ function NazuX:CreateTitleBar()
     title.TextXAlignment = Enum.TextXAlignment.Center
     title.Parent = titleContainer
     
-    -- Title glow effect
+    -- Title Glow Effect - FIXED
     local titleGlow = Instance.new("TextLabel")
     titleGlow.Name = "TitleGlow"
     titleGlow.Size = UDim2.new(1, 0, 1, 0)
@@ -197,80 +185,101 @@ function NazuX:CreateTitleBar()
     titleGlow.ZIndex = -1
     titleGlow.Parent = titleContainer
     
-    -- Control Buttons
+    -- Control Buttons - FIXED POSITIONS
     self:CreateControlButtons()
 end
 
 function NazuX:CreateControlButtons()
-    -- Settings Button (Gear Icon)
-    self.SettingsButton = Instance.new("ImageButton")
+    -- Settings Button (Gear Icon) - FIXED POSITION
+    self.SettingsButton = Instance.new("TextButton") -- Changed to TextButton for better compatibility
     self.SettingsButton.Name = "SettingsButton"
-    self.SettingsButton.Size = UDim2.new(0, 20, 0, 20)
-    self.SettingsButton.Position = UDim2.new(1, -90, 0.5, -10)
-    self.SettingsButton.BackgroundTransparency = 1
-    self.SettingsButton.Image = "rbxassetid://6031280882" -- Gear icon
-    self.SettingsButton.ImageColor3 = Colors[self.Theme].Text
+    self.SettingsButton.Size = UDim2.new(0, 25, 0, 25)
+    self.SettingsButton.Position = UDim2.new(1, -90, 0.5, -12.5)
+    self.SettingsButton.BackgroundColor3 = Colors[self.Theme].Secondary
+    self.SettingsButton.BorderSizePixel = 0
+    self.SettingsButton.Text = "⚙" -- Gear icon
+    self.SettingsButton.TextColor3 = Colors[self.Theme].Text
+    self.SettingsButton.TextSize = 14
+    self.SettingsButton.Font = Enum.Font.GothamBold
     self.SettingsButton.Parent = self.TitleBar
     
-    -- Minimize Button with enhanced animation
-    self.MinimizeButton = Instance.new("ImageButton")
+    local settingsCorner = Instance.new("UICorner")
+    settingsCorner.CornerRadius = UDim.new(0, 4)
+    settingsCorner.Parent = self.SettingsButton
+    
+    -- Minimize Button - FIXED POSITION AND ICON
+    self.MinimizeButton = Instance.new("TextButton")
     self.MinimizeButton.Name = "MinimizeButton"
-    self.MinimizeButton.Size = UDim2.new(0, 20, 0, 20)
-    self.MinimizeButton.Position = UDim2.new(1, -60, 0.5, -10)
-    self.MinimizeButton.BackgroundTransparency = 1
-    self.MinimizeButton.Image = "rbxassetid://6035067830" -- Minimize icon
-    self.MinimizeButton.ImageColor3 = Colors[self.Theme].Text
+    self.MinimizeButton.Size = UDim2.new(0, 25, 0, 25)
+    self.MinimizeButton.Position = UDim2.new(1, -60, 0.5, -12.5)
+    self.MinimizeButton.BackgroundColor3 = Colors[self.Theme].Secondary
+    self.MinimizeButton.BorderSizePixel = 0
+    self.MinimizeButton.Text = "–" -- New minimize icon
+    self.MinimizeButton.TextColor3 = Colors[self.Theme].Text
+    self.MinimizeButton.TextSize = 16
+    self.MinimizeButton.Font = Enum.Font.GothamBold
     self.MinimizeButton.Parent = self.TitleBar
     
-    -- Close Button
-    local closeButton = Instance.new("ImageButton")
+    local minimizeCorner = Instance.new("UICorner")
+    minimizeCorner.CornerRadius = UDim.new(0, 4)
+    minimizeCorner.Parent = self.MinimizeButton
+    
+    -- Close Button - FIXED POSITION
+    local closeButton = Instance.new("TextButton")
     closeButton.Name = "CloseButton"
-    closeButton.Size = UDim2.new(0, 20, 0, 20)
-    closeButton.Position = UDim2.new(1, -30, 0.5, -10)
-    closeButton.BackgroundTransparency = 1
-    closeButton.Image = "rbxassetid://6031094677" -- Close icon
-    closeButton.ImageColor3 = Colors[self.Theme].Text
+    closeButton.Size = UDim2.new(0, 25, 0, 25)
+    closeButton.Position = UDim2.new(1, -30, 0.5, -12.5)
+    closeButton.BackgroundColor3 = Color3.fromRGB(220, 60, 60)
+    closeButton.BorderSizePixel = 0
+    closeButton.Text = "X"
+    closeButton.TextColor3 = Colors[self.Theme].Text
+    closeButton.TextSize = 14
+    closeButton.Font = Enum.Font.GothamBold
     closeButton.Parent = self.TitleBar
     
-    -- Button hover effects with animations
-    local function createHoverEffect(button)
+    local closeCorner = Instance.new("UICorner")
+    closeCorner.CornerRadius = UDim.new(0, 4)
+    closeCorner.Parent = closeButton
+    
+    -- Button hover effects - FIXED
+    local function createHoverEffect(button, isClose)
         button.MouseEnter:Connect(function()
-            local tween = TweenService:Create(button, TweenInfo.new(0.2), {
-                ImageColor3 = Colors[self.Theme].Accent,
-                Rotation = 5
-            })
-            tween:Play()
+            if isClose then
+                button.BackgroundColor3 = Color3.fromRGB(255, 80, 80)
+            else
+                button.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+            end
         end)
         
         button.MouseLeave:Connect(function()
-            local tween = TweenService:Create(button, TweenInfo.new(0.2), {
-                ImageColor3 = Colors[self.Theme].Text,
-                Rotation = 0
-            })
-            tween:Play()
+            if isClose then
+                button.BackgroundColor3 = Color3.fromRGB(220, 60, 60)
+            else
+                button.BackgroundColor3 = Colors[self.Theme].Secondary
+            end
         end)
     end
     
-    createHoverEffect(self.SettingsButton)
-    createHoverEffect(self.MinimizeButton)
-    createHoverEffect(closeButton)
+    createHoverEffect(self.SettingsButton, false)
+    createHoverEffect(self.MinimizeButton, false)
+    createHoverEffect(closeButton, true)
     
-    -- Special effect for settings button
+    -- Special rotation effect for settings button
     self.SettingsButton.MouseEnter:Connect(function()
-        local spinTween = TweenService:Create(self.SettingsButton, TweenInfo.new(0.5), {
+        local tween = TweenService:Create(self.SettingsButton, TweenInfo.new(0.5), {
             Rotation = 360
         })
-        spinTween:Play()
+        tween:Play()
     end)
     
     self.SettingsButton.MouseLeave:Connect(function()
-        local resetTween = TweenService:Create(self.SettingsButton, TweenInfo.new(0.3), {
+        local tween = TweenService:Create(self.SettingsButton, TweenInfo.new(0.3), {
             Rotation = 0
         })
-        resetTween:Play()
+        tween:Play()
     end)
     
-    -- Button events
+    -- Button events - FIXED
     self.SettingsButton.MouseButton1Click:Connect(function()
         self:ToggleThemeSettings()
     end)
@@ -281,6 +290,136 @@ function NazuX:CreateControlButtons()
     
     closeButton.MouseButton1Click:Connect(function()
         self:DestroyWithAnimation()
+    end)
+end
+
+function NazuX:CreateContentArea()
+    -- Left Sidebar
+    self.LeftSidebar = Instance.new("Frame")
+    self.LeftSidebar.Name = "LeftSidebar"
+    self.LeftSidebar.Size = UDim2.new(0, 200, 1, -35)
+    self.LeftSidebar.Position = UDim2.new(0, 0, 0, 35)
+    self.LeftSidebar.BackgroundColor3 = Colors[self.Theme].Secondary
+    self.LeftSidebar.BorderSizePixel = 0
+    self.LeftSidebar.Parent = self.MainFrame
+    
+    -- Owner Info Section
+    self:CreateOwnerInfo()
+    
+    -- Search Bar
+    self:CreateSearchBar()
+    
+    -- Tab Container
+    self.TabContainer = Instance.new("ScrollingFrame")
+    self.TabContainer.Name = "TabContainer"
+    self.TabContainer.Size = UDim2.new(1, 0, 1, -160)
+    self.TabContainer.Position = UDim2.new(0, 0, 0, 160)
+    self.TabContainer.BackgroundTransparency = 1
+    self.TabContainer.BorderSizePixel = 0
+    self.TabContainer.ScrollBarThickness = 3
+    self.TabContainer.ScrollBarImageColor3 = Colors[self.Theme].Accent
+    self.TabContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
+    self.TabContainer.Parent = self.LeftSidebar
+    
+    local uiListLayout = Instance.new("UIListLayout")
+    uiListLayout.Padding = UDim.new(0, 8)
+    uiListLayout.Parent = self.TabContainer
+    
+    -- Right Content Area
+    self.ContentFrame = Instance.new("Frame")
+    self.ContentFrame.Name = "ContentFrame"
+    self.ContentFrame.Size = UDim2.new(1, -200, 1, -35)
+    self.ContentFrame.Position = UDim2.new(0, 200, 0, 35)
+    self.ContentFrame.BackgroundColor3 = Colors[self.Theme].Background
+    self.ContentFrame.BorderSizePixel = 0
+    self.ContentFrame.Parent = self.MainFrame
+    
+    -- Loading Screen
+    self:CreateLoadingScreen()
+end
+
+function NazuX:CreateOwnerInfo()
+    local ownerContainer = Instance.new("Frame")
+    ownerContainer.Name = "OwnerContainer"
+    ownerContainer.Size = UDim2.new(1, -20, 0, 80)
+    ownerContainer.Position = UDim2.new(0, 10, 0, 10)
+    ownerContainer.BackgroundTransparency = 1
+    ownerContainer.Parent = self.LeftSidebar
+    
+    -- Owner Image
+    local ownerImage = Instance.new("ImageLabel")
+    ownerImage.Name = "OwnerImage"
+    ownerImage.Size = UDim2.new(0, 50, 0, 50)
+    ownerImage.Position = UDim2.new(0.5, -25, 0, 0)
+    ownerImage.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    ownerImage.Image = self.OwnerImage
+    ownerImage.Parent = ownerContainer
+    
+    local imageCorner = Instance.new("UICorner")
+    imageCorner.CornerRadius = UDim.new(1, 0)
+    imageCorner.Parent = ownerImage
+    
+    -- Owner Info Text (Centered below image)
+    local ownerText = Instance.new("TextLabel")
+    ownerText.Name = "OwnerText"
+    ownerText.Size = UDim2.new(1, 0, 0, 20)
+    ownerText.Position = UDim2.new(0, 0, 0, 55)
+    ownerText.BackgroundTransparency = 1
+    ownerText.Text = self.OwnerInfo
+    ownerText.TextColor3 = Colors[self.Theme].Text
+    ownerText.TextSize = 14
+    ownerText.Font = Enum.Font.GothamBold
+    ownerText.TextXAlignment = Enum.TextXAlignment.Center
+    ownerText.Parent = ownerContainer
+end
+
+function NazuX:CreateSearchBar()
+    local searchContainer = Instance.new("Frame")
+    searchContainer.Name = "SearchContainer"
+    searchContainer.Size = UDim2.new(1, -20, 0, 35)
+    searchContainer.Position = UDim2.new(0, 10, 0, 100)
+    searchContainer.BackgroundColor3 = Colors[self.Theme].Background
+    searchContainer.Parent = self.LeftSidebar
+    
+    local searchCorner = Instance.new("UICorner")
+    searchCorner.CornerRadius = UDim.new(0, 6)
+    searchCorner.Parent = searchContainer
+    
+    -- Search Icon - CHANGED TO EMOJI
+    local searchIcon = Instance.new("TextLabel")
+    searchIcon.Name = "SearchIcon"
+    searchIcon.Size = UDim2.new(0, 20, 0, 20)
+    searchIcon.Position = UDim2.new(0, 8, 0.5, -10)
+    searchIcon.BackgroundTransparency = 1
+    searchIcon.Text = "🔎" -- New search emoji
+    searchIcon.TextColor3 = Color3.fromRGB(150, 150, 150)
+    searchIcon.TextSize = 14
+    searchIcon.Font = Enum.Font.Gotham
+    searchIcon.Parent = searchContainer
+    
+    -- Search TextBox
+    local searchBox = Instance.new("TextBox")
+    searchBox.Name = "SearchBox"
+    searchBox.Size = UDim2.new(1, -35, 1, 0)
+    searchBox.Position = UDim2.new(0, 30, 0, 0)
+    searchBox.BackgroundTransparency = 1
+    searchBox.PlaceholderText = "Search..."
+    searchBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+    searchBox.TextColor3 = Colors[self.Theme].Text
+    searchBox.TextSize = 14
+    searchBox.Font = Enum.Font.Gotham
+    searchBox.TextXAlignment = Enum.TextXAlignment.Left
+    searchBox.Parent = searchContainer
+    
+    -- Search box focus effects
+    searchBox.Focused:Connect(function()
+        searchContainer.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        searchIcon.TextColor3 = Colors[self.Theme].Accent
+    end)
+    
+    searchBox.FocusLost:Connect(function()
+        searchContainer.BackgroundColor3 = Colors[self.Theme].Background
+        searchIcon.TextColor3 = Color3.fromRGB(150, 150, 150)
     end)
 end
 
@@ -299,20 +438,6 @@ function NazuX:CreateThemeSettingsWindow()
     themeCorner.CornerRadius = UDim.new(0, 8)
     themeCorner.Parent = self.ThemeWindow
     
-    -- Theme window shadow
-    local themeShadow = Instance.new("ImageLabel")
-    themeShadow.Name = "ThemeShadow"
-    themeShadow.Size = UDim2.new(1, 20, 1, 20)
-    themeShadow.Position = UDim2.new(0, -10, 0, -10)
-    themeShadow.BackgroundTransparency = 1
-    themeShadow.Image = "rbxassetid://5554237731"
-    themeShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-    themeShadow.ImageTransparency = 0.8
-    themeShadow.ScaleType = Enum.ScaleType.Slice
-    themeShadow.SliceCenter = Rect.new(23, 23, 277, 277)
-    themeShadow.Parent = self.ThemeWindow
-    themeShadow.ZIndex = -1
-    
     -- Theme window title
     local themeTitle = Instance.new("TextLabel")
     themeTitle.Name = "ThemeTitle"
@@ -325,18 +450,17 @@ function NazuX:CreateThemeSettingsWindow()
     themeTitle.Font = Enum.Font.GothamBold
     themeTitle.Parent = self.ThemeWindow
     
-    local titleCorner = Instance.new("UICorner")
-    titleCorner.CornerRadius = UDim.new(0, 8)
-    titleCorner.Parent = themeTitle
-    
     -- Close theme window button
-    local closeThemeButton = Instance.new("ImageButton")
+    local closeThemeButton = Instance.new("TextButton")
     closeThemeButton.Name = "CloseThemeButton"
-    closeThemeButton.Size = UDim2.new(0, 20, 0, 20)
-    closeThemeButton.Position = UDim2.new(1, -30, 0, 10)
-    closeThemeButton.BackgroundTransparency = 1
-    closeThemeButton.Image = "rbxassetid://6031094677"
-    closeThemeButton.ImageColor3 = Colors[self.Theme].Text
+    closeThemeButton.Size = UDim2.new(0, 25, 0, 25)
+    closeThemeButton.Position = UDim2.new(1, -30, 0, 7.5)
+    closeThemeButton.BackgroundColor3 = Color3.fromRGB(220, 60, 60)
+    closeThemeButton.BorderSizePixel = 0
+    closeThemeButton.Text = "X"
+    closeThemeButton.TextColor3 = Colors[self.Theme].Text
+    closeThemeButton.TextSize = 14
+    closeThemeButton.Font = Enum.Font.GothamBold
     closeThemeButton.Parent = themeTitle
     
     closeThemeButton.MouseButton1Click:Connect(function()
@@ -399,25 +523,6 @@ function NazuX:CreateThemeButtons(container)
         accentCorner.CornerRadius = UDim.new(1, 0)
         accentCorner.Parent = accentPreview
         
-        -- Hover effects
-        themeButton.MouseEnter:Connect(function()
-            local tween = TweenService:Create(themeButton, TweenInfo.new(0.2), {
-                BackgroundColor3 = Color3.fromRGB(
-                    math.clamp(Colors[themeName].Background.R * 255 + 20, 0, 255),
-                    math.clamp(Colors[themeName].Background.G * 255 + 20, 0, 255),
-                    math.clamp(Colors[themeName].Background.B * 255 + 20, 0, 255)
-                ) / 255
-            })
-            tween:Play()
-        end)
-        
-        themeButton.MouseLeave:Connect(function()
-            local tween = TweenService:Create(themeButton, TweenInfo.new(0.2), {
-                BackgroundColor3 = Colors[themeName].Background
-            })
-            tween:Play()
-        end)
-        
         -- Click event
         themeButton.MouseButton1Click:Connect(function()
             self:ChangeTheme(themeName)
@@ -431,181 +536,6 @@ end
 
 function NazuX:ToggleThemeSettings()
     self.ThemeWindow.Visible = not self.ThemeWindow.Visible
-    
-    if self.ThemeWindow.Visible then
-        -- Bring to front
-        self.ThemeWindow.ZIndex = 20
-        self.MainFrame.ZIndex = 10
-    else
-        self.MainFrame.ZIndex = 20
-    end
-end
-
-function NazuX:CreateContentArea()
-    -- Left Sidebar
-    self.LeftSidebar = Instance.new("Frame")
-    self.LeftSidebar.Name = "LeftSidebar"
-    self.LeftSidebar.Size = UDim2.new(0, 200, 1, -35)
-    self.LeftSidebar.Position = UDim2.new(0, 0, 0, 35)
-    self.LeftSidebar.BackgroundColor3 = Colors[self.Theme].Secondary
-    self.LeftSidebar.BorderSizePixel = 0
-    self.LeftSidebar.Parent = self.MainFrame
-    
-    -- Owner Info Section (Improved Layout)
-    self:CreateOwnerInfo()
-    
-    -- Search Bar
-    self:CreateSearchBar()
-    
-    -- Tab Container
-    self.TabContainer = Instance.new("ScrollingFrame")
-    self.TabContainer.Name = "TabContainer"
-    self.TabContainer.Size = UDim2.new(1, 0, 1, -160)
-    self.TabContainer.Position = UDim2.new(0, 0, 0, 160)
-    self.TabContainer.BackgroundTransparency = 1
-    self.TabContainer.BorderSizePixel = 0
-    self.TabContainer.ScrollBarThickness = 3
-    self.TabContainer.ScrollBarImageColor3 = Colors[self.Theme].Accent
-    self.TabContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
-    self.TabContainer.Parent = self.LeftSidebar
-    
-    local uiListLayout = Instance.new("UIListLayout")
-    uiListLayout.Padding = UDim.new(0, 8)
-    uiListLayout.Parent = self.TabContainer
-    
-    -- Right Content Area
-    self.ContentFrame = Instance.new("Frame")
-    self.ContentFrame.Name = "ContentFrame"
-    self.ContentFrame.Size = UDim2.new(1, -200, 1, -35)
-    self.ContentFrame.Position = UDim2.new(0, 200, 0, 35)
-    self.ContentFrame.BackgroundColor3 = Colors[self.Theme].Background
-    self.ContentFrame.BorderSizePixel = 0
-    self.ContentFrame.Parent = self.MainFrame
-    
-    -- Loading Screen
-    self:CreateLoadingScreen()
-end
-
-function NazuX:CreateOwnerInfo()
-    local ownerContainer = Instance.new("Frame")
-    ownerContainer.Name = "OwnerContainer"
-    ownerContainer.Size = UDim2.new(1, -20, 0, 80)
-    ownerContainer.Position = UDim2.new(0, 10, 0, 10)
-    ownerContainer.BackgroundTransparency = 1
-    ownerContainer.Parent = self.LeftSidebar
-    
-    -- Owner Image with pulse animation
-    local ownerImage = Instance.new("ImageLabel")
-    ownerImage.Name = "OwnerImage"
-    ownerImage.Size = UDim2.new(0, 50, 0, 50)
-    ownerImage.Position = UDim2.new(0.5, -25, 0, 0)
-    ownerImage.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    ownerImage.Image = self.OwnerImage
-    ownerImage.Parent = ownerContainer
-    
-    local imageCorner = Instance.new("UICorner")
-    imageCorner.CornerRadius = UDim.new(1, 0)
-    imageCorner.Parent = ownerImage
-    
-    -- Pulse animation
-    local pulseConnection
-    pulseConnection = RunService.Heartbeat:Connect(function(delta)
-        local scale = 1 + math.sin(tick() * 3) * 0.05
-        ownerImage.Size = UDim2.new(0, 50 * scale, 0, 50 * scale)
-        ownerImage.Position = UDim2.new(0.5, -25 * scale, 0, 25 - 25 * scale)
-    end)
-    
-    -- Owner Info Text (Centered below image)
-    local ownerText = Instance.new("TextLabel")
-    ownerText.Name = "OwnerText"
-    ownerText.Size = UDim2.new(1, 0, 0, 20)
-    ownerText.Position = UDim2.new(0, 0, 0, 55)
-    ownerText.BackgroundTransparency = 1
-    ownerText.Text = self.OwnerInfo
-    ownerText.TextColor3 = Colors[self.Theme].Text
-    ownerText.TextSize = 14
-    ownerText.Font = Enum.Font.GothamBold
-    ownerText.TextXAlignment = Enum.TextXAlignment.Center
-    ownerText.Parent = ownerContainer
-    
-    -- Glow effect for owner text
-    local ownerGlow = Instance.new("TextLabel")
-    ownerGlow.Name = "OwnerGlow"
-    ownerGlow.Size = UDim2.new(1, 0, 0, 20)
-    ownerGlow.Position = UDim2.new(0, 0, 0, 55)
-    ownerGlow.BackgroundTransparency = 1
-    ownerGlow.Text = self.OwnerInfo
-    ownerGlow.TextColor3 = Colors[self.Theme].Accent
-    ownerGlow.TextSize = 14
-    ownerGlow.Font = Enum.Font.GothamBold
-    ownerGlow.TextXAlignment = Enum.TextXAlignment.Center
-    ownerGlow.TextTransparency = 0.7
-    ownerGlow.ZIndex = -1
-    ownerGlow.Parent = ownerContainer
-end
-
-function NazuX:CreateSearchBar()
-    local searchContainer = Instance.new("Frame")
-    searchContainer.Name = "SearchContainer"
-    searchContainer.Size = UDim2.new(1, -20, 0, 35)
-    searchContainer.Position = UDim2.new(0, 10, 0, 100)
-    searchContainer.BackgroundColor3 = Colors[self.Theme].Background
-    searchContainer.Parent = self.LeftSidebar
-    
-    local searchCorner = Instance.new("UICorner")
-    searchCorner.CornerRadius = UDim.new(0, 6)
-    searchCorner.Parent = searchContainer
-    
-    -- Search Icon with animation
-    local searchIcon = Instance.new("ImageLabel")
-    searchIcon.Name = "SearchIcon"
-    searchIcon.Size = UDim2.new(0, 18, 0, 18)
-    searchIcon.Position = UDim2.new(0, 8, 0.5, -9)
-    searchIcon.BackgroundTransparency = 1
-    searchIcon.Image = "rbxassetid://6035067836" -- Search icon
-    searchIcon.ImageColor3 = Color3.fromRGB(150, 150, 150)
-    searchIcon.Parent = searchContainer
-    
-    -- Search TextBox
-    local searchBox = Instance.new("TextBox")
-    searchBox.Name = "SearchBox"
-    searchBox.Size = UDim2.new(1, -35, 1, 0)
-    searchBox.Position = UDim2.new(0, 30, 0, 0)
-    searchBox.BackgroundTransparency = 1
-    searchBox.PlaceholderText = "Search..."
-    searchBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
-    searchBox.TextColor3 = Colors[self.Theme].Text
-    searchBox.TextSize = 14
-    searchBox.Font = Enum.Font.Gotham
-    searchBox.TextXAlignment = Enum.TextXAlignment.Left
-    searchBox.Parent = searchContainer
-    
-    -- Search box focus effects with animation
-    searchBox.Focused:Connect(function()
-        local tween = TweenService:Create(searchContainer, TweenInfo.new(0.3), {
-            BackgroundColor3 = Color3.fromRGB(60, 60, 60),
-            Size = UDim2.new(1, -10, 0, 35)
-        })
-        tween:Play()
-        
-        local iconTween = TweenService:Create(searchIcon, TweenInfo.new(0.3), {
-            ImageColor3 = Colors[self.Theme].Accent
-        })
-        iconTween:Play()
-    end)
-    
-    searchBox.FocusLost:Connect(function()
-        local tween = TweenService:Create(searchContainer, TweenInfo.new(0.3), {
-            BackgroundColor3 = Colors[self.Theme].Background,
-            Size = UDim2.new(1, -20, 0, 35)
-        })
-        tween:Play()
-        
-        local iconTween = TweenService:Create(searchIcon, TweenInfo.new(0.3), {
-            ImageColor3 = Color3.fromRGB(150, 150, 150)
-        })
-        iconTween:Play()
-    end)
 end
 
 function NazuX:CreateLoadingScreen()
@@ -619,13 +549,15 @@ function NazuX:CreateLoadingScreen()
     self.LoadingFrame.Visible = false
     self.LoadingFrame.Parent = self.MainFrame
     
-    local loadingSpinner = Instance.new("ImageLabel")
+    local loadingSpinner = Instance.new("TextLabel")
     loadingSpinner.Name = "LoadingSpinner"
     loadingSpinner.Size = UDim2.new(0, 50, 0, 50)
     loadingSpinner.Position = UDim2.new(0.5, -25, 0.5, -25)
     loadingSpinner.BackgroundTransparency = 1
-    loadingSpinner.Image = "rbxassetid://6031082533" -- Loading spinner icon
-    loadingSpinner.ImageColor3 = Colors[self.Theme].Accent
+    loadingSpinner.Text = "⟳"
+    loadingSpinner.TextColor3 = Colors[self.Theme].Accent
+    loadingSpinner.TextSize = 30
+    loadingSpinner.Font = Enum.Font.GothamBold
     loadingSpinner.Parent = self.LoadingFrame
     
     -- Spinning animation
@@ -648,20 +580,6 @@ function NazuX:CreateLoadingScreen()
     loadingText.TextSize = 16
     loadingText.Font = Enum.Font.Gotham
     loadingText.Parent = self.LoadingFrame
-    
-    -- Loading text glow
-    local loadingGlow = Instance.new("TextLabel")
-    loadingGlow.Name = "LoadingGlow"
-    loadingGlow.Size = UDim2.new(1, 0, 0, 20)
-    loadingGlow.Position = UDim2.new(0, 0, 0.5, 40)
-    loadingGlow.BackgroundTransparency = 1
-    loadingGlow.Text = "Loading..."
-    loadingGlow.TextColor3 = Colors[self.Theme].Accent
-    loadingGlow.TextSize = 16
-    loadingGlow.Font = Enum.Font.Gotham
-    loadingGlow.TextTransparency = 0.7
-    loadingGlow.ZIndex = -1
-    loadingGlow.Parent = self.LoadingFrame
 end
 
 function NazuX:MakeDraggable(frame, handle)
@@ -702,7 +620,7 @@ function NazuX:ToggleMinimizeWithAnimation()
     local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
     
     if self.Minimized then
-        -- Minimize animation with bounce effect
+        -- Minimize animation
         local tween = TweenService:Create(self.MainFrame, tweenInfo, {
             Size = UDim2.new(0, 600, 0, 35)
         })
@@ -713,28 +631,16 @@ function NazuX:ToggleMinimizeWithAnimation()
             self.LeftSidebar.Visible = false
             self.ContentFrame.Visible = false
         end)
-        
-        -- Rotate minimize button
-        local rotateTween = TweenService:Create(self.MinimizeButton, TweenInfo.new(0.3), {
-            Rotation = 180
-        })
-        rotateTween:Play()
     else
         -- Show content first
         self.LeftSidebar.Visible = true
         self.ContentFrame.Visible = true
         
-        -- Restore animation with bounce
+        -- Restore animation
         local tween = TweenService:Create(self.MainFrame, tweenInfo, {
             Size = UDim2.new(0, 600, 0, 450)
         })
         tween:Play()
-        
-        -- Rotate minimize button back
-        local rotateTween = TweenService:Create(self.MinimizeButton, TweenInfo.new(0.3), {
-            Rotation = 0
-        })
-        rotateTween:Play()
     end
 end
 
@@ -782,23 +688,15 @@ function NazuX:UpdateTheme()
     self.TitleBar.BackgroundColor3 = theme.Secondary
     self.LeftSidebar.BackgroundColor3 = theme.Secondary
     
-    -- Update glow effects
-    local glow = self.MainFrame:FindFirstChild("Glow")
-    if glow then
-        glow.ImageColor3 = theme.Accent
-    end
-    
-    -- Update text colors and accents
+    -- Update text colors
     for _, element in pairs(self.MainFrame:GetDescendants()) do
-        if element:IsA("TextLabel") or element:IsA("TextBox") then
-            if element.Name:find("Glow") then
+        if element:IsA("TextLabel") or element:IsA("TextBox") or element:IsA("TextButton") then
+            if element.Name == "Title" or element.Name == "OwnerText" then
+                element.TextColor3 = theme.Text
+            elseif element.Name == "TitleGlow" then
                 element.TextColor3 = theme.Accent
             else
                 element.TextColor3 = theme.Text
-            end
-        elseif element:IsA("ImageButton") or element:IsA("ImageLabel") then
-            if element.Name ~= "OwnerImage" and element.Name ~= "LeftIcon" then
-                element.ImageColor3 = theme.Text
             end
         end
     end
@@ -809,7 +707,7 @@ function NazuX:UpdateTheme()
     end
 end
 
--- Tab Methods (giữ nguyên từ code trước)
+-- Tab Methods with Enhanced Effects
 function NazuX:CreateTab(tabName)
     local tab = {}
     tab.Name = tabName
@@ -851,11 +749,12 @@ function NazuX:CreateTab(tabName)
     contentPadding.PaddingRight = UDim.new(0, 10)
     contentPadding.Parent = tab.Content
     
-    -- Tab button hover effects
+    -- Enhanced Tab Button Effects
     tab.Button.MouseEnter:Connect(function()
         if self.CurrentTab ~= tab then
             local tween = TweenService:Create(tab.Button, TweenInfo.new(0.2), {
-                BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+                BackgroundColor3 = Color3.fromRGB(60, 60, 60),
+                Size = UDim2.new(1, -15, 0, 40)
             })
             tween:Play()
         end
@@ -864,15 +763,16 @@ function NazuX:CreateTab(tabName)
     tab.Button.MouseLeave:Connect(function()
         if self.CurrentTab ~= tab then
             local tween = TweenService:Create(tab.Button, TweenInfo.new(0.2), {
-                BackgroundColor3 = Colors[self.Theme].Secondary
+                BackgroundColor3 = Colors[self.Theme].Secondary,
+                Size = UDim2.new(1, -20, 0, 40)
             })
             tween:Play()
         end
     end)
     
-    -- Tab button click event
+    -- Tab button click event with enhanced effects
     tab.Button.MouseButton1Click:Connect(function()
-        self:SwitchTab(tab)
+        self:SwitchTabWithEffects(tab)
     end)
     
     self.Tabs[tabName] = tab
@@ -882,37 +782,74 @@ function NazuX:CreateTab(tabName)
     
     -- Select first tab if none selected
     if not self.CurrentTab then
-        self:SwitchTab(tab)
+        self:SwitchTabWithEffects(tab)
     end
     
     return tab
 end
 
-function NazuX:SwitchTab(tab)
+function NazuX:SwitchTabWithEffects(tab)
     -- Hide all tab contents
     for _, otherTab in pairs(self.Tabs) do
         otherTab.Content.Visible = false
-        otherTab.Button.BackgroundColor3 = Colors[self.Theme].Secondary
+        
+        -- Reset other tab buttons
+        if otherTab ~= tab then
+            local tween = TweenService:Create(otherTab.Button, TweenInfo.new(0.3), {
+                BackgroundColor3 = Colors[self.Theme].Secondary,
+                Size = UDim2.new(1, -20, 0, 40),
+                TextColor3 = Colors[self.Theme].Text
+            })
+            tween:Play()
+        end
     end
     
-    -- Show selected tab content
+    -- Show selected tab content with fade in effect
     tab.Content.Visible = true
-    tab.Button.BackgroundColor3 = Colors[self.Theme].Accent
+    tab.Content.BackgroundTransparency = 1
+    
+    local fadeIn = TweenService:Create(tab.Content, TweenInfo.new(0.3), {
+        BackgroundTransparency = 1
+    })
+    fadeIn:Play()
+    
+    -- Enhanced tab button selection effect
+    local selectTween = TweenService:Create(tab.Button, TweenInfo.new(0.3), {
+        BackgroundColor3 = Colors[self.Theme].Accent,
+        Size = UDim2.new(1, -10, 0, 45),
+        TextColor3 = Color3.fromRGB(255, 255, 255)
+    })
+    selectTween:Play()
+    
+    -- Tab switching animation
+    self:AnimateTabSwitch(tab.Button)
     
     -- Update current tab
     self.CurrentTab = tab
-    
-    -- Enhanced rotation animation
-    self:AnimateTabSwitch(tab.Button)
 end
 
 function NazuX:AnimateTabSwitch(tabButton)
+    -- Scale animation
+    local scaleUp = TweenService:Create(tabButton, TweenInfo.new(0.1), {
+        Size = UDim2.new(1, -5, 0, 42)
+    })
+    
+    local scaleDown = TweenService:Create(tabButton, TweenInfo.new(0.1), {
+        Size = UDim2.new(1, -10, 0, 45)
+    })
+    
+    scaleUp:Play()
+    scaleUp.Completed:Connect(function()
+        scaleDown:Play()
+    end)
+    
+    -- Rotation animation
     local rotation = 0
     local connection
     
     connection = RunService.Heartbeat:Connect(function(delta)
-        rotation = rotation + delta * 720 -- 720 degrees per second for faster spin
-        if rotation >= 360 then
+        rotation = rotation + delta * 360
+        if rotation >= 180 then
             rotation = 0
             tabButton.Rotation = 0
             connection:Disconnect()
@@ -932,7 +869,7 @@ function NazuX:UpdateTabContainerSize()
     self.TabContainer.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
 end
 
--- Control Methods (giữ nguyên từ code trước)
+-- Control Methods
 function NazuX:AddButton(tab, buttonName, callback)
     local buttonFrame = Instance.new("Frame")
     buttonFrame.Name = buttonName .. "Button"
@@ -956,25 +893,28 @@ function NazuX:AddButton(tab, buttonName, callback)
     buttonCorner.Parent = button
     
     -- Fingerprint icon
-    local fingerprint = Instance.new("ImageLabel")
+    local fingerprint = Instance.new("TextLabel")
     fingerprint.Name = "Fingerprint"
     fingerprint.Size = UDim2.new(0, 20, 0, 20)
     fingerprint.Position = UDim2.new(1, -30, 0.5, -10)
     fingerprint.BackgroundTransparency = 1
-    fingerprint.Image = "rbxassetid://6035067839" -- Fingerprint icon
-    fingerprint.ImageColor3 = Colors[self.Theme].Text
+    fingerprint.Text = "👆"
+    fingerprint.TextColor3 = Colors[self.Theme].Text
+    fingerprint.TextSize = 12
+    fingerprint.Font = Enum.Font.Gotham
     fingerprint.Parent = button
     
-    -- Enhanced hover effects with animation
+    -- Enhanced hover effects
     button.MouseEnter:Connect(function()
         local tween = TweenService:Create(button, TweenInfo.new(0.2), {
             BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-            TextColor3 = Color3.fromRGB(0, 0, 0)
+            TextColor3 = Color3.fromRGB(0, 0, 0),
+            Size = UDim2.new(1, 5, 1, 5)
         })
         tween:Play()
         
         local iconTween = TweenService:Create(fingerprint, TweenInfo.new(0.2), {
-            ImageColor3 = Color3.fromRGB(0, 0, 0)
+            TextColor3 = Color3.fromRGB(0, 0, 0)
         })
         iconTween:Play()
     end)
@@ -982,12 +922,13 @@ function NazuX:AddButton(tab, buttonName, callback)
     button.MouseLeave:Connect(function()
         local tween = TweenService:Create(button, TweenInfo.new(0.2), {
             BackgroundColor3 = Colors[self.Theme].Secondary,
-            TextColor3 = Colors[self.Theme].Text
+            TextColor3 = Colors[self.Theme].Text,
+            Size = UDim2.new(1, 0, 1, 0)
         })
         tween:Play()
         
         local iconTween = TweenService:Create(fingerprint, TweenInfo.new(0.2), {
-            ImageColor3 = Colors[self.Theme].Text
+            TextColor3 = Colors[self.Theme].Text
         })
         iconTween:Play()
     end)
@@ -1001,99 +942,6 @@ function NazuX:AddButton(tab, buttonName, callback)
     self:UpdateContentSize(tab.Content)
     
     return button
-end
-
-function NazuX:AddToggle(tab, toggleName, defaultValue, callback)
-    local toggle = {}
-    toggle.Value = defaultValue or false
-    
-    local toggleFrame = Instance.new("Frame")
-    toggleFrame.Name = toggleName .. "Toggle"
-    toggleFrame.Size = UDim2.new(1, -20, 0, 40)
-    toggleFrame.BackgroundTransparency = 1
-    toggleFrame.Parent = tab.Content
-    
-    -- Toggle text (Left aligned)
-    local toggleText = Instance.new("TextLabel")
-    toggleText.Name = "ToggleText"
-    toggleText.Size = UDim2.new(0.7, 0, 1, 0)
-    toggleText.BackgroundTransparency = 1
-    toggleText.Text = toggleName
-    toggleText.TextColor3 = Colors[self.Theme].Text
-    toggleText.TextSize = 14
-    toggleText.Font = Enum.Font.GothamSemibold
-    toggleText.TextXAlignment = Enum.TextXAlignment.Left
-    toggleText.Parent = toggleFrame
-    
-    -- Toggle button (Right aligned)
-    local toggleButton = Instance.new("TextButton")
-    toggleButton.Name = "ToggleButton"
-    toggleButton.Size = UDim2.new(0, 50, 0, 25)
-    toggleButton.Position = UDim2.new(1, -55, 0.5, -12.5)
-    toggleButton.BackgroundColor3 = Colors[self.Theme].Secondary
-    toggleButton.BorderSizePixel = 0
-    toggleButton.Text = ""
-    toggleButton.Parent = toggleFrame
-    
-    local toggleCorner = Instance.new("UICorner")
-    toggleCorner.CornerRadius = UDim.new(1, 0)
-    toggleCorner.Parent = toggleButton
-    
-    -- Toggle indicator
-    local toggleIndicator = Instance.new("Frame")
-    toggleIndicator.Name = "ToggleIndicator"
-    toggleIndicator.Size = UDim2.new(0, 21, 0, 21)
-    toggleIndicator.Position = UDim2.new(0, 2, 0, 2)
-    toggleIndicator.BackgroundColor3 = Colors[self.Theme].Text
-    toggleIndicator.BorderSizePixel = 0
-    toggleIndicator.Parent = toggleButton
-    
-    local indicatorCorner = Instance.new("UICorner")
-    indicatorCorner.CornerRadius = UDim.new(1, 0)
-    indicatorCorner.Parent = toggleIndicator
-    
-    -- Update toggle state
-    local function updateToggle()
-        if toggle.Value then
-            -- On state - show checkmark
-            local tween = TweenService:Create(toggleIndicator, TweenInfo.new(0.2), {
-                Position = UDim2.new(1, -23, 0, 2),
-                BackgroundColor3 = Colors[self.Theme].Text
-            })
-            tween:Play()
-            
-            local bgTween = TweenService:Create(toggleButton, TweenInfo.new(0.2), {
-                BackgroundColor3 = Colors[self.Theme].Accent
-            })
-            bgTween:Play()
-        else
-            -- Off state - just border
-            local tween = TweenService:Create(toggleIndicator, TweenInfo.new(0.2), {
-                Position = UDim2.new(0, 2, 0, 2),
-                BackgroundColor3 = Colors[self.Theme].Secondary
-            })
-            tween:Play()
-            
-            local bgTween = TweenService:Create(toggleButton, TweenInfo.new(0.2), {
-                BackgroundColor3 = Colors[self.Theme].Secondary
-            })
-            bgTween:Play()
-        end
-    end
-    
-    -- Toggle click event
-    toggleButton.MouseButton1Click:Connect(function()
-        toggle.Value = not toggle.Value
-        updateToggle()
-        if callback then
-            callback(toggle.Value)
-        end
-    end)
-    
-    updateToggle()
-    self:UpdateContentSize(tab.Content)
-    
-    return toggle
 end
 
 function NazuX:UpdateContentSize(contentFrame)
