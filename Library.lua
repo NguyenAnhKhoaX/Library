@@ -287,7 +287,7 @@ function NazuX:CreateWindow(options)
         Size = UDim2.new(1, -60, 0.5, 0),
         Position = UDim2.new(0, 60, 0, 0),
         BackgroundTransparency = 1,
-        Text = options.Owner or "NazuX Owner",
+        Text = options.Owner or LocalPlayer.Name,  -- Sử dụng tên Roblox
         TextColor3 = Colors[Window.CurrentTheme].Text,
         TextSize = 16,
         Font = Enum.Font.GothamSemibold,
@@ -300,7 +300,7 @@ function NazuX:CreateWindow(options)
         Size = UDim2.new(1, -60, 0.5, 0),
         Position = UDim2.new(0, 60, 0.5, 0),
         BackgroundTransparency = 1,
-        Text = "Library Owner",
+        Text = "@" .. LocalPlayer.Name,  -- Hiển thị tên Roblox với @
         TextColor3 = Colors[Window.CurrentTheme].Text,
         TextTransparency = 0.3,
         TextSize = 12,
