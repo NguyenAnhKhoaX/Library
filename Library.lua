@@ -1,7 +1,7 @@
 --[[
     NazuX Library
     Created for Roblox
-    Version 1.1 - Fixed Dragging and Buttons
+    Version 2.0 - Fixed Tabs, Buttons and Added All Elements
 --]]
 
 local NazuX = {}
@@ -12,6 +12,7 @@ local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
+local TextService = game:GetService("TextService")
 
 -- Player
 local LocalPlayer = Players.LocalPlayer
@@ -149,6 +150,7 @@ function NazuX:CreateWindow(Config)
     Window.Theme = Config.Theme or "Dark"
     Window.Size = Config.Size or UDim2.new(0, 600, 0, 400)
     Window.Position = Config.Position or UDim2.new(0.5, -300, 0.5, -200)
+    Window.Icon = Config.Icon or "rbxassetid://10734948220"
     
     -- Create main screen GUI
     local ScreenGui = Instance.new("ScreenGui")
@@ -161,7 +163,7 @@ function NazuX:CreateWindow(Config)
     
     -- Delay to show loading
     task.spawn(function()
-        task.wait(2) -- Simulate loading time
+        task.wait(2)
         DestroyLoading()
         Window:InitializeUI(ScreenGui)
     end)
@@ -204,13 +206,13 @@ function NazuX:InitializeUI(Parent)
     TitleBarCorner.CornerRadius = UDim.new(0, 12)
     TitleBarCorner.Parent = TitleBar
     
-    -- Logo
-    local Logo = Instance.new("ImageLabel")
-    Logo.Size = UDim2.new(0, 24, 0, 24)
-    Logo.Position = UDim2.new(0, 10, 0, 8)
-    Logo.BackgroundTransparency = 1
-    Logo.Image = "rbxassetid://10734948220"
-    Logo.Parent = TitleBar
+    -- Icon
+    local Icon = Instance.new("ImageLabel")
+    Icon.Size = UDim2.new(0, 24, 0, 24)
+    Icon.Position = UDim2.new(0, 10, 0, 8)
+    Icon.BackgroundTransparency = 1
+    Icon.Image = self.Icon
+    Icon.Parent = TitleBar
     
     -- Title
     local Title = Instance.new("TextLabel")
@@ -234,6 +236,7 @@ function NazuX:InitializeUI(Parent)
     MinimizeButton.TextColor3 = Colors[self.Theme].Text
     MinimizeButton.TextSize = 18
     MinimizeButton.Font = Enum.Font.GothamBold
+    MinimizeButton.AutoButtonColor = false
     MinimizeButton.Parent = TitleBar
     
     local MinimizeCorner = Instance.new("UICorner")
@@ -249,6 +252,7 @@ function NazuX:InitializeUI(Parent)
     CloseButton.TextColor3 = Color3.new(1, 1, 1)
     CloseButton.TextSize = 14
     CloseButton.Font = Enum.Font.GothamBold
+    CloseButton.AutoButtonColor = false
     CloseButton.Parent = TitleBar
     
     local CloseCorner = Instance.new("UICorner")
@@ -421,7 +425,6 @@ function NazuX:SetupEvents()
             local NewX = self.StartPosition.X.Offset + Delta.X
             local NewY = self.StartPosition.Y.Offset + Delta.Y
             
-            -- Giới hạn trong màn hình
             local ViewportSize = workspace.CurrentCamera.ViewportSize
             NewX = math.clamp(NewX, 0, ViewportSize.X - self.MainFrame.AbsoluteSize.X)
             NewY = math.clamp(NewY, 0, ViewportSize.Y - self.MainFrame.AbsoluteSize.Y)
@@ -443,7 +446,6 @@ function NazuX:SetupEvents()
         end
     end)
     
-    -- Global mouse events for dragging
     UserInputService.InputChanged:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseMovement then
             UpdateDrag()
@@ -454,6 +456,23 @@ function NazuX:SetupEvents()
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             StopDrag()
         end
+    end)
+    
+    -- Button hover effects
+    self.MinimizeButton.MouseEnter:Connect(function()
+        Tween(self.MinimizeButton, {BackgroundColor3 = Colors[self.Theme].Accent}, 0.2)
+    end)
+    
+    self.MinimizeButton.MouseLeave:Connect(function()
+        Tween(self.MinimizeButton, {BackgroundColor3 = Colors[self.Theme].Secondary}, 0.2)
+    end)
+    
+    self.CloseButton.MouseEnter:Connect(function()
+        Tween(self.CloseButton, {BackgroundColor3 = Color3.fromRGB(255, 50, 50)}, 0.2)
+    end)
+    
+    self.CloseButton.MouseLeave:Connect(function()
+        Tween(self.CloseButton, {BackgroundColor3 = Color3.fromRGB(232, 17, 35)}, 0.2)
     end)
     
     -- Minimize functionality
@@ -477,7 +496,6 @@ function NazuX:ToggleMinimize()
     
     if self.Minimized then
         Tween(self.MainFrame, {Size = UDim2.new(0, self.Size.X.Offset, 0, 40)}, 0.3)
-        Tween(self.TitleBar, {BackgroundTransparency = 0}, 0.3)
     else
         Tween(self.MainFrame, {Size = self.Size}, 0.3)
     end
@@ -613,6 +631,7 @@ function NazuX:SelectTab(Tab)
     Tween(Tab.Button, {Rotation = 0}, 0.1)
 end
 
+-- SECTION
 function NazuX:AddSection(Tab, SectionName)
     local Section = {}
     
@@ -643,6 +662,37 @@ function NazuX:AddSection(Tab, SectionName)
     return Section
 end
 
+-- PARAGRAPH
+function NazuX:AddParagraph(Tab, Text)
+    local Paragraph = {}
+    
+    local TextLabel = Instance.new("TextLabel")
+    TextLabel.Size = UDim2.new(1, -20, 0, 0)
+    TextLabel.BackgroundTransparency = 1
+    TextLabel.Text = Text
+    TextLabel.TextColor3 = Colors[self.Theme].Text
+    TextLabel.TextSize = 14
+    TextLabel.Font = Enum.Font.Gotham
+    TextLabel.TextWrapped = true
+    TextLabel.TextXAlignment = Enum.TextXAlignment.Left
+    TextLabel.Parent = Tab.Frame
+    
+    -- Auto size
+    local function UpdateSize()
+        local TextSize = TextService:GetTextSize(Text, 14, Enum.Font.Gotham, Vector2.new(Tab.Frame.AbsoluteSize.X - 40, math.huge))
+        TextLabel.Size = UDim2.new(1, -20, 0, TextSize.Y + 10)
+    end
+    
+    UpdateSize()
+    Tab.Frame:GetPropertyChangedSignal("AbsoluteSize"):Connect(UpdateSize)
+    
+    Paragraph.Label = TextLabel
+    table.insert(Tab.Elements, TextLabel)
+    
+    return Paragraph
+end
+
+-- BUTTON
 function NazuX:AddButton(Tab, ButtonName, Callback)
     local Button = {}
     
@@ -699,6 +749,7 @@ function NazuX:AddButton(Tab, ButtonName, Callback)
     return Button
 end
 
+-- TOGGLE
 function NazuX:AddToggle(Tab, ToggleName, Default, Callback)
     local Toggle = {}
     Toggle.Value = Default or false
@@ -776,6 +827,7 @@ function NazuX:AddToggle(Tab, ToggleName, Default, Callback)
     return Toggle
 end
 
+-- DROPDOWN
 function NazuX:AddDropdown(Tab, DropdownName, Options, Default, Callback)
     local Dropdown = {}
     Dropdown.Options = Options or {}
@@ -813,6 +865,7 @@ function NazuX:AddDropdown(Tab, DropdownName, Options, Default, Callback)
     DropdownButton.TextColor3 = Color3.new(1, 1, 1)
     DropdownButton.TextSize = 12
     DropdownButton.Font = Enum.Font.Gotham
+    DropdownButton.AutoButtonColor = false
     DropdownButton.Parent = DropdownFrame
     
     local DropdownButtonCorner = Instance.new("UICorner")
@@ -895,6 +948,7 @@ function NazuX:AddDropdown(Tab, DropdownName, Options, Default, Callback)
     return Dropdown
 end
 
+-- SLIDER
 function NazuX:AddSlider(Tab, SliderName, Min, Max, Default, Callback)
     local Slider = {}
     Slider.Value = Default or Min
@@ -1022,21 +1076,174 @@ function NazuX:AddSlider(Tab, SliderName, Min, Max, Default, Callback)
     return Slider
 end
 
+-- TEXTBOX
+function NazuX:AddTextBox(Tab, TextBoxName, Placeholder, Callback)
+    local TextBox = {}
+    
+    local TextBoxFrame = Instance.new("Frame")
+    TextBoxFrame.Size = UDim2.new(1, -20, 0, 40)
+    TextBoxFrame.BackgroundColor3 = Colors[self.Theme].Secondary
+    TextBoxFrame.BorderSizePixel = 0
+    TextBoxFrame.Parent = Tab.Frame
+    
+    local TextBoxCorner = Instance.new("UICorner")
+    TextBoxCorner.CornerRadius = UDim.new(0, 8)
+    TextBoxCorner.Parent = TextBoxFrame
+    
+    local TextBoxLabel = Instance.new("TextLabel")
+    TextBoxLabel.Size = UDim2.new(0.3, 0, 1, 0)
+    TextBoxLabel.Position = UDim2.new(0, 10, 0, 0)
+    TextBoxLabel.BackgroundTransparency = 1
+    TextBoxLabel.Text = TextBoxName
+    TextBoxLabel.TextColor3 = Colors[self.Theme].Text
+    TextBoxLabel.TextSize = 14
+    TextBoxLabel.Font = Enum.Font.Gotham
+    TextBoxLabel.TextXAlignment = Enum.TextXAlignment.Left
+    TextBoxLabel.Parent = TextBoxFrame
+    
+    local InputBox = Instance.new("TextBox")
+    InputBox.Size = UDim2.new(0.6, 0, 0, 30)
+    InputBox.Position = UDim2.new(0.35, 0, 0, 5)
+    InputBox.BackgroundColor3 = Colors[self.Theme].Background
+    InputBox.BorderSizePixel = 0
+    InputBox.PlaceholderText = Placeholder or "Enter text..."
+    InputBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+    InputBox.Text = ""
+    InputBox.TextColor3 = Colors[self.Theme].Text
+    InputBox.TextSize = 14
+    InputBox.Font = Enum.Font.Gotham
+    InputBox.Parent = TextBoxFrame
+    
+    local InputCorner = Instance.new("UICorner")
+    InputCorner.CornerRadius = UDim.new(0, 6)
+    InputCorner.Parent = InputBox
+    
+    InputBox.FocusLost:Connect(function(enterPressed)
+        if enterPressed and Callback then
+            Callback(InputBox.Text)
+        end
+    end)
+    
+    TextBox.Frame = TextBoxFrame
+    TextBox.Input = InputBox
+    table.insert(Tab.Elements, TextBoxLabel)
+    
+    return TextBox
+end
+
+-- LABEL
+function NazuX:AddLabel(Tab, LabelText)
+    local Label = {}
+    
+    local LabelFrame = Instance.new("Frame")
+    LabelFrame.Size = UDim2.new(1, -20, 0, 30)
+    LabelFrame.BackgroundTransparency = 1
+    LabelFrame.Parent = Tab.Frame
+    
+    local LabelText = Instance.new("TextLabel")
+    LabelText.Size = UDim2.new(1, 0, 1, 0)
+    LabelText.BackgroundTransparency = 1
+    LabelText.Text = LabelText
+    LabelText.TextColor3 = Colors[self.Theme].Text
+    LabelText.TextSize = 14
+    LabelText.Font = Enum.Font.Gotham
+    LabelText.TextXAlignment = Enum.TextXAlignment.Left
+    LabelText.Parent = LabelFrame
+    
+    Label.Frame = LabelFrame
+    table.insert(Tab.Elements, LabelText)
+    
+    return Label
+end
+
+-- KEYBIND
+function NazuX:AddKeybind(Tab, KeybindName, DefaultKey, Callback)
+    local Keybind = {}
+    Keybind.Value = DefaultKey or Enum.KeyCode.F
+    Keybind.Listening = false
+    
+    local KeybindFrame = Instance.new("Frame")
+    KeybindFrame.Size = UDim2.new(1, -20, 0, 40)
+    KeybindFrame.BackgroundColor3 = Colors[self.Theme].Secondary
+    KeybindFrame.BorderSizePixel = 0
+    KeybindFrame.Parent = Tab.Frame
+    
+    local KeybindCorner = Instance.new("UICorner")
+    KeybindCorner.CornerRadius = UDim.new(0, 8)
+    KeybindCorner.Parent = KeybindFrame
+    
+    local KeybindLabel = Instance.new("TextLabel")
+    KeybindLabel.Size = UDim2.new(0.7, 0, 1, 0)
+    KeybindLabel.Position = UDim2.new(0, 10, 0, 0)
+    KeybindLabel.BackgroundTransparency = 1
+    KeybindLabel.Text = KeybindName
+    KeybindLabel.TextColor3 = Colors[self.Theme].Text
+    KeybindLabel.TextSize = 14
+    KeybindLabel.Font = Enum.Font.Gotham
+    KeybindLabel.TextXAlignment = Enum.TextXAlignment.Left
+    KeybindLabel.Parent = KeybindFrame
+    
+    local KeybindButton = Instance.new("TextButton")
+    KeybindButton.Size = UDim2.new(0, 80, 0, 30)
+    KeybindButton.Position = UDim2.new(1, -90, 0, 5)
+    KeybindButton.BackgroundColor3 = Colors[self.Theme].Accent
+    KeybindButton.BorderSizePixel = 0
+    KeybindButton.Text = tostring(Keybind.Value):gsub("Enum.KeyCode.", "")
+    KeybindButton.TextColor3 = Color3.new(1, 1, 1)
+    KeybindButton.TextSize = 12
+    KeybindButton.Font = Enum.Font.Gotham
+    KeybindButton.AutoButtonColor = false
+    KeybindButton.Parent = KeybindFrame
+    
+    local KeybindCorner2 = Instance.new("UICorner")
+    KeybindCorner2.CornerRadius = UDim.new(0, 6)
+    KeybindCorner2.Parent = KeybindButton
+    
+    local function UpdateKeybind()
+        KeybindButton.Text = tostring(Keybind.Value):gsub("Enum.KeyCode.", "")
+    end
+    
+    KeybindButton.MouseButton1Click:Connect(function()
+        Keybind.Listening = true
+        KeybindButton.Text = "..."
+        KeybindButton.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
+        
+        local Connection
+        Connection = UserInputService.InputBegan:Connect(function(Input, GameProcessed)
+            if GameProcessed then return end
+            
+            if Input.UserInputType == Enum.UserInputType.Keyboard then
+                Keybind.Value = Input.KeyCode
+                Keybind.Listening = false
+                UpdateKeybind()
+                KeybindButton.BackgroundColor3 = Colors[self.Theme].Accent
+                Connection:Disconnect()
+                
+                if Callback then
+                    Callback(Keybind.Value)
+                end
+            end
+        end)
+    end)
+    
+    Keybind.Frame = KeybindFrame
+    table.insert(Tab.Elements, KeybindLabel)
+    
+    return Keybind
+end
+
 function NazuX:ChangeTheme(ThemeName)
     if Colors[ThemeName] then
         self.Theme = ThemeName
         
-        -- Update all UI elements with new theme colors
         if self.MainFrame then
             self.MainFrame.BackgroundColor3 = Colors[ThemeName].Background
             self.TitleBar.BackgroundColor3 = Colors[ThemeName].Secondary
             
-            -- Update title bar stroke
             if self.MainFrame:FindFirstChild("UIStroke") then
                 self.MainFrame.UIStroke.Color = Colors[ThemeName].Accent
             end
             
-            -- Update title text
             if self.TitleBar:FindFirstChildWhichIsA("TextLabel") then
                 self.TitleBar:FindFirstChildWhichIsA("TextLabel").TextColor3 = Colors[ThemeName].Text
             end
@@ -1046,7 +1253,6 @@ end
 
 function NazuX:AddColorChangeButton(Tab, ButtonName)
     return self:AddButton(Tab, ButtonName, function()
-        -- Create color selection popup
         local ColorPopup = Instance.new("Frame")
         ColorPopup.Size = UDim2.new(0, 200, 0, 250)
         ColorPopup.Position = UDim2.new(0.5, -100, 0.5, -125)
@@ -1083,7 +1289,6 @@ function NazuX:AddColorChangeButton(Tab, ButtonName)
         ColorLayout.SortOrder = Enum.SortOrder.LayoutOrder
         ColorLayout.Parent = ColorList
         
-        -- Add color options
         for ThemeName, ColorData in pairs(Colors) do
             local ColorButton = Instance.new("TextButton")
             ColorButton.Size = UDim2.new(1, 0, 0, 40)
@@ -1106,7 +1311,6 @@ function NazuX:AddColorChangeButton(Tab, ButtonName)
             end)
         end
         
-        -- Close when clicking outside
         local CloseConnection
         CloseConnection = UserInputService.InputBegan:Connect(function(Input)
             if Input.UserInputType == Enum.UserInputType.MouseButton1 then
