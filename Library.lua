@@ -1,7 +1,7 @@
 --[[
     NazuX Library
     Created for Roblox
-    Version 1.0
+    Version 1.1 - Fixed Dragging and Buttons
 --]]
 
 local NazuX = {}
@@ -145,7 +145,7 @@ function NazuX:CreateWindow(Config)
     
     -- Window properties
     Window.Title = Config.Title or "NazuX Library"
-    Window.OwnerImage = Config.OwnerImage or "rbxasset://textures/ui/GuiImagePlaceholder.png"
+    Window.OwnerImage = Config.OwnerImage or "rbxassetid://10734948220"
     Window.Theme = Config.Theme or "Dark"
     Window.Size = Config.Size or UDim2.new(0, 600, 0, 400)
     Window.Position = Config.Position or UDim2.new(0.5, -300, 0.5, -200)
@@ -170,6 +170,9 @@ function NazuX:CreateWindow(Config)
     Window.Tabs = {}
     Window.CurrentTab = nil
     Window.Minimized = false
+    Window.Dragging = false
+    Window.DragStart = nil
+    Window.StartPosition = nil
     
     return Window
 end
@@ -190,7 +193,7 @@ function NazuX:InitializeUI(Parent)
     
     local MainStroke = CreateStroke(MainFrame, Colors[self.Theme].Accent, 2)
     
-    -- Title Bar
+    -- Title Bar (for dragging)
     local TitleBar = Instance.new("Frame")
     TitleBar.Size = UDim2.new(1, 0, 0, 40)
     TitleBar.BackgroundColor3 = Colors[self.Theme].Secondary
@@ -206,7 +209,7 @@ function NazuX:InitializeUI(Parent)
     Logo.Size = UDim2.new(0, 24, 0, 24)
     Logo.Position = UDim2.new(0, 10, 0, 8)
     Logo.BackgroundTransparency = 1
-    Logo.Image = "rbxassetid://10734948220" -- Example logo
+    Logo.Image = "rbxassetid://10734948220"
     Logo.Parent = TitleBar
     
     -- Title
@@ -392,6 +395,67 @@ function NazuX:InitializeUI(Parent)
 end
 
 function NazuX:SetupEvents()
+    -- Dragging functionality
+    local function StartDrag()
+        self.Dragging = true
+        self.DragStart = UserInputService:GetMouseLocation()
+        self.StartPosition = UDim2.new(
+            self.MainFrame.Position.X.Scale,
+            self.MainFrame.Position.X.Offset,
+            self.MainFrame.Position.Y.Scale,
+            self.MainFrame.Position.Y.Offset
+        )
+    end
+    
+    local function StopDrag()
+        self.Dragging = false
+        self.DragStart = nil
+        self.StartPosition = nil
+    end
+    
+    local function UpdateDrag()
+        if self.Dragging and self.DragStart and self.StartPosition then
+            local MouseLocation = UserInputService:GetMouseLocation()
+            local Delta = MouseLocation - self.DragStart
+            
+            local NewX = self.StartPosition.X.Offset + Delta.X
+            local NewY = self.StartPosition.Y.Offset + Delta.Y
+            
+            -- Giới hạn trong màn hình
+            local ViewportSize = workspace.CurrentCamera.ViewportSize
+            NewX = math.clamp(NewX, 0, ViewportSize.X - self.MainFrame.AbsoluteSize.X)
+            NewY = math.clamp(NewY, 0, ViewportSize.Y - self.MainFrame.AbsoluteSize.Y)
+            
+            self.MainFrame.Position = UDim2.new(0, NewX, 0, NewY)
+        end
+    end
+    
+    -- Title bar dragging
+    self.TitleBar.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            StartDrag()
+        end
+    end)
+    
+    self.TitleBar.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            StopDrag()
+        end
+    end)
+    
+    -- Global mouse events for dragging
+    UserInputService.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            UpdateDrag()
+        end
+    end)
+    
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            StopDrag()
+        end
+    end)
+    
     -- Minimize functionality
     self.MinimizeButton.MouseButton1Click:Connect(function()
         self:ToggleMinimize()
@@ -455,11 +519,25 @@ function NazuX:AddTab(TabName)
     TabButton.TextColor3 = Colors[self.Theme].Text
     TabButton.TextSize = 14
     TabButton.Font = Enum.Font.Gotham
+    TabButton.AutoButtonColor = false
     TabButton.Parent = self.TabsContainer
     
     local TabCorner = Instance.new("UICorner")
     TabCorner.CornerRadius = UDim.new(0, 8)
     TabCorner.Parent = TabButton
+    
+    -- Hover effects for tab button
+    TabButton.MouseEnter:Connect(function()
+        if self.CurrentTab ~= Tab then
+            Tween(TabButton, {BackgroundTransparency = 0.3}, 0.2)
+        end
+    end)
+    
+    TabButton.MouseLeave:Connect(function()
+        if self.CurrentTab ~= Tab then
+            Tween(TabButton, {BackgroundTransparency = 0.5}, 0.2)
+        end
+    end)
     
     -- Tab Content Frame
     local TabFrame = Instance.new("ScrollingFrame")
@@ -595,7 +673,7 @@ function NazuX:AddButton(Tab, ButtonName, Callback)
     Fingerprint.Size = UDim2.new(0, 20, 0, 20)
     Fingerprint.Position = UDim2.new(1, -30, 0, 10)
     Fingerprint.BackgroundTransparency = 1
-    Fingerprint.Image = "rbxassetid://10734948220" -- Fingerprint icon
+    Fingerprint.Image = "rbxassetid://10734948220"
     Fingerprint.Parent = ButtonFrame
     
     -- Hover effects
@@ -768,11 +846,21 @@ function NazuX:AddDropdown(Tab, DropdownName, Options, Default, Callback)
         OptionButton.TextColor3 = Colors[self.Theme].Text
         OptionButton.TextSize = 12
         OptionButton.Font = Enum.Font.Gotham
+        OptionButton.AutoButtonColor = false
         OptionButton.Parent = DropdownList
         
         local OptionCorner = Instance.new("UICorner")
         OptionCorner.CornerRadius = UDim.new(0, 4)
         OptionCorner.Parent = OptionButton
+        
+        -- Hover effects for options
+        OptionButton.MouseEnter:Connect(function()
+            Tween(OptionButton, {BackgroundColor3 = Colors[self.Theme].Accent}, 0.2)
+        end)
+        
+        OptionButton.MouseLeave:Connect(function()
+            Tween(OptionButton, {BackgroundColor3 = Colors[self.Theme].Secondary}, 0.2)
+        end)
         
         OptionButton.MouseButton1Click:Connect(function()
             Dropdown.Value = Option
@@ -893,18 +981,16 @@ function NazuX:AddSlider(Tab, SliderName, Min, Max, Default, Callback)
         end
     end
     
-    SliderButton.MouseButton1Down:Connect(function()
+    local function StartDrag()
         Dragging = true
-    end)
+    end
     
-    UserInputService.InputEnded:Connect(function(Input)
-        if Input.UserInputType == Enum.UserInputType.MouseButton1 then
-            Dragging = false
-        end
-    end)
+    local function StopDrag()
+        Dragging = false
+    end
     
-    UserInputService.InputChanged:Connect(function(Input)
-        if Dragging and Input.UserInputType == Enum.UserInputType.MouseMovement then
+    local function UpdateDrag()
+        if Dragging then
             local MousePos = UserInputService:GetMouseLocation()
             local TrackAbsPos = SliderTrack.AbsolutePosition
             local TrackAbsSize = SliderTrack.AbsoluteSize
@@ -913,6 +999,20 @@ function NazuX:AddSlider(Tab, SliderName, Min, Max, Default, Callback)
             local Value = Slider.Min + (RelativeX * (Slider.Max - Slider.Min))
             
             UpdateSlider(math.clamp(Value, Slider.Min, Slider.Max))
+        end
+    end
+    
+    SliderButton.MouseButton1Down:Connect(StartDrag)
+    
+    UserInputService.InputEnded:Connect(function(Input)
+        if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+            StopDrag()
+        end
+    end)
+    
+    UserInputService.InputChanged:Connect(function(Input)
+        if Input.UserInputType == Enum.UserInputType.MouseMovement then
+            UpdateDrag()
         end
     end)
     
@@ -993,6 +1093,7 @@ function NazuX:AddColorChangeButton(Tab, ButtonName)
             ColorButton.TextColor3 = Color3.new(1, 1, 1)
             ColorButton.TextSize = 14
             ColorButton.Font = Enum.Font.Gotham
+            ColorButton.AutoButtonColor = false
             ColorButton.Parent = ColorList
             
             local ButtonCorner = Instance.new("UICorner")
