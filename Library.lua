@@ -20,60 +20,16 @@ local mouse = localPlayer:GetMouse()
 
 -- Icons dictionary
 local Icons = {
-    ["perm_media"] = "http://www.roblox.com/asset/?id=6031215982",
-    ["sticky_note_2"] = "http://www.roblox.com/asset/?id=6031265972",
-    ["gavel"] = "http://www.roblox.com/asset/?id=6023565902",
-    ["table_view"] = "http://www.roblox.com/asset/?id=6031233835",
     ["home"] = "http://www.roblox.com/asset/?id=6026568195",
-    ["list"] = "http://www.roblox.com/asset/?id=6026568229",
     ["search"] = "http://www.roblox.com/asset/?id=6031154871",
     ["settings"] = "http://www.roblox.com/asset/?id=6031280882",
     ["person"] = "http://www.roblox.com/asset/?id=6034287594",
-    ["dark_mode"] = "http://www.roblox.com/asset/?id=6035067839",
-    ["light_mode"] = "http://www.roblox.com/asset/?id=6035067842",
-    ["palette"] = "http://www.roblox.com/asset/?id=6034316009",
     ["close"] = "http://www.roblox.com/asset/?id=6031094678",
-    ["remove"] = "http://www.roblox.com/asset/?id=6035067836",
     ["expand_more"] = "http://www.roblox.com/asset/?id=6031094687",
     ["check"] = "http://www.roblox.com/asset/?id=6031094667",
-    ["add"] = "http://www.roblox.com/asset/?id=6035047377",
     ["fingerprint"] = "http://www.roblox.com/asset/?id=6023565895",
-    ["info"] = "http://www.roblox.com/asset/?id=6026568227",
-    ["warning"] = "http://www.roblox.com/asset/?id=6031071053",
-    ["star"] = "http://www.roblox.com/asset/?id=6031068423",
-    ["favorite"] = "http://www.roblox.com/asset/?id=6023426974",
-    ["lock"] = "http://www.roblox.com/asset/?id=6026568224",
-    ["security"] = "http://www.roblox.com/asset/?id=6034837802",
-    ["code"] = "http://www.roblox.com/asset/?id=6022668955",
-    ["build"] = "http://www.roblox.com/asset/?id=6023426938",
-    ["extension"] = "http://www.roblox.com/asset/?id=6023565892",
-    ["gamepad"] = "http://www.roblox.com/asset/?id=6034789879",
-    ["dashboard"] = "http://www.roblox.com/asset/?id=6022668883",
-    ["speed"] = "http://www.roblox.com/asset/?id=6026681578",
-    ["bolt"] = "http://www.roblox.com/asset/?id=6035047381",
-    ["rocket_launch"] = "http://www.roblox.com/asset/?id=6031075934",
-    ["auto_awesome"] = "http://www.roblox.com/asset/?id=6031360365",
-    ["gradient"] = "http://www.roblox.com/asset/?id=6034333261",
-    ["color_lens"] = "http://www.roblox.com/asset/?id=6031625148",
-    ["brush"] = "http://www.roblox.com/asset/?id=6031572320",
-    ["format_paint"] = "http://www.roblox.com/asset/?id=6034925618",
-    ["palette"] = "http://www.roblox.com/asset/?id=6034316009",
-    ["invert_colors"] = "http://www.roblox.com/asset/?id=6026568253",
-    ["contrast"] = "http://www.roblox.com/asset/?id=6034328968",
-    ["brightness_6"] = "http://www.roblox.com/asset/?id=6031572309",
-    ["tonality"] = "http://www.roblox.com/asset/?id=6031734891",
-    ["opacity"] = "http://www.roblox.com/asset/?id=6026568295",
-    ["style"] = "http://www.roblox.com/asset/?id=6031754538",
-    ["texture"] = "http://www.roblox.com/asset/?id=6031754553",
-    ["filter_vintage"] = "http://www.roblox.com/asset/?id=6031600811",
-    ["photo_filter"] = "http://www.roblox.com/asset/?id=6031770992",
-    ["adjust"] = "http://www.roblox.com/asset/?id=6031339048",
-    ["flare"] = "http://www.roblox.com/asset/?id=6031600816",
-    ["looks"] = "http://www.roblox.com/asset/?id=6034407096",
-    ["wb_sunny"] = "http://www.roblox.com/asset/?id=6034412758",
-    ["nights_stay"] = "http://www.roblox.com/asset/?id=6034304881",
-    ["bedtime"] = "http://www.roblox.com/asset/?id=6031371054",
-    ["lightbulb"] = "http://www.roblox.com/asset/?id=6026568247"
+    ["fullscreen"] = "http://www.roblox.com/asset/?id=6031094681",
+    ["fullscreen_exit"] = "http://www.roblox.com/asset/?id=6031094691"
 }
 
 -- Theme colors
@@ -151,6 +107,7 @@ function NazuX:CreateWindow(options)
         Tabs = {},
         CurrentTab = nil,
         Minimized = false,
+        FullScreen = false,
         CurrentTheme = options.Theme or "Dark"
     }
     setmetatable(Window, self)
@@ -232,34 +189,24 @@ function NazuX:CreateWindow(options)
     
     Create("UICorner", {Parent = TitleBar, CornerRadius = UDim.new(0, 8)})
     
-    -- Logo
-    local Logo = Create("ImageLabel", {
-        Parent = TitleBar,
-        Size = UDim2.new(0, 24, 0, 24),
-        Position = UDim2.new(0, 10, 0.5, -12),
-        BackgroundTransparency = 1,
-        Image = Icons.code,
-        ImageColor3 = Themes[Window.CurrentTheme].Accent
-    })
-    
-    -- Title
+    -- Title (bên trái)
     local Title = Create("TextLabel", {
         Parent = TitleBar,
         Size = UDim2.new(0, 200, 1, 0),
-        Position = UDim2.new(0.5, -100, 0, 0),
+        Position = UDim2.new(0, 15, 0, 0),
         BackgroundTransparency = 1,
         Text = options.Title or "NazuX Library",
         TextColor3 = Themes[Window.CurrentTheme].Text,
         TextSize = 16,
         Font = Enum.Font.GothamSemibold,
-        TextXAlignment = Enum.TextXAlignment.Center
+        TextXAlignment = Enum.TextXAlignment.Left
     })
     
-    -- Search bar in title
+    -- Search bar
     local SearchFrame = Create("Frame", {
         Parent = TitleBar,
         Size = UDim2.new(0, 200, 0, 30),
-        Position = UDim2.new(0.7, -100, 0.5, -15),
+        Position = UDim2.new(0.5, -100, 0.5, -15),
         BackgroundColor3 = Themes[Window.CurrentTheme].Main,
         BorderSizePixel = 0
     })
@@ -290,6 +237,27 @@ function NazuX:CreateWindow(options)
     })
     
     -- Control buttons
+    local FullScreenButton = Create("TextButton", {
+        Parent = TitleBar,
+        Size = UDim2.new(0, 30, 0, 30),
+        Position = UDim2.new(1, -110, 0.5, -15),
+        BackgroundColor3 = Themes[Window.CurrentTheme].Secondary,
+        BorderSizePixel = 0,
+        Text = "",
+        AutoButtonColor = false
+    })
+    
+    Create("UICorner", {Parent = FullScreenButton, CornerRadius = UDim.new(0, 6)})
+    
+    local FullScreenIcon = Create("ImageLabel", {
+        Parent = FullScreenButton,
+        Size = UDim2.new(0, 18, 0, 18),
+        Position = UDim2.new(0.5, -9, 0.5, -9),
+        BackgroundTransparency = 1,
+        Image = Icons.fullscreen,
+        ImageColor3 = Themes[Window.CurrentTheme].Text
+    })
+    
     local MinimizeButton = Create("TextButton", {
         Parent = TitleBar,
         Size = UDim2.new(0, 30, 0, 30),
@@ -299,7 +267,8 @@ function NazuX:CreateWindow(options)
         Text = "-",
         TextColor3 = Themes[Window.CurrentTheme].Text,
         TextSize = 18,
-        Font = Enum.Font.GothamBold
+        Font = Enum.Font.GothamBold,
+        AutoButtonColor = false
     })
     
     Create("UICorner", {Parent = MinimizeButton, CornerRadius = UDim.new(0, 6)})
@@ -313,7 +282,8 @@ function NazuX:CreateWindow(options)
         Text = "X",
         TextColor3 = Color3.fromRGB(255, 255, 255),
         TextSize = 14,
-        Font = Enum.Font.GothamBold
+        Font = Enum.Font.GothamBold,
+        AutoButtonColor = false
     })
     
     Create("UICorner", {Parent = CloseButton, CornerRadius = UDim.new(0, 6)})
@@ -407,14 +377,25 @@ function NazuX:CreateWindow(options)
         Size = UDim2.new(1, -10, 0, 35),
         BackgroundColor3 = Themes[Window.CurrentTheme].Accent,
         BorderSizePixel = 0,
-        BackgroundTransparency = 0.3
+        BackgroundTransparency = 0.3,
+        Visible = false
     })
     
     Create("UICorner", {Parent = TabHighlight, CornerRadius = UDim.new(0, 6)})
     
-    -- Make window draggable
+    -- Make window draggable với TitleBar
     local Dragging = false
     local DragInput, DragStart, StartPos
+    
+    local function UpdateDrag(input)
+        if not Dragging then return end
+        
+        local delta = input.Position - DragStart
+        MainFrame.Position = UDim2.new(
+            StartPos.X.Scale, StartPos.X.Offset + delta.X,
+            StartPos.Y.Scale, StartPos.Y.Offset + delta.Y
+        )
+    end
     
     TitleBar.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -438,11 +419,7 @@ function NazuX:CreateWindow(options)
     
     UserInputService.InputChanged:Connect(function(input)
         if input == DragInput and Dragging then
-            local delta = input.Position - DragStart
-            MainFrame.Position = UDim2.new(
-                StartPos.X.Scale, StartPos.X.Offset + delta.X,
-                StartPos.Y.Scale, StartPos.Y.Offset + delta.Y
-            )
+            UpdateDrag(input)
         end
     end)
     
@@ -459,6 +436,17 @@ function NazuX:CreateWindow(options)
             Tween(UserInfoFrame, {BackgroundTransparency = 0}, 0.3)
             Tween(TabsContainer, {BackgroundTransparency = 0.2}, 0.3)
             Tween(ContentContainer, {BackgroundTransparency = 0}, 0.3)
+        end
+    end)
+    
+    FullScreenButton.MouseButton1Click:Connect(function()
+        Window.FullScreen = not Window.FullScreen
+        if Window.FullScreen then
+            Tween(MainFrame, {Size = UDim2.new(1, -20, 1, -20), Position = UDim2.new(0, 10, 0, 10)}, 0.3)
+            FullScreenIcon.Image = Icons.fullscreen_exit
+        else
+            Tween(MainFrame, {Size = UDim2.new(0, 600, 0, 400), Position = UDim2.new(0.5, -300, 0.5, -200)}, 0.3)
+            FullScreenIcon.Image = Icons.fullscreen
         end
     end)
     
@@ -527,7 +515,7 @@ function NazuX:AddTab(name, icon)
         Size = UDim2.new(0, 20, 0, 20),
         Position = UDim2.new(0, 10, 0.5, -10),
         BackgroundTransparency = 1,
-        Image = Icons[icon] or Icons.extension,
+        Image = Icons[icon] or Icons.home,
         ImageColor3 = Themes[self.CurrentTheme].Text
     })
     
@@ -578,11 +566,6 @@ function NazuX:AddTab(name, icon)
     
     table.insert(self.Tabs, Tab)
     
-    -- Auto-select first tab
-    if #self.Tabs == 1 then
-        self:SwitchTab(Tab)
-    end
-    
     -- Update scrolling frame size
     self.TabsContainer.CanvasSize = UDim2.new(0, 0, 0, self.UIListLayout.AbsoluteContentSize.Y)
     
@@ -600,7 +583,8 @@ function NazuX:SwitchTab(tab)
     self.CurrentTab = tab
     tab.Content.Visible = true
     
-    -- Move highlight
+    -- Show and move highlight
+    self.TabHighlight.Visible = true
     Tween(self.TabHighlight, {Position = tab.Button.Position}, 0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
     
     -- Change button appearance
@@ -657,11 +641,13 @@ function NazuX:AddButton(tab, options)
     ButtonFrame.MouseEnter:Connect(function()
         Tween(ButtonFrame, {BackgroundColor3 = Color3.fromRGB(255, 255, 255)}, 0.2)
         Tween(ButtonLabel, {TextColor3 = Color3.fromRGB(0, 0, 0)}, 0.2)
+        Tween(FingerprintIcon, {ImageColor3 = Color3.fromRGB(0, 0, 0)}, 0.2)
     end)
     
     ButtonFrame.MouseLeave:Connect(function()
         Tween(ButtonFrame, {BackgroundColor3 = Themes[self.CurrentTheme].Secondary}, 0.2)
         Tween(ButtonLabel, {TextColor3 = Themes[self.CurrentTheme].Text}, 0.2)
+        Tween(FingerprintIcon, {ImageColor3 = Themes[self.CurrentTheme].TextSecondary}, 0.2)
     end)
     
     ButtonFrame.MouseButton1Click:Connect(function()
@@ -804,7 +790,8 @@ function NazuX:AddDropdown(tab, options)
         Text = Dropdown.Value,
         TextColor3 = Themes[self.CurrentTheme].Text,
         TextSize = 12,
-        Font = Enum.Font.Gotham
+        Font = Enum.Font.Gotham,
+        AutoButtonColor = false
     })
     
     Create("UICorner", {Parent = DropdownButton, CornerRadius = UDim.new(0, 4)})
@@ -867,7 +854,8 @@ function NazuX:AddDropdown(tab, options)
             Text = option,
             TextColor3 = Themes[self.CurrentTheme].Text,
             TextSize = 12,
-            Font = Enum.Font.Gotham
+            Font = Enum.Font.Gotham,
+            AutoButtonColor = false
         })
         
         OptionButton.MouseButton1Click:Connect(function()
