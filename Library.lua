@@ -1,4 +1,4 @@
--- NazuX Library - With Real Avatar
+-- NazuX Library - Fixed Tabs & Buttons
 local NazuX = {}
 NazuX.__index = NazuX
 
@@ -233,7 +233,7 @@ function NazuX:CreateWindow(options)
         Parent = UserInfoFrame
     })
     
-    -- AVATAR THẬT từ Roblox
+    -- Avatar Thật
     local UserAvatar = Create("ImageLabel", {
         Name = "UserAvatar",
         BackgroundColor3 = Color3.fromRGB(60, 60, 60),
@@ -281,7 +281,7 @@ function NazuX:CreateWindow(options)
         Parent = UserInfoFrame
     })
     
-    -- Tabs Container
+    -- Tabs Container - FIXED
     local TabsContainer = Create("ScrollingFrame", {
         Name = "TabsContainer",
         BackgroundTransparency = 1,
@@ -302,7 +302,7 @@ function NazuX:CreateWindow(options)
         TabsContainer.CanvasSize = UDim2.new(0, 0, 0, TabsListLayout.AbsoluteContentSize.Y)
     end)
     
-    -- Content Area
+    -- Content Area - FIXED
     local ContentArea = Create("Frame", {
         Name = "ContentArea",
         BackgroundTransparency = 1,
@@ -471,7 +471,6 @@ function NazuX:CreateWindow(options)
             
             wait(0.2)
             
-            -- Hủy kết nối phím tắt trước khi đóng
             if MinimizeConnection then
                 MinimizeConnection:Disconnect()
             end
@@ -488,7 +487,7 @@ function NazuX:CreateWindow(options)
         end
     end)
     
-    -- Tab Management
+    -- Tab Management - FIXED HOÀN TOÀN
     local CurrentTab = nil
     local TabContents = {}
     local TabButtons = {}
@@ -497,7 +496,7 @@ function NazuX:CreateWindow(options)
     function NazuXLibrary:CreateTab(TabName)
         local TabFunctions = {}
         
-        -- Tạo tab button thẳng đứng
+        -- Tạo tab button
         local TabButton = Create("TextButton", {
             Name = TabName .. "TabButton",
             BackgroundColor3 = Color3.fromRGB(50, 50, 50),
@@ -523,7 +522,7 @@ function NazuX:CreateWindow(options)
             Parent = TabButton
         })
         
-        -- Tạo content cho tab
+        -- Tạo content cho tab - FIXED
         local TabContent = Create("ScrollingFrame", {
             Name = TabName .. "Content",
             BackgroundTransparency = 1,
@@ -573,30 +572,35 @@ function NazuX:CreateWindow(options)
             end
         end)
         
-        -- Tab Click Functionality
+        -- Tab Click Functionality - FIXED
         TabButton.MouseButton1Click:Connect(function()
             if CurrentTab then
                 CurrentTab.Visible = false
                 
-                for _, btn in pairs(TabButtons) do
-                    Tween(btn, {
-                        BackgroundColor3 = Color3.fromRGB(50, 50, 50),
-                        TextColor3 = Color3.fromRGB(200, 200, 200)
-                    }, 0.2)
+                -- Reset tất cả tab buttons
+                for tabName, btn in pairs(TabButtons) do
+                    if TabContents[tabName] ~= CurrentTab then
+                        Tween(btn, {
+                            BackgroundColor3 = Color3.fromRGB(50, 50, 50),
+                            TextColor3 = Color3.fromRGB(200, 200, 200)
+                        }, 0.2)
+                    end
                 end
             end
             
+            -- Hiển thị tab mới
             CurrentTab = TabContent
             TabContent.Visible = true
             SearchResults.Visible = false
             
+            -- Highlight tab button mới
             Tween(TabButton, {
                 BackgroundColor3 = Color3.fromRGB(0, 120, 215),
                 TextColor3 = Color3.fromRGB(255, 255, 255)
             }, 0.2)
         end)
         
-        -- BUTTON FUNCTION
+        -- BUTTON FUNCTION - FIXED HOÀN TOÀN
         function TabFunctions:AddButton(ButtonConfig)
             ButtonConfig = ButtonConfig or {}
             local ButtonName = ButtonConfig.Name or "Button"
@@ -644,7 +648,7 @@ function NazuX:CreateWindow(options)
             }
             table.insert(AllElements, elementData)
             
-            -- Button Animations
+            -- Button Animations - FIXED
             local buttonDebounce = false
             
             Button.MouseEnter:Connect(function()
@@ -669,6 +673,7 @@ function NazuX:CreateWindow(options)
                 if not buttonDebounce then
                     buttonDebounce = true
                     
+                    -- Click animation
                     Tween(ButtonContainer, {
                         BackgroundColor3 = Color3.fromRGB(25, 25, 25)
                     }, 0.1)
@@ -679,6 +684,7 @@ function NazuX:CreateWindow(options)
                         BackgroundColor3 = Color3.fromRGB(45, 45, 45)
                     }, 0.1)
                     
+                    -- Execute callback
                     Callback()
                     
                     wait(0.2)
@@ -686,7 +692,160 @@ function NazuX:CreateWindow(options)
                 end
             end)
             
-            return ButtonContainer
+            return Button
+        end
+        
+        -- TOGGLE FUNCTION - FIXED
+        function TabFunctions:AddToggle(ToggleConfig)
+            ToggleConfig = ToggleConfig or {}
+            local ToggleName = ToggleConfig.Name or "Toggle"
+            local Default = ToggleConfig.Default or false
+            local Callback = ToggleConfig.Callback or function() end
+            
+            local ToggleContainer = Create("Frame", {
+                Name = ToggleName .. "Container",
+                BackgroundColor3 = Color3.fromRGB(35, 35, 35),
+                BackgroundTransparency = 0.2,
+                BorderSizePixel = 0,
+                Size = UDim2.new(1, 0, 0, 45),
+                Parent = TabContent
+            })
+            
+            local ToggleContainerCorner = Create("UICorner", {
+                CornerRadius = UDim.new(0, 10),
+                Parent = ToggleContainer
+            })
+            
+            local ToggleContainerStroke = Create("UIStroke", {
+                Color = Color3.fromRGB(70, 70, 70),
+                Thickness = 1,
+                Parent = ToggleContainer
+            })
+            
+            local ToggleLabel = Create("TextLabel", {
+                Name = "ToggleLabel",
+                BackgroundTransparency = 1,
+                Position = UDim2.new(0, 15, 0, 0),
+                Size = UDim2.new(0.7, -15, 1, 0),
+                Font = Enum.Font.Gotham,
+                Text = ToggleName,
+                TextColor3 = Color3.fromRGB(255, 255, 255),
+                TextSize = 13,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                Parent = ToggleContainer
+            })
+            
+            local ToggleButton = Create("Frame", {
+                Name = "ToggleButton",
+                BackgroundColor3 = Default and Color3.fromRGB(0, 170, 255) or Color3.fromRGB(80, 80, 80),
+                Position = UDim2.new(0.85, -25, 0.5, -12),
+                Size = UDim2.new(0, 50, 0, 24),
+                Parent = ToggleContainer
+            })
+            
+            local ToggleButtonCorner = Create("UICorner", {
+                CornerRadius = UDim.new(0, 12),
+                Parent = ToggleButton
+            })
+            
+            local ToggleKnob = Create("Frame", {
+                Name = "ToggleKnob",
+                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                Position = Default and UDim2.new(0.5, 0, 0.5, -8) or UDim2.new(0, 4, 0.5, -8),
+                Size = UDim2.new(0, 16, 0, 16),
+                Parent = ToggleButton
+            })
+            
+            local ToggleKnobCorner = Create("UICorner", {
+                CornerRadius = UDim.new(0, 8),
+                Parent = ToggleKnob
+            })
+            
+            local ToggleClickArea = Create("TextButton", {
+                Name = "ToggleClickArea",
+                BackgroundTransparency = 1,
+                Size = UDim2.new(1, 0, 1, 0),
+                Text = "",
+                AutoButtonColor = false,
+                Parent = ToggleContainer
+            })
+            
+            local ToggleState = Default
+            
+            local function UpdateToggle()
+                if ToggleState then
+                    Tween(ToggleButton, {
+                        BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+                    }, 0.2)
+                    Tween(ToggleKnob, {
+                        Position = UDim2.new(0.5, 0, 0.5, -8)
+                    }, 0.2)
+                else
+                    Tween(ToggleButton, {
+                        BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+                    }, 0.2)
+                    Tween(ToggleKnob, {
+                        Position = UDim2.new(0, 4, 0.5, -8)
+                    }, 0.2)
+                end
+                Callback(ToggleState)
+            end
+            
+            ToggleClickArea.MouseButton1Click:Connect(function()
+                ToggleState = not ToggleState
+                UpdateToggle()
+            end)
+            
+            -- Lưu element để search
+            local elementData = {
+                Type = "Toggle",
+                Name = ToggleName,
+                Container = ToggleContainer,
+                Tab = TabName,
+                GetState = function() return ToggleState end,
+                SetState = function(value) ToggleState = value UpdateToggle() end
+            }
+            table.insert(AllElements, elementData)
+            
+            -- Toggle Container Animations
+            ToggleClickArea.MouseEnter:Connect(function()
+                Tween(ToggleContainer, {
+                    BackgroundColor3 = Color3.fromRGB(45, 45, 45),
+                    BackgroundTransparency = 0.1
+                }, 0.2)
+            end)
+            
+            ToggleClickArea.MouseLeave:Connect(function()
+                Tween(ToggleContainer, {
+                    BackgroundColor3 = Color3.fromRGB(35, 35, 35),
+                    BackgroundTransparency = 0.2
+                }, 0.2)
+            end)
+            
+            UpdateToggle()
+            
+            local ToggleFunctions = {}
+            
+            function ToggleFunctions:SetValue(Value)
+                ToggleState = Value
+                UpdateToggle()
+            end
+            
+            function ToggleFunctions:GetValue()
+                return ToggleState
+            end
+            
+            return ToggleFunctions
+        end
+        
+        -- Auto-select tab đầu tiên
+        if not CurrentTab then
+            CurrentTab = TabContent
+            TabContent.Visible = true
+            Tween(TabButton, {
+                BackgroundColor3 = Color3.fromRGB(0, 120, 215),
+                TextColor3 = Color3.fromRGB(255, 255, 255)
+            }, 0.2)
         end
         
         return TabFunctions
@@ -802,6 +961,10 @@ function NazuX:CreateWindow(options)
                 ActionButton.MouseButton1Click:Connect(function()
                     if element.Type == "Button" and element.Callback then
                         element.Callback()
+                    elseif element.Type == "Toggle" and element.SetState then
+                        local currentState = element.GetState()
+                        element.SetState(not currentState)
+                        ActionButton.Text = element.GetState() and "ON" or "OFF"
                     end
                     
                     Tween(ResultItem, {
