@@ -1,10 +1,11 @@
--- NazuX Library - No Auto Select
+-- NazuX Library - Fixed Tabs & Buttons
 local NazuX = {}
 NazuX.__index = NazuX
 
 -- Services
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
 
 -- Utility Functions
 local function Create(class, properties)
@@ -26,6 +27,8 @@ end
 function NazuX:CreateWindow(options)
     options = options or {}
     local WindowName = options.Name or "NazuX Hub"
+    local Size = options.Size or UDim2.new(0, 600, 0, 450)
+    local Position = options.Position or UDim2.new(0.5, -300, 0.5, -225)
     
     local NazuXLibrary = {}
     
@@ -42,17 +45,23 @@ function NazuX:CreateWindow(options)
     local MainFrame = Create("Frame", {
         Name = "MainFrame",
         BackgroundColor3 = Color3.fromRGB(20, 20, 20),
-        BackgroundTransparency = 0.2,
+        BackgroundTransparency = 0.1,
         BorderSizePixel = 0,
-        Position = UDim2.new(0.5, -300, 0.5, -200),
-        Size = UDim2.new(0, 600, 0, 400),
+        Position = Position,
+        Size = Size,
         Active = true,
         Draggable = true,
         Parent = ScreenGui
     })
     
     local UICorner = Create("UICorner", {
-        CornerRadius = UDim.new(0, 8),
+        CornerRadius = UDim.new(0, 12),
+        Parent = MainFrame
+    })
+    
+    local UIStroke = Create("UIStroke", {
+        Color = Color3.fromRGB(60, 60, 60),
+        Thickness = 2,
         Parent = MainFrame
     })
     
@@ -62,24 +71,24 @@ function NazuX:CreateWindow(options)
         BackgroundColor3 = Color3.fromRGB(30, 30, 30),
         BackgroundTransparency = 0.1,
         BorderSizePixel = 0,
-        Size = UDim2.new(1, 0, 0, 40),
+        Size = UDim2.new(1, 0, 0, 45),
         Parent = MainFrame
     })
     
     local UICornerTop = Create("UICorner", {
-        CornerRadius = UDim.new(0, 8),
+        CornerRadius = UDim.new(0, 12),
         Parent = TopFrame
     })
     
     local Title = Create("TextLabel", {
         Name = "Title",
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 15, 0, 0),
-        Size = UDim2.new(0, 120, 1, 0),
+        Position = UDim2.new(0, 20, 0, 0),
+        Size = UDim2.new(0, 200, 1, 0),
         Font = Enum.Font.GothamBold,
         Text = WindowName,
         TextColor3 = Color3.fromRGB(255, 255, 255),
-        TextSize = 14,
+        TextSize = 16,
         TextXAlignment = Enum.TextXAlignment.Left,
         Parent = TopFrame
     })
@@ -88,25 +97,26 @@ function NazuX:CreateWindow(options)
     local SearchBox = Create("TextBox", {
         Name = "SearchBox",
         BackgroundColor3 = Color3.fromRGB(40, 40, 40),
-        BackgroundTransparency = 0.3,
-        Position = UDim2.new(0.3, 0, 0.5, -12),
-        Size = UDim2.new(0.4, 0, 0, 24),
+        BackgroundTransparency = 0.2,
+        Position = UDim2.new(0.3, 0, 0.5, -15),
+        Size = UDim2.new(0.4, 0, 0, 30),
         Font = Enum.Font.Gotham,
-        Text = "Search...",
+        Text = "",
         PlaceholderText = "Search features...",
-        TextColor3 = Color3.fromRGB(200, 200, 200),
-        TextSize = 11,
+        PlaceholderColor3 = Color3.fromRGB(150, 150, 150),
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        TextSize = 12,
         TextXAlignment = Enum.TextXAlignment.Left,
         Parent = TopFrame
     })
     
     local SearchCorner = Create("UICorner", {
-        CornerRadius = UDim.new(0, 6),
+        CornerRadius = UDim.new(0, 8),
         Parent = SearchBox
     })
     
     local SearchPadding = Create("UIPadding", {
-        PaddingLeft = UDim.new(0, 8),
+        PaddingLeft = UDim.new(0, 12),
         Parent = SearchBox
     })
     
@@ -116,17 +126,17 @@ function NazuX:CreateWindow(options)
         BackgroundColor3 = Color3.fromRGB(220, 60, 60),
         BackgroundTransparency = 0.1,
         BorderSizePixel = 0,
-        Position = UDim2.new(1, -30, 0.5, -10),
-        Size = UDim2.new(0, 20, 0, 20),
+        Position = UDim2.new(1, -35, 0.5, -12),
+        Size = UDim2.new(0, 24, 0, 24),
         Font = Enum.Font.GothamBold,
         Text = "X",
         TextColor3 = Color3.fromRGB(255, 255, 255),
-        TextSize = 12,
+        TextSize = 14,
         Parent = TopFrame
     })
     
     local CloseUICorner = Create("UICorner", {
-        CornerRadius = UDim.new(0, 4),
+        CornerRadius = UDim.new(0, 6),
         Parent = CloseButton
     })
     
@@ -134,82 +144,86 @@ function NazuX:CreateWindow(options)
     local TabsContainer = Create("Frame", {
         Name = "TabsContainer",
         BackgroundColor3 = Color3.fromRGB(25, 25, 25),
-        BackgroundTransparency = 0.3,
+        BackgroundTransparency = 0.2,
         BorderSizePixel = 0,
-        Position = UDim2.new(0, 0, 0, 40),
-        Size = UDim2.new(1, 0, 0, 40),
+        Position = UDim2.new(0, 0, 0, 45),
+        Size = UDim2.new(1, 0, 0, 50),
         Parent = MainFrame
     })
     
     local TabsScrolling = Create("ScrollingFrame", {
         Name = "TabsScrolling",
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 10, 0, 5),
-        Size = UDim2.new(1, -20, 1, -10),
+        Position = UDim2.new(0, 15, 0, 10),
+        Size = UDim2.new(1, -30, 1, -20),
         CanvasSize = UDim2.new(0, 0, 0, 0),
         ScrollBarThickness = 0,
         Parent = TabsContainer
     })
     
     local TabsListLayout = Create("UIListLayout", {
-        Padding = UDim.new(0, 5),
+        Padding = UDim.new(0, 8),
         FillDirection = Enum.FillDirection.Horizontal,
         Parent = TabsScrolling
     })
+    
+    TabsListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        TabsScrolling.CanvasSize = UDim2.new(0, TabsListLayout.AbsoluteContentSize.X, 0, 0)
+    end)
     
     -- Content Area
     local ContentArea = Create("Frame", {
         Name = "ContentArea",
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 0, 0, 80),
-        Size = UDim2.new(1, 0, 1, -80),
+        Position = UDim2.new(0, 0, 0, 95),
+        Size = UDim2.new(1, 0, 1, -95),
         Parent = MainFrame
     })
     
-    -- ANIMATION: Search Box focus
+    -- Search Box Animations
     SearchBox.Focused:Connect(function()
         Tween(SearchBox, {
             BackgroundTransparency = 0.1,
-            TextColor3 = Color3.fromRGB(255, 255, 255)
-        }, 0.2)
-        
-        if SearchBox.Text == "Search..." then
-            SearchBox.Text = ""
-        end
+            Size = UDim2.new(0.45, 0, 0, 30)
+        }, 0.3)
     end)
     
     SearchBox.FocusLost:Connect(function()
-        if SearchBox.Text == "" then
-            SearchBox.Text = "Search..."
-            Tween(SearchBox, {
-                BackgroundTransparency = 0.3,
-                TextColor3 = Color3.fromRGB(200, 200, 200)
-            }, 0.2)
-        end
+        Tween(SearchBox, {
+            BackgroundTransparency = 0.2,
+            Size = UDim2.new(0.4, 0, 0, 30)
+        }, 0.3)
     end)
     
-    -- ANIMATION: Close Button
+    -- Close Button Animations
     CloseButton.MouseEnter:Connect(function()
         Tween(CloseButton, {
             BackgroundColor3 = Color3.fromRGB(240, 80, 80),
-            Rotation = 5
+            Rotation = 90,
+            Size = UDim2.new(0, 26, 0, 26)
         }, 0.2)
     end)
     
     CloseButton.MouseLeave:Connect(function()
         Tween(CloseButton, {
             BackgroundColor3 = Color3.fromRGB(220, 60, 60),
-            Rotation = 0
+            Rotation = 0,
+            Size = UDim2.new(0, 24, 0, 24)
         }, 0.2)
     end)
     
     CloseButton.MouseButton1Click:Connect(function()
+        Tween(MainFrame, {
+            Size = UDim2.new(0, 0, 0, 0),
+            BackgroundTransparency = 1
+        }, 0.4):Wait()
         ScreenGui:Destroy()
     end)
     
     -- Tab Management
     local CurrentTab = nil
     local TabContents = {}
+    local TabButtons = {}
     
     function NazuXLibrary:CreateTab(TabName)
         local TabFunctions = {}
@@ -220,16 +234,23 @@ function NazuX:CreateWindow(options)
             BackgroundColor3 = Color3.fromRGB(50, 50, 50),
             BackgroundTransparency = 0.3,
             BorderSizePixel = 0,
-            Size = UDim2.new(0, 80, 0, 30),
-            Font = Enum.Font.Gotham,
+            Size = UDim2.new(0, 100, 0, 35),
+            Font = Enum.Font.GothamSemibold,
             Text = TabName,
             TextColor3 = Color3.fromRGB(200, 200, 200),
-            TextSize = 11,
+            TextSize = 13,
+            AutoButtonColor = false,
             Parent = TabsScrolling
         })
         
         local TabButtonUICorner = Create("UICorner", {
-            CornerRadius = UDim.new(0, 6),
+            CornerRadius = UDim.new(0, 8),
+            Parent = TabButton
+        })
+        
+        local TabButtonStroke = Create("UIStroke", {
+            Color = Color3.fromRGB(80, 80, 80),
+            Thickness = 1,
             Parent = TabButton
         })
         
@@ -239,29 +260,38 @@ function NazuX:CreateWindow(options)
             BackgroundTransparency = 1,
             Size = UDim2.new(1, 0, 1, 0),
             CanvasSize = UDim2.new(0, 0, 0, 0),
-            ScrollBarThickness = 3,
-            ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100),
-            Visible = false, -- KHÔNG AUTO SELECT
+            ScrollBarThickness = 4,
+            ScrollBarImageColor3 = Color3.fromRGB(80, 80, 80),
+            Visible = false,
             Parent = ContentArea
         })
         
         local TabContentListLayout = Create("UIListLayout", {
-            Padding = UDim.new(0, 10),
+            Padding = UDim.new(0, 12),
+            Parent = TabContent
+        })
+        
+        local TabContentPadding = Create("UIPadding", {
+            PaddingTop = UDim.new(0, 10),
+            PaddingLeft = UDim.new(0, 10),
+            PaddingRight = UDim.new(0, 10),
             Parent = TabContent
         })
         
         TabContentListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-            TabContent.CanvasSize = UDim2.new(0, 0, 0, TabContentListLayout.AbsoluteContentSize.Y + 10)
+            TabContent.CanvasSize = UDim2.new(0, 0, 0, TabContentListLayout.AbsoluteContentSize.Y + 20)
         end)
         
         TabContents[TabName] = TabContent
+        TabButtons[TabName] = TabButton
         
-        -- ANIMATION: Tab button hover
+        -- Tab Button Animations
         TabButton.MouseEnter:Connect(function()
             if CurrentTab ~= TabContent then
                 Tween(TabButton, {
                     BackgroundColor3 = Color3.fromRGB(70, 70, 70),
-                    TextColor3 = Color3.fromRGB(255, 255, 255)
+                    TextColor3 = Color3.fromRGB(255, 255, 255),
+                    Size = UDim2.new(0, 105, 0, 37)
                 }, 0.2)
             end
         end)
@@ -270,25 +300,25 @@ function NazuX:CreateWindow(options)
             if CurrentTab ~= TabContent then
                 Tween(TabButton, {
                     BackgroundColor3 = Color3.fromRGB(50, 50, 50),
-                    TextColor3 = Color3.fromRGB(200, 200, 200)
+                    TextColor3 = Color3.fromRGB(200, 200, 200),
+                    Size = UDim2.new(0, 100, 0, 35)
                 }, 0.2)
             end
         end)
         
-        -- ANIMATION: Tab click
+        -- Tab Click Functionality
         TabButton.MouseButton1Click:Connect(function()
             if CurrentTab then
                 -- Ẩn tab cũ
                 CurrentTab.Visible = false
                 
-                -- Reset tab button cũ
-                for _, btn in pairs(TabsScrolling:GetChildren()) do
-                    if btn:IsA("TextButton") then
-                        Tween(btn, {
-                            BackgroundColor3 = Color3.fromRGB(50, 50, 50),
-                            TextColor3 = Color3.fromRGB(200, 200, 200)
-                        }, 0.2)
-                    end
+                -- Reset tất cả tab buttons
+                for _, btn in pairs(TabButtons) do
+                    Tween(btn, {
+                        BackgroundColor3 = Color3.fromRGB(50, 50, 50),
+                        TextColor3 = Color3.fromRGB(200, 200, 200),
+                        Size = UDim2.new(0, 100, 0, 35)
+                    }, 0.2)
                 end
             end
             
@@ -299,7 +329,8 @@ function NazuX:CreateWindow(options)
             -- Highlight tab button mới
             Tween(TabButton, {
                 BackgroundColor3 = Color3.fromRGB(0, 120, 215),
-                TextColor3 = Color3.fromRGB(255, 255, 255)
+                TextColor3 = Color3.fromRGB(255, 255, 255),
+                Size = UDim2.new(0, 105, 0, 37)
             }, 0.2)
         end)
         
@@ -309,77 +340,293 @@ function NazuX:CreateWindow(options)
             local ButtonName = ButtonConfig.Name or "Button"
             local Callback = ButtonConfig.Callback or function() end
             
-            local Button = Create("TextButton", {
-                Name = ButtonName .. "Button",
-                BackgroundColor3 = Color3.fromRGB(60, 60, 60),
+            local ButtonContainer = Create("Frame", {
+                Name = ButtonName .. "Container",
+                BackgroundColor3 = Color3.fromRGB(35, 35, 35),
                 BackgroundTransparency = 0.2,
                 BorderSizePixel = 0,
-                Size = UDim2.new(1, -20, 0, 40),
-                Font = Enum.Font.Gotham,
-                Text = ButtonName,
-                TextColor3 = Color3.fromRGB(255, 255, 255),
-                TextSize = 12,
+                Size = UDim2.new(1, 0, 0, 45),
                 Parent = TabContent
             })
             
-            local ButtonUICorner = Create("UICorner", {
-                CornerRadius = UDim.new(0, 8),
-                Parent = Button
+            local ButtonContainerCorner = Create("UICorner", {
+                CornerRadius = UDim.new(0, 10),
+                Parent = ButtonContainer
             })
             
-            -- ANIMATION: Button hover
+            local ButtonContainerStroke = Create("UIStroke", {
+                Color = Color3.fromRGB(70, 70, 70),
+                Thickness = 1,
+                Parent = ButtonContainer
+            })
+            
+            local Button = Create("TextButton", {
+                Name = ButtonName .. "Button",
+                BackgroundTransparency = 1,
+                Size = UDim2.new(1, 0, 1, 0),
+                Font = Enum.Font.Gotham,
+                Text = ButtonName,
+                TextColor3 = Color3.fromRGB(255, 255, 255),
+                TextSize = 13,
+                Parent = ButtonContainer
+            })
+            
+            -- Button Animations
             Button.MouseEnter:Connect(function()
-                Tween(Button, {
-                    BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+                Tween(ButtonContainer, {
+                    BackgroundColor3 = Color3.fromRGB(45, 45, 45),
+                    BackgroundTransparency = 0.1
                 }, 0.2)
             end)
             
             Button.MouseLeave:Connect(function()
-                Tween(Button, {
-                    BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+                Tween(ButtonContainer, {
+                    BackgroundColor3 = Color3.fromRGB(35, 35, 35),
+                    BackgroundTransparency = 0.2
                 }, 0.2)
             end)
             
-            -- ANIMATION: Button click
-            Button.MouseButton1Click:Connect(function()
-                Tween(Button, {
-                    BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+            Button.MouseButton1Down:Connect(function()
+                Tween(ButtonContainer, {
+                    BackgroundColor3 = Color3.fromRGB(25, 25, 25),
+                    Size = UDim2.new(1, -5, 0, 43)
                 }, 0.1)
-                wait(0.1)
-                Tween(Button, {
-                    BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+            end)
+            
+            Button.MouseButton1Up:Connect(function()
+                Tween(ButtonContainer, {
+                    BackgroundColor3 = Color3.fromRGB(45, 45, 45),
+                    Size = UDim2.new(1, 0, 0, 45)
                 }, 0.1)
                 
+                -- Click effect
+                local ClickEffect = Create("Frame", {
+                    Name = "ClickEffect",
+                    BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                    BackgroundTransparency = 0.9,
+                    Size = UDim2.new(0, 0, 0, 0),
+                    Position = UDim2.new(0.5, 0, 0.5, 0),
+                    Parent = ButtonContainer
+                })
+                
+                local EffectCorner = Create("UICorner", {
+                    CornerRadius = UDim.new(1, 0),
+                    Parent = ClickEffect
+                })
+                
+                Tween(ClickEffect, {
+                    Size = UDim2.new(1, 0, 1, 0),
+                    BackgroundTransparency = 1
+                }, 0.5)
+                
+                delay(0.5, function()
+                    ClickEffect:Destroy()
+                end)
+                
+                -- Execute callback
                 Callback()
             end)
             
-            return Button
+            return ButtonContainer
         end
         
-        -- KHÔNG AUTO SELECT TAB ĐẦU TIÊN
+        -- TOGGLE FUNCTION
+        function TabFunctions:AddToggle(ToggleConfig)
+            ToggleConfig = ToggleConfig or {}
+            local ToggleName = ToggleConfig.Name or "Toggle"
+            local Default = ToggleConfig.Default or false
+            local Callback = ToggleConfig.Callback or function() end
+            
+            local ToggleContainer = Create("Frame", {
+                Name = ToggleName .. "Container",
+                BackgroundColor3 = Color3.fromRGB(35, 35, 35),
+                BackgroundTransparency = 0.2,
+                BorderSizePixel = 0,
+                Size = UDim2.new(1, 0, 0, 45),
+                Parent = TabContent
+            })
+            
+            local ToggleContainerCorner = Create("UICorner", {
+                CornerRadius = UDim.new(0, 10),
+                Parent = ToggleContainer
+            })
+            
+            local ToggleContainerStroke = Create("UIStroke", {
+                Color = Color3.fromRGB(70, 70, 70),
+                Thickness = 1,
+                Parent = ToggleContainer
+            })
+            
+            local ToggleLabel = Create("TextLabel", {
+                Name = "ToggleLabel",
+                BackgroundTransparency = 1,
+                Position = UDim2.new(0, 15, 0, 0),
+                Size = UDim2.new(0.7, -15, 1, 0),
+                Font = Enum.Font.Gotham,
+                Text = ToggleName,
+                TextColor3 = Color3.fromRGB(255, 255, 255),
+                TextSize = 13,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                Parent = ToggleContainer
+            })
+            
+            local ToggleButton = Create("Frame", {
+                Name = "ToggleButton",
+                BackgroundColor3 = Default and Color3.fromRGB(0, 170, 255) or Color3.fromRGB(80, 80, 80),
+                Position = UDim2.new(0.85, -25, 0.5, -12),
+                Size = UDim2.new(0, 50, 0, 24),
+                Parent = ToggleContainer
+            })
+            
+            local ToggleButtonCorner = Create("UICorner", {
+                CornerRadius = UDim.new(0, 12),
+                Parent = ToggleButton
+            })
+            
+            local ToggleKnob = Create("Frame", {
+                Name = "ToggleKnob",
+                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                Position = Default and UDim2.new(0.5, 0, 0.5, -8) or UDim2.new(0, 4, 0.5, -8),
+                Size = UDim2.new(0, 16, 0, 16),
+                Parent = ToggleButton
+            })
+            
+            local ToggleKnobCorner = Create("UICorner", {
+                CornerRadius = UDim.new(0, 8),
+                Parent = ToggleKnob
+            })
+            
+            local ToggleClickArea = Create("TextButton", {
+                Name = "ToggleClickArea",
+                BackgroundTransparency = 1,
+                Size = UDim2.new(1, 0, 1, 0),
+                Text = "",
+                Parent = ToggleContainer
+            })
+            
+            local ToggleState = Default
+            
+            local function UpdateToggle()
+                if ToggleState then
+                    Tween(ToggleButton, {
+                        BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+                    }, 0.2)
+                    Tween(ToggleKnob, {
+                        Position = UDim2.new(0.5, 0, 0.5, -8)
+                    }, 0.2)
+                else
+                    Tween(ToggleButton, {
+                        BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+                    }, 0.2)
+                    Tween(ToggleKnob, {
+                        Position = UDim2.new(0, 4, 0.5, -8)
+                    }, 0.2)
+                end
+                Callback(ToggleState)
+            end
+            
+            ToggleClickArea.MouseButton1Click:Connect(function()
+                ToggleState = not ToggleState
+                UpdateToggle()
+            end)
+            
+            -- Toggle Container Animations
+            ToggleClickArea.MouseEnter:Connect(function()
+                Tween(ToggleContainer, {
+                    BackgroundColor3 = Color3.fromRGB(45, 45, 45),
+                    BackgroundTransparency = 0.1
+                }, 0.2)
+            end)
+            
+            ToggleClickArea.MouseLeave:Connect(function()
+                Tween(ToggleContainer, {
+                    BackgroundColor3 = Color3.fromRGB(35, 35, 35),
+                    BackgroundTransparency = 0.2
+                }, 0.2)
+            end)
+            
+            UpdateToggle()
+            
+            local ToggleFunctions = {}
+            
+            function ToggleFunctions:SetValue(Value)
+                ToggleState = Value
+                UpdateToggle()
+            end
+            
+            function ToggleFunctions:GetValue()
+                return ToggleState
+            end
+            
+            return ToggleFunctions
+        end
+        
+        -- LABEL FUNCTION
+        function TabFunctions:AddLabel(LabelConfig)
+            LabelConfig = LabelConfig or {}
+            local LabelText = LabelConfig.Text or "Label"
+            local TextColor = LabelConfig.TextColor or Color3.fromRGB(255, 255, 255)
+            
+            local LabelContainer = Create("Frame", {
+                Name = "LabelContainer",
+                BackgroundColor3 = Color3.fromRGB(40, 40, 40),
+                BackgroundTransparency = 0.3,
+                BorderSizePixel = 0,
+                Size = UDim2.new(1, 0, 0, 35),
+                Parent = TabContent
+            })
+            
+            local LabelContainerCorner = Create("UICorner", {
+                CornerRadius = UDim.new(0, 8),
+                Parent = LabelContainer
+            })
+            
+            local Label = Create("TextLabel", {
+                Name = "Label",
+                BackgroundTransparency = 1,
+                Size = UDim2.new(1, 0, 1, 0),
+                Font = Enum.Font.Gotham,
+                Text = LabelText,
+                TextColor3 = TextColor,
+                TextSize = 12,
+                Parent = LabelContainer
+            })
+            
+            return LabelContainer
+        end
+        
         return TabFunctions
     end
     
-    -- Toggle UI function
+    -- Toggle UI Function
     function NazuXLibrary:ToggleUI()
         MainFrame.Visible = not MainFrame.Visible
     end
     
-    -- Search functionality
+    -- Search Functionality
     function NazuXLibrary:SearchFeatures(searchText)
         for tabName, tabContent in pairs(TabContents) do
             for _, element in pairs(tabContent:GetChildren()) do
-                if element:IsA("TextButton") and string.find(string.lower(element.Text), string.lower(searchText)) then
-                    Tween(element, {
-                        BackgroundColor3 = Color3.fromRGB(0, 150, 255)
-                    }, 0.3)
+                if element:IsA("Frame") then
+                    local button = element:FindFirstChildWhichIsA("TextButton")
+                    local label = element:FindFirstChildWhichIsA("TextLabel")
+                    
+                    if button and string.find(string.lower(button.Text), string.lower(searchText)) then
+                        Tween(element, {
+                            BackgroundColor3 = Color3.fromRGB(0, 150, 255)
+                        }, 0.3)
+                    elseif label and string.find(string.lower(label.Text), string.lower(searchText)) then
+                        Tween(element, {
+                            BackgroundColor3 = Color3.fromRGB(0, 150, 255)
+                        }, 0.3)
+                    end
                 end
             end
         end
     end
     
     SearchBox.FocusLost:Connect(function(enterPressed)
-        if enterPressed and SearchBox.Text ~= "Search..." then
+        if enterPressed and SearchBox.Text ~= "" then
             NazuXLibrary:SearchFeatures(SearchBox.Text)
         end
     end)
