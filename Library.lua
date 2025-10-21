@@ -1,4 +1,4 @@
--- NazuX Library - Fixed Tabs & Buttons
+-- NazuX Library - Enhanced Search Features
 local NazuX = {}
 NazuX.__index = NazuX
 
@@ -93,13 +93,39 @@ function NazuX:CreateWindow(options)
         Parent = TopFrame
     })
     
-    -- Search Bar
-    local SearchBox = Create("TextBox", {
-        Name = "SearchBox",
+    -- Search Bar với icon
+    local SearchContainer = Create("Frame", {
+        Name = "SearchContainer",
         BackgroundColor3 = Color3.fromRGB(40, 40, 40),
         BackgroundTransparency = 0.2,
         Position = UDim2.new(0.3, 0, 0.5, -15),
         Size = UDim2.new(0.4, 0, 0, 30),
+        Parent = TopFrame
+    })
+    
+    local SearchCorner = Create("UICorner", {
+        CornerRadius = UDim.new(0, 8),
+        Parent = SearchContainer
+    })
+    
+    local SearchIcon = Create("TextLabel", {
+        Name = "SearchIcon",
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, 8, 0, 0),
+        Size = UDim2.new(0, 20, 1, 0),
+        Font = Enum.Font.Gotham,
+        Text = "🔍",
+        TextColor3 = Color3.fromRGB(150, 150, 150),
+        TextSize = 14,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Parent = SearchContainer
+    })
+    
+    local SearchBox = Create("TextBox", {
+        Name = "SearchBox",
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, 30, 0, 0),
+        Size = UDim2.new(1, -35, 1, 0),
         Font = Enum.Font.Gotham,
         Text = "",
         PlaceholderText = "Search features...",
@@ -107,17 +133,20 @@ function NazuX:CreateWindow(options)
         TextColor3 = Color3.fromRGB(255, 255, 255),
         TextSize = 12,
         TextXAlignment = Enum.TextXAlignment.Left,
-        Parent = TopFrame
+        Parent = SearchContainer
     })
     
-    local SearchCorner = Create("UICorner", {
-        CornerRadius = UDim.new(0, 8),
-        Parent = SearchBox
-    })
-    
-    local SearchPadding = Create("UIPadding", {
-        PaddingLeft = UDim.new(0, 12),
-        Parent = SearchBox
+    local ClearSearchButton = Create("TextButton", {
+        Name = "ClearSearchButton",
+        BackgroundTransparency = 1,
+        Position = UDim2.new(1, -25, 0, 0),
+        Size = UDim2.new(0, 20, 1, 0),
+        Font = Enum.Font.Gotham,
+        Text = "×",
+        TextColor3 = Color3.fromRGB(150, 150, 150),
+        TextSize = 16,
+        Visible = false,
+        Parent = SearchContainer
     })
     
     -- Close Button
@@ -180,19 +209,68 @@ function NazuX:CreateWindow(options)
         Parent = MainFrame
     })
     
+    -- Search Results Panel
+    local SearchResults = Create("ScrollingFrame", {
+        Name = "SearchResults",
+        BackgroundColor3 = Color3.fromRGB(30, 30, 30),
+        BackgroundTransparency = 0.1,
+        BorderSizePixel = 0,
+        Position = UDim2.new(0, 10, 0, 10),
+        Size = UDim2.new(1, -20, 1, -20),
+        CanvasSize = UDim2.new(0, 0, 0, 0),
+        ScrollBarThickness = 4,
+        ScrollBarImageColor3 = Color3.fromRGB(80, 80, 80),
+        Visible = false,
+        Parent = ContentArea
+    })
+    
+    local SearchResultsLayout = Create("UIListLayout", {
+        Padding = UDim.new(0, 8),
+        Parent = SearchResults
+    })
+    
+    local SearchResultsPadding = Create("UIPadding", {
+        PaddingTop = UDim.new(0, 10),
+        PaddingLeft = UDim.new(0, 10),
+        PaddingRight = UDim.new(0, 10),
+        Parent = SearchResults
+    })
+    
+    SearchResultsLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        SearchResults.CanvasSize = UDim2.new(0, 0, 0, SearchResultsLayout.AbsoluteContentSize.Y + 20)
+    end)
+    
     -- Search Box Animations
     SearchBox.Focused:Connect(function()
-        Tween(SearchBox, {
+        Tween(SearchContainer, {
             BackgroundTransparency = 0.1,
             Size = UDim2.new(0.45, 0, 0, 30)
         }, 0.3)
+        SearchIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
     end)
     
     SearchBox.FocusLost:Connect(function()
-        Tween(SearchBox, {
+        Tween(SearchContainer, {
             BackgroundTransparency = 0.2,
             Size = UDim2.new(0.4, 0, 0, 30)
         }, 0.3)
+        SearchIcon.TextColor3 = Color3.fromRGB(150, 150, 150)
+    end)
+    
+    -- Clear Search Button
+    ClearSearchButton.MouseButton1Click:Connect(function()
+        SearchBox.Text = ""
+        ClearSearchButton.Visible = false
+        NazuXLibrary:ClearSearch()
+    end)
+    
+    SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
+        ClearSearchButton.Visible = SearchBox.Text ~= ""
+        if SearchBox.Text ~= "" then
+            NazuXLibrary:PerformSearch(SearchBox.Text)
+        else
+            NazuXLibrary:ClearSearch()
+        end
     end)
     
     -- Close Button Animations
@@ -224,6 +302,7 @@ function NazuX:CreateWindow(options)
     local CurrentTab = nil
     local TabContents = {}
     local TabButtons = {}
+    local AllElements = {} -- Lưu tất cả elements để search
     
     function NazuXLibrary:CreateTab(TabName)
         local TabFunctions = {}
@@ -309,10 +388,8 @@ function NazuX:CreateWindow(options)
         -- Tab Click Functionality
         TabButton.MouseButton1Click:Connect(function()
             if CurrentTab then
-                -- Ẩn tab cũ
                 CurrentTab.Visible = false
                 
-                -- Reset tất cả tab buttons
                 for _, btn in pairs(TabButtons) do
                     Tween(btn, {
                         BackgroundColor3 = Color3.fromRGB(50, 50, 50),
@@ -322,11 +399,10 @@ function NazuX:CreateWindow(options)
                 end
             end
             
-            -- Hiển thị tab mới
             CurrentTab = TabContent
             TabContent.Visible = true
+            SearchResults.Visible = false
             
-            -- Highlight tab button mới
             Tween(TabButton, {
                 BackgroundColor3 = Color3.fromRGB(0, 120, 215),
                 TextColor3 = Color3.fromRGB(255, 255, 255),
@@ -371,6 +447,16 @@ function NazuX:CreateWindow(options)
                 Parent = ButtonContainer
             })
             
+            -- Lưu element để search
+            local elementData = {
+                Type = "Button",
+                Name = ButtonName,
+                Container = ButtonContainer,
+                Tab = TabName,
+                Callback = Callback
+            }
+            table.insert(AllElements, elementData)
+            
             -- Button Animations
             Button.MouseEnter:Connect(function()
                 Tween(ButtonContainer, {
@@ -386,44 +472,15 @@ function NazuX:CreateWindow(options)
                 }, 0.2)
             end)
             
-            Button.MouseButton1Down:Connect(function()
+            Button.MouseButton1Click:Connect(function()
                 Tween(ButtonContainer, {
-                    BackgroundColor3 = Color3.fromRGB(25, 25, 25),
-                    Size = UDim2.new(1, -5, 0, 43)
+                    BackgroundColor3 = Color3.fromRGB(25, 25, 25)
                 }, 0.1)
-            end)
-            
-            Button.MouseButton1Up:Connect(function()
+                wait(0.1)
                 Tween(ButtonContainer, {
-                    BackgroundColor3 = Color3.fromRGB(45, 45, 45),
-                    Size = UDim2.new(1, 0, 0, 45)
+                    BackgroundColor3 = Color3.fromRGB(45, 45, 45)
                 }, 0.1)
                 
-                -- Click effect
-                local ClickEffect = Create("Frame", {
-                    Name = "ClickEffect",
-                    BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                    BackgroundTransparency = 0.9,
-                    Size = UDim2.new(0, 0, 0, 0),
-                    Position = UDim2.new(0.5, 0, 0.5, 0),
-                    Parent = ButtonContainer
-                })
-                
-                local EffectCorner = Create("UICorner", {
-                    CornerRadius = UDim.new(1, 0),
-                    Parent = ClickEffect
-                })
-                
-                Tween(ClickEffect, {
-                    Size = UDim2.new(1, 0, 1, 0),
-                    BackgroundTransparency = 1
-                }, 0.5)
-                
-                delay(0.5, function()
-                    ClickEffect:Destroy()
-                end)
-                
-                -- Execute callback
                 Callback()
             end)
             
@@ -530,6 +587,17 @@ function NazuX:CreateWindow(options)
                 UpdateToggle()
             end)
             
+            -- Lưu element để search
+            local elementData = {
+                Type = "Toggle",
+                Name = ToggleName,
+                Container = ToggleContainer,
+                Tab = TabName,
+                GetState = function() return ToggleState end,
+                SetState = function(value) ToggleState = value UpdateToggle() end
+            }
+            table.insert(AllElements, elementData)
+            
             -- Toggle Container Animations
             ToggleClickArea.MouseEnter:Connect(function()
                 Tween(ToggleContainer, {
@@ -592,44 +660,186 @@ function NazuX:CreateWindow(options)
                 Parent = LabelContainer
             })
             
+            -- Lưu element để search
+            local elementData = {
+                Type = "Label",
+                Name = LabelText,
+                Container = LabelContainer,
+                Tab = TabName
+            }
+            table.insert(AllElements, elementData)
+            
             return LabelContainer
         end
         
         return TabFunctions
     end
     
+    -- SEARCH FUNCTIONS
+    function NazuXLibrary:PerformSearch(searchText)
+        local searchLower = string.lower(searchText)
+        local foundResults = false
+        
+        -- Ẩn tất cả tab contents
+        for _, tabContent in pairs(TabContents) do
+            tabContent.Visible = false
+        end
+        
+        -- Hiển thị search results
+        SearchResults.Visible = true
+        
+        -- Xóa kết quả cũ
+        for _, child in pairs(SearchResults:GetChildren()) do
+            if child:IsA("Frame") then
+                child:Destroy()
+            end
+        end
+        
+        -- Tìm kiếm và hiển thị kết quả
+        for _, element in pairs(AllElements) do
+            if string.find(string.lower(element.Name), searchLower) then
+                foundResults = true
+                
+                local ResultItem = Create("TextButton", {
+                    Name = element.Name .. "Result",
+                    BackgroundColor3 = Color3.fromRGB(45, 45, 45),
+                    BackgroundTransparency = 0.2,
+                    BorderSizePixel = 0,
+                    Size = UDim2.new(1, 0, 0, 50),
+                    Font = Enum.Font.Gotham,
+                    Text = "",
+                    Parent = SearchResults
+                })
+                
+                local ResultCorner = Create("UICorner", {
+                    CornerRadius = UDim.new(0, 8),
+                    Parent = ResultItem
+                })
+                
+                local ResultStroke = Create("UIStroke", {
+                    Color = Color3.fromRGB(80, 80, 80),
+                    Thickness = 1,
+                    Parent = ResultItem
+                })
+                
+                local Icon = Create("TextLabel", {
+                    Name = "Icon",
+                    BackgroundTransparency = 1,
+                    Position = UDim2.new(0, 15, 0, 0),
+                    Size = UDim2.new(0, 30, 1, 0),
+                    Font = Enum.Font.Gotham,
+                    Text = element.Type == "Button" and "🔘" or element.Type == "Toggle" and "⚡" or "🏷️",
+                    TextColor3 = Color3.fromRGB(200, 200, 200),
+                    TextSize = 16,
+                    TextXAlignment = Enum.TextXAlignment.Left,
+                    Parent = ResultItem
+                })
+                
+                local NameLabel = Create("TextLabel", {
+                    Name = "NameLabel",
+                    BackgroundTransparency = 1,
+                    Position = UDim2.new(0, 50, 0, 8),
+                    Size = UDim2.new(0.6, -50, 0, 20),
+                    Font = Enum.Font.GothamSemibold,
+                    Text = element.Name,
+                    TextColor3 = Color3.fromRGB(255, 255, 255),
+                    TextSize = 14,
+                    TextXAlignment = Enum.TextXAlignment.Left,
+                    Parent = ResultItem
+                })
+                
+                local TypeLabel = Create("TextLabel", {
+                    Name = "TypeLabel",
+                    BackgroundTransparency = 1,
+                    Position = UDim2.new(0, 50, 0, 28),
+                    Size = UDim2.new(0.6, -50, 0, 14),
+                    Font = Enum.Font.Gotham,
+                    Text = element.Type .. " • " .. element.Tab,
+                    TextColor3 = Color3.fromRGB(150, 150, 150),
+                    TextSize = 11,
+                    TextXAlignment = Enum.TextXAlignment.Left,
+                    Parent = ResultItem
+                })
+                
+                local ActionButton = Create("TextButton", {
+                    Name = "ActionButton",
+                    BackgroundColor3 = Color3.fromRGB(0, 120, 215),
+                    BackgroundTransparency = 0.2,
+                    Position = UDim2.new(0.8, 10, 0.5, -15),
+                    Size = UDim2.new(0.2, -20, 0, 30),
+                    Font = Enum.Font.Gotham,
+                    Text = element.Type == "Button" and "RUN" or element.Type == "Toggle" and "TOGGLE" or "VIEW",
+                    TextColor3 = Color3.fromRGB(255, 255, 255),
+                    TextSize = 12,
+                    Parent = ResultItem
+                })
+                
+                local ActionCorner = Create("UICorner", {
+                    CornerRadius = UDim.new(0, 6),
+                    Parent = ActionButton
+                })
+                
+                -- Action khi click
+                ActionButton.MouseButton1Click:Connect(function()
+                    if element.Type == "Button" and element.Callback then
+                        element.Callback()
+                    elseif element.Type == "Toggle" and element.SetState then
+                        local currentState = element.GetState()
+                        element.SetState(not currentState)
+                        ActionButton.Text = element.GetState() and "ON" or "OFF"
+                    end
+                    
+                    -- Highlight kết quả
+                    Tween(ResultItem, {
+                        BackgroundColor3 = Color3.fromRGB(0, 150, 255)
+                    }, 0.3)
+                end)
+                
+                -- Hover effects
+                ResultItem.MouseEnter:Connect(function()
+                    Tween(ResultItem, {
+                        BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+                    }, 0.2)
+                end)
+                
+                ResultItem.MouseLeave:Connect(function()
+                    Tween(ResultItem, {
+                        BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+                    }, 0.2)
+                end)
+            end
+        end
+        
+        -- Hiển thị thông báo nếu không tìm thấy kết quả
+        if not foundResults then
+            local NoResults = Create("TextLabel", {
+                Name = "NoResults",
+                BackgroundTransparency = 1,
+                Size = UDim2.new(1, 0, 0, 100),
+                Font = Enum.Font.Gotham,
+                Text = "No results found for: \"" .. searchText .. "\"",
+                TextColor3 = Color3.fromRGB(150, 150, 150),
+                TextSize = 14,
+                Parent = SearchResults
+            })
+        end
+    end
+    
+    function NazuXLibrary:ClearSearch()
+        SearchResults.Visible = false
+        if CurrentTab then
+            CurrentTab.Visible = true
+        end
+    end
+    
+    function NazuXLibrary:GetSearchResults()
+        return AllElements
+    end
+    
     -- Toggle UI Function
     function NazuXLibrary:ToggleUI()
         MainFrame.Visible = not MainFrame.Visible
     end
-    
-    -- Search Functionality
-    function NazuXLibrary:SearchFeatures(searchText)
-        for tabName, tabContent in pairs(TabContents) do
-            for _, element in pairs(tabContent:GetChildren()) do
-                if element:IsA("Frame") then
-                    local button = element:FindFirstChildWhichIsA("TextButton")
-                    local label = element:FindFirstChildWhichIsA("TextLabel")
-                    
-                    if button and string.find(string.lower(button.Text), string.lower(searchText)) then
-                        Tween(element, {
-                            BackgroundColor3 = Color3.fromRGB(0, 150, 255)
-                        }, 0.3)
-                    elseif label and string.find(string.lower(label.Text), string.lower(searchText)) then
-                        Tween(element, {
-                            BackgroundColor3 = Color3.fromRGB(0, 150, 255)
-                        }, 0.3)
-                    end
-                end
-            end
-        end
-    end
-    
-    SearchBox.FocusLost:Connect(function(enterPressed)
-        if enterPressed and SearchBox.Text ~= "" then
-            NazuXLibrary:SearchFeatures(SearchBox.Text)
-        end
-    end)
     
     return NazuXLibrary
 end
