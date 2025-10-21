@@ -1,4 +1,4 @@
--- NazuX Library - Fixed Tabs & Buttons
+-- NazuX Library - Fixed Tabs & Buttons with Icons & Themes
 local NazuX = {}
 NazuX.__index = NazuX
 
@@ -23,6 +23,119 @@ local function Tween(Object, Goals, Duration, Style, Direction)
     Tween:Play()
     return Tween
 end
+
+-- Icons Library
+local Icons = {
+    ["perm_media"] = "http://www.roblox.com/asset/?id=6031215982",
+    ["sticky_note_2"] = "http://www.roblox.com/asset/?id=6031265972",
+    ["gavel"] = "http://www.roblox.com/asset/?id=6023565902",
+    ["table_view"] = "http://www.roblox.com/asset/?id=6031233835",
+    ["home"] = "http://www.roblox.com/asset/?id=6026568195",
+    -- ... (tất cả các icon khác ở đây)
+    ["sparkle"] = "http://www.roblox.com/asset/?id=4483362748"
+}
+
+-- Themes System
+local Themes = {
+    Names = {
+        "Dark",
+        "Darker", 
+        "AMOLED",
+        "NazuX",
+        "Light",
+        "Balloon",
+        "SoftCream",
+        "Aqua", 
+        "Amethyst",
+        "Rose",
+        "Midnight",
+        "Forest",
+        "Sunset", 
+        "Ocean",
+        "Emerald",
+        "Sapphire",
+        "Cloud",
+        "Grape",
+        "Bloody",
+        "Arctic"
+    },
+    Dark = {
+        Name = "Dark",
+        Accent = Color3.fromRGB(96, 205, 255),
+        AcrylicMain = Color3.fromRGB(60, 60, 60),
+        AcrylicBorder = Color3.fromRGB(90, 90, 90),
+        AcrylicGradient = ColorSequence.new(Color3.fromRGB(40, 40, 40), Color3.fromRGB(40, 40, 40)),
+        AcrylicNoise = 0.9,
+        TitleBarLine = Color3.fromRGB(75, 75, 75),
+        Tab = Color3.fromRGB(120, 120, 120),
+        Element = Color3.fromRGB(120, 120, 120),
+        ElementBorder = Color3.fromRGB(35, 35, 35),
+        InElementBorder = Color3.fromRGB(90, 90, 90),
+        ElementTransparency = 0.87,
+        ToggleSlider = Color3.fromRGB(120, 120, 120),
+        ToggleToggled = Color3.fromRGB(42, 42, 42),
+        SliderRail = Color3.fromRGB(120, 120, 120),
+        DropdownFrame = Color3.fromRGB(160, 160, 160),
+        DropdownHolder = Color3.fromRGB(45, 45, 45),
+        DropdownBorder = Color3.fromRGB(35, 35, 35),
+        DropdownOption = Color3.fromRGB(120, 120, 120),
+        Keybind = Color3.fromRGB(120, 120, 120),
+        Input = Color3.fromRGB(160, 160, 160),
+        InputFocused = Color3.fromRGB(10, 10, 10),
+        InputIndicator = Color3.fromRGB(150, 150, 150),
+        Dialog = Color3.fromRGB(45, 45, 45),
+        DialogHolder = Color3.fromRGB(35, 35, 35),
+        DialogHolderLine = Color3.fromRGB(30, 30, 30),
+        DialogButton = Color3.fromRGB(45, 45, 45),
+        DialogButtonBorder = Color3.fromRGB(80, 80, 80),
+        DialogBorder = Color3.fromRGB(70, 70, 70),
+        DialogInput = Color3.fromRGB(55, 55, 55),
+        DialogInputLine = Color3.fromRGB(160, 160, 160),
+        Text = Color3.fromRGB(240, 240, 240),
+        SubText = Color3.fromRGB(170, 170, 170),
+        Hover = Color3.fromRGB(120, 120, 120),
+        HoverChange = 0.07,
+    },
+    -- ... (tất cả các theme khác ở đây)
+    Arctic = {
+        Name = "Arctic",
+        Accent = Color3.fromRGB(64, 224, 255),
+        AcrylicMain = Color3.fromRGB(10, 18, 25),
+        AcrylicBorder = Color3.fromRGB(35, 55, 70),
+        AcrylicGradient = ColorSequence.new(Color3.fromRGB(15, 25, 35), Color3.fromRGB(18, 30, 40)),
+        AcrylicNoise = 0.94,
+        TitleBarLine = Color3.fromRGB(45, 70, 90),
+        Tab = Color3.fromRGB(70, 110, 140),
+        Element = Color3.fromRGB(60, 95, 120),
+        ElementBorder = Color3.fromRGB(60, 95, 120),
+        InElementBorder = Color3.fromRGB(70, 110, 140),
+        ElementTransparency = 0.88,
+        ToggleSlider = Color3.fromRGB(90, 140, 180),
+        ToggleToggled = Color3.fromRGB(15, 25, 35),
+        SliderRail = Color3.fromRGB(90, 140, 180),
+        DropdownFrame = Color3.fromRGB(110, 170, 220),
+        DropdownHolder = Color3.fromRGB(30, 45, 60),
+        DropdownBorder = Color3.fromRGB(60, 95, 120),
+        DropdownOption = Color3.fromRGB(90, 140, 180),
+        Keybind = Color3.fromRGB(90, 140, 180),
+        Input = Color3.fromRGB(90, 140, 180),
+        InputFocused = Color3.fromRGB(10, 18, 25),
+        InputIndicator = Color3.fromRGB(130, 200, 255),
+        InputIndicatorFocus = Color3.fromRGB(64, 224, 255),
+        Dialog = Color3.fromRGB(30, 45, 60),
+        DialogHolder = Color3.fromRGB(18, 30, 40),
+        DialogHolderLine = Color3.fromRGB(15, 25, 35),
+        DialogButton = Color3.fromRGB(30, 45, 60),
+        DialogButtonBorder = Color3.fromRGB(45, 70, 90),
+        DialogBorder = Color3.fromRGB(40, 60, 80),
+        DialogInput = Color3.fromRGB(35, 55, 70),
+        DialogInputLine = Color3.fromRGB(110, 170, 220),
+        Text = Color3.fromRGB(240, 250, 255),
+        SubText = Color3.fromRGB(180, 200, 220),
+        Hover = Color3.fromRGB(90, 140, 180),
+        HoverChange = 0.04
+    }
+}
 
 -- Main Library Function
 function NazuX:CreateWindow(options)
@@ -96,13 +209,34 @@ function NazuX:CreateWindow(options)
         Parent = TopFrame
     })
     
+    -- Theme Button (mới thêm)
+    local ThemeButton = Create("TextButton", {
+        Name = "ThemeButton",
+        BackgroundColor3 = Color3.fromRGB(80, 180, 80),
+        BackgroundTransparency = 0.1,
+        BorderSizePixel = 0,
+        Position = UDim2.new(1, -105, 0.5, -12),
+        Size = UDim2.new(0, 24, 0, 24),
+        Font = Enum.Font.GothamBold,
+        Text = "🎨",
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        TextSize = 14,
+        AutoButtonColor = false,
+        Parent = TopFrame
+    })
+    
+    local ThemeUICorner = Create("UICorner", {
+        CornerRadius = UDim.new(0, 6),
+        Parent = ThemeButton
+    })
+    
     -- Minimize Button
     local MinimizeButton = Create("TextButton", {
         Name = "MinimizeButton",
         BackgroundColor3 = Color3.fromRGB(255, 180, 0),
         BackgroundTransparency = 0.1,
         BorderSizePixel = 0,
-        Position = UDim2.new(1, -65, 0.5, -12),
+        Position = UDim2.new(1, -75, 0.5, -12),
         Size = UDim2.new(0, 24, 0, 24),
         Font = Enum.Font.GothamBold,
         Text = "_",
@@ -342,6 +476,83 @@ function NazuX:CreateWindow(options)
         SearchResults.CanvasSize = UDim2.new(0, 0, 0, SearchResultsLayout.AbsoluteContentSize.Y + 20)
     end)
     
+    -- Theme Management System
+    local CurrentTheme = "Dark"
+    local ThemeElements = {}
+    
+    local function ApplyTheme(themeName)
+        local theme = Themes[themeName]
+        if not theme then return end
+        
+        CurrentTheme = themeName
+        
+        -- Apply theme to all registered elements
+        for _, elementData in pairs(ThemeElements) do
+            if elementData.ApplyTheme then
+                elementData.ApplyTheme(theme)
+            end
+        end
+        
+        -- Apply to main UI elements
+        MainFrame.BackgroundColor3 = theme.AcrylicMain
+        TopFrame.BackgroundColor3 = theme.AcrylicMain
+        LeftSidebar.BackgroundColor3 = theme.AcrylicMain
+        UIStroke.Color = theme.AcrylicBorder
+        
+        -- Update theme button to show current theme
+        ThemeButton.Text = "🎨 " .. themeName
+    end
+    
+    -- Register theme elements
+    local function RegisterThemeElement(elementData)
+        table.insert(ThemeElements, elementData)
+        -- Apply current theme immediately
+        if elementData.ApplyTheme then
+            elementData.ApplyTheme(Themes[CurrentTheme])
+        end
+    end
+    
+    -- Theme Button Functionality
+    local currentThemeIndex = 1
+    
+    ThemeButton.MouseEnter:Connect(function()
+        Tween(ThemeButton, {
+            BackgroundColor3 = Color3.fromRGB(100, 200, 100),
+            Size = UDim2.new(0, 26, 0, 26),
+            Position = UDim2.new(1, -106, 0.5, -13)
+        }, 0.2)
+    end)
+    
+    ThemeButton.MouseLeave:Connect(function()
+        Tween(ThemeButton, {
+            BackgroundColor3 = Color3.fromRGB(80, 180, 80),
+            Size = UDim2.new(0, 24, 0, 24),
+            Position = UDim2.new(1, -105, 0.5, -12)
+        }, 0.2)
+    end)
+    
+    ThemeButton.MouseButton1Click:Connect(function()
+        currentThemeIndex = currentThemeIndex + 1
+        if currentThemeIndex > #Themes.Names then
+            currentThemeIndex = 1
+        end
+        
+        local nextTheme = Themes.Names[currentThemeIndex]
+        ApplyTheme(nextTheme)
+        
+        -- Animation feedback
+        Tween(ThemeButton, {
+            Rotation = 360,
+            BackgroundColor3 = Themes[nextTheme].Accent
+        }, 0.5)
+        
+        wait(0.5)
+        
+        Tween(ThemeButton, {
+            Rotation = 0
+        }, 0.2)
+    end)
+    
     -- Minimize Key Functionality
     local IsMinimized = false
     local OriginalSize = Size
@@ -384,7 +595,7 @@ function NazuX:CreateWindow(options)
         Tween(MinimizeButton, {
             BackgroundColor3 = Color3.fromRGB(255, 200, 50),
             Size = UDim2.new(0, 26, 0, 26),
-            Position = UDim2.new(1, -66, 0.5, -13)
+            Position = UDim2.new(1, -76, 0.5, -13)
         }, 0.2)
     end)
     
@@ -392,7 +603,7 @@ function NazuX:CreateWindow(options)
         Tween(MinimizeButton, {
             BackgroundColor3 = Color3.fromRGB(255, 180, 0),
             Size = UDim2.new(0, 24, 0, 24),
-            Position = UDim2.new(1, -65, 0.5, -12)
+            Position = UDim2.new(1, -75, 0.5, -12)
         }, 0.2)
     end)
     
@@ -493,21 +704,16 @@ function NazuX:CreateWindow(options)
     local TabButtons = {}
     local AllElements = {}
     
-    function NazuXLibrary:CreateTab(TabName)
+    function NazuXLibrary:CreateTab(TabName, IconName)
         local TabFunctions = {}
         
-        -- Tạo tab button
-        local TabButton = Create("TextButton", {
+        -- Tạo tab button với icon
+        local TabButton = Create("Frame", {
             Name = TabName .. "TabButton",
             BackgroundColor3 = Color3.fromRGB(50, 50, 50),
             BackgroundTransparency = 0.3,
             BorderSizePixel = 0,
             Size = UDim2.new(1, 0, 0, 45),
-            Font = Enum.Font.GothamSemibold,
-            Text = TabName,
-            TextColor3 = Color3.fromRGB(200, 200, 200),
-            TextSize = 13,
-            AutoButtonColor = false,
             Parent = TabsContainer
         })
         
@@ -519,6 +725,37 @@ function NazuX:CreateWindow(options)
         local TabButtonStroke = Create("UIStroke", {
             Color = Color3.fromRGB(80, 80, 80),
             Thickness = 1,
+            Parent = TabButton
+        })
+        
+        local TabIcon = Create("ImageLabel", {
+            Name = "TabIcon",
+            BackgroundTransparency = 1,
+            Position = UDim2.new(0, 12, 0.5, -10),
+            Size = UDim2.new(0, 20, 0, 20),
+            Image = Icons[IconName] or Icons["folder"],
+            Parent = TabButton
+        })
+        
+        local TabLabel = Create("TextLabel", {
+            Name = "TabLabel",
+            BackgroundTransparency = 1,
+            Position = UDim2.new(0, 40, 0, 0),
+            Size = UDim2.new(1, -40, 1, 0),
+            Font = Enum.Font.GothamSemibold,
+            Text = TabName,
+            TextColor3 = Color3.fromRGB(200, 200, 200),
+            TextSize = 13,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            Parent = TabButton
+        })
+        
+        local TabClickArea = Create("TextButton", {
+            Name = "TabClickArea",
+            BackgroundTransparency = 1,
+            Size = UDim2.new(1, 0, 1, 0),
+            Text = "",
+            AutoButtonColor = false,
             Parent = TabButton
         })
         
@@ -553,27 +790,40 @@ function NazuX:CreateWindow(options)
         TabContents[TabName] = TabContent
         TabButtons[TabName] = TabButton
         
+        -- Register tab for themes
+        RegisterThemeElement({
+            ApplyTheme = function(theme)
+                TabButton.BackgroundColor3 = theme.Tab
+                TabButtonStroke.Color = theme.ElementBorder
+                TabLabel.TextColor3 = theme.Text
+            end
+        })
+        
         -- Tab Button Animations
-        TabButton.MouseEnter:Connect(function()
+        TabClickArea.MouseEnter:Connect(function()
             if CurrentTab ~= TabContent then
                 Tween(TabButton, {
                     BackgroundColor3 = Color3.fromRGB(70, 70, 70),
+                }, 0.2)
+                Tween(TabLabel, {
                     TextColor3 = Color3.fromRGB(255, 255, 255)
                 }, 0.2)
             end
         end)
         
-        TabButton.MouseLeave:Connect(function()
+        TabClickArea.MouseLeave:Connect(function()
             if CurrentTab ~= TabContent then
                 Tween(TabButton, {
                     BackgroundColor3 = Color3.fromRGB(50, 50, 50),
+                }, 0.2)
+                Tween(TabLabel, {
                     TextColor3 = Color3.fromRGB(200, 200, 200)
                 }, 0.2)
             end
         end)
         
         -- Tab Click Functionality - FIXED
-        TabButton.MouseButton1Click:Connect(function()
+        TabClickArea.MouseButton1Click:Connect(function()
             if CurrentTab then
                 CurrentTab.Visible = false
                 
@@ -582,6 +832,8 @@ function NazuX:CreateWindow(options)
                     if TabContents[tabName] ~= CurrentTab then
                         Tween(btn, {
                             BackgroundColor3 = Color3.fromRGB(50, 50, 50),
+                        }, 0.2)
+                        Tween(TabLabel, {
                             TextColor3 = Color3.fromRGB(200, 200, 200)
                         }, 0.2)
                     end
@@ -596,6 +848,8 @@ function NazuX:CreateWindow(options)
             -- Highlight tab button mới
             Tween(TabButton, {
                 BackgroundColor3 = Color3.fromRGB(0, 120, 215),
+            }, 0.2)
+            Tween(TabLabel, {
                 TextColor3 = Color3.fromRGB(255, 255, 255)
             }, 0.2)
         end)
@@ -605,6 +859,7 @@ function NazuX:CreateWindow(options)
             ButtonConfig = ButtonConfig or {}
             local ButtonName = ButtonConfig.Name or "Button"
             local Callback = ButtonConfig.Callback or function() end
+            local ButtonIcon = ButtonConfig.Icon or "radio_button_unchecked"
             
             local ButtonContainer = Create("Frame", {
                 Name = ButtonName .. "Container",
@@ -626,16 +881,36 @@ function NazuX:CreateWindow(options)
                 Parent = ButtonContainer
             })
             
+            local ButtonIconLabel = Create("ImageLabel", {
+                Name = "ButtonIcon",
+                BackgroundTransparency = 1,
+                Position = UDim2.new(0, 15, 0.5, -10),
+                Size = UDim2.new(0, 20, 0, 20),
+                Image = Icons[ButtonIcon] or Icons["radio_button_unchecked"],
+                Parent = ButtonContainer
+            })
+            
             local Button = Create("TextButton", {
                 Name = ButtonName .. "Button",
                 BackgroundTransparency = 1,
-                Size = UDim2.new(1, 0, 1, 0),
+                Position = UDim2.new(0, 45, 0, 0),
+                Size = UDim2.new(1, -45, 1, 0),
                 Font = Enum.Font.Gotham,
                 Text = ButtonName,
                 TextColor3 = Color3.fromRGB(255, 255, 255),
                 TextSize = 13,
+                TextXAlignment = Enum.TextXAlignment.Left,
                 AutoButtonColor = false,
                 Parent = ButtonContainer
+            })
+            
+            -- Register for themes
+            RegisterThemeElement({
+                ApplyTheme = function(theme)
+                    ButtonContainer.BackgroundColor3 = theme.Element
+                    ButtonContainerStroke.Color = theme.ElementBorder
+                    Button.TextColor3 = theme.Text
+                end
             })
             
             -- Lưu element để search
@@ -701,6 +976,7 @@ function NazuX:CreateWindow(options)
             local ToggleName = ToggleConfig.Name or "Toggle"
             local Default = ToggleConfig.Default or false
             local Callback = ToggleConfig.Callback or function() end
+            local ToggleIcon = ToggleConfig.Icon or "toggle_off"
             
             local ToggleContainer = Create("Frame", {
                 Name = ToggleName .. "Container",
@@ -722,11 +998,20 @@ function NazuX:CreateWindow(options)
                 Parent = ToggleContainer
             })
             
+            local ToggleIconLabel = Create("ImageLabel", {
+                Name = "ToggleIcon",
+                BackgroundTransparency = 1,
+                Position = UDim2.new(0, 15, 0.5, -10),
+                Size = UDim2.new(0, 20, 0, 20),
+                Image = Icons[ToggleIcon] or Icons["toggle_off"],
+                Parent = ToggleContainer
+            })
+            
             local ToggleLabel = Create("TextLabel", {
                 Name = "ToggleLabel",
                 BackgroundTransparency = 1,
-                Position = UDim2.new(0, 15, 0, 0),
-                Size = UDim2.new(0.7, -15, 1, 0),
+                Position = UDim2.new(0, 45, 0, 0),
+                Size = UDim2.new(0.7, -45, 1, 0),
                 Font = Enum.Font.Gotham,
                 Text = ToggleName,
                 TextColor3 = Color3.fromRGB(255, 255, 255),
@@ -796,6 +1081,16 @@ function NazuX:CreateWindow(options)
                 UpdateToggle()
             end)
             
+            -- Register for themes
+            RegisterThemeElement({
+                ApplyTheme = function(theme)
+                    ToggleContainer.BackgroundColor3 = theme.Element
+                    ToggleContainerStroke.Color = theme.ElementBorder
+                    ToggleLabel.TextColor3 = theme.Text
+                    ToggleButton.BackgroundColor3 = ToggleState and theme.ToggleToggled or theme.ToggleSlider
+                end
+            })
+            
             -- Lưu element để search
             local elementData = {
                 Type = "Toggle",
@@ -844,6 +1139,8 @@ function NazuX:CreateWindow(options)
             TabContent.Visible = true
             Tween(TabButton, {
                 BackgroundColor3 = Color3.fromRGB(0, 120, 215),
+            }, 0.2)
+            Tween(TabLabel, {
                 TextColor3 = Color3.fromRGB(255, 255, 255)
             }, 0.2)
         end
@@ -1026,6 +1323,23 @@ function NazuX:CreateWindow(options)
         ToggleMinimize()
     end
     
+    -- Change Theme Function
+    function NazuXLibrary:ChangeTheme(themeName)
+        if Themes[themeName] then
+            ApplyTheme(themeName)
+        end
+    end
+    
+    -- Get Current Theme Function
+    function NazuXLibrary:GetCurrentTheme()
+        return CurrentTheme
+    end
+    
+    -- Get Available Themes Function
+    function NazuXLibrary:GetAvailableThemes()
+        return Themes.Names
+    end
+    
     -- Destroy Function
     function NazuXLibrary:Destroy()
         if MinimizeConnection then
@@ -1034,7 +1348,14 @@ function NazuX:CreateWindow(options)
         ScreenGui:Destroy()
     end
     
+    -- Apply default theme
+    ApplyTheme("Dark")
+    
     return NazuXLibrary
 end
+
+-- Export Icons and Themes for external use
+NazuX.Icons = Icons
+NazuX.Themes = Themes
 
 return NazuX
