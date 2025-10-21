@@ -1,4 +1,4 @@
--- NazuX Library - Left Tabs with User Info
+-- NazuX Library - User Info Above Tabs
 local NazuX = {}
 NazuX.__index = NazuX
 
@@ -95,48 +95,13 @@ function NazuX:CreateWindow(options)
         Parent = TopFrame
     })
     
-    -- User Info trên thanh tab (bên phải)
-    local UserInfoFrame = Create("Frame", {
-        Name = "UserInfoFrame",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0.7, 0, 0, 0),
-        Size = UDim2.new(0.3, 0, 1, 0),
-        Parent = TopFrame
-    })
-    
-    local UsernameLabel = Create("TextLabel", {
-        Name = "UsernameLabel",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 0, 0, 5),
-        Size = UDim2.new(1, 0, 0, 18),
-        Font = Enum.Font.GothamSemibold,
-        Text = "@" .. LocalPlayer.Name,
-        TextColor3 = Color3.fromRGB(200, 200, 200),
-        TextSize = 12,
-        TextXAlignment = Enum.TextXAlignment.Right,
-        Parent = UserInfoFrame
-    })
-    
-    local UserIdLabel = Create("TextLabel", {
-        Name = "UserIdLabel",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 0, 0, 23),
-        Size = UDim2.new(1, 0, 0, 14),
-        Font = Enum.Font.Gotham,
-        Text = "ID: " .. LocalPlayer.UserId,
-        TextColor3 = Color3.fromRGB(150, 150, 150),
-        TextSize = 10,
-        TextXAlignment = Enum.TextXAlignment.Right,
-        Parent = UserInfoFrame
-    })
-    
     -- Search Bar
     local SearchContainer = Create("Frame", {
         Name = "SearchContainer",
         BackgroundColor3 = Color3.fromRGB(40, 40, 40),
         BackgroundTransparency = 0.2,
         Position = UDim2.new(0.3, 0, 0.5, -15),
-        Size = UDim2.new(0.35, 0, 0, 30),
+        Size = UDim2.new(0.4, 0, 0, 30),
         Parent = TopFrame
     })
     
@@ -208,7 +173,7 @@ function NazuX:CreateWindow(options)
         Parent = CloseButton
     })
     
-    -- Left Sidebar với tabs thẳng đứng
+    -- Left Sidebar với User Info trên cùng
     local LeftSidebar = Create("Frame", {
         Name = "LeftSidebar",
         BackgroundColor3 = Color3.fromRGB(25, 25, 25),
@@ -224,12 +189,86 @@ function NazuX:CreateWindow(options)
         Parent = LeftSidebar
     })
     
-    -- Tabs Container thẳng đứng
+    -- USER INFO FRAME (TRÊN CÙNG CỦA SIDEBAR)
+    local UserInfoFrame = Create("Frame", {
+        Name = "UserInfoFrame",
+        BackgroundColor3 = Color3.fromRGB(40, 40, 40),
+        BackgroundTransparency = 0.3,
+        BorderSizePixel = 0,
+        Position = UDim2.new(0, 10, 0, 10),
+        Size = UDim2.new(1, -20, 0, 80),
+        Parent = LeftSidebar
+    })
+    
+    local UserInfoCorner = Create("UICorner", {
+        CornerRadius = UDim.new(0, 8),
+        Parent = UserInfoFrame
+    })
+    
+    local UserInfoStroke = Create("UIStroke", {
+        Color = Color3.fromRGB(70, 70, 70),
+        Thickness = 1,
+        Parent = UserInfoFrame
+    })
+    
+    -- User Avatar (Placeholder)
+    local UserAvatar = Create("Frame", {
+        Name = "UserAvatar",
+        BackgroundColor3 = Color3.fromRGB(60, 60, 60),
+        Position = UDim2.new(0.5, -20, 0, 10),
+        Size = UDim2.new(0, 40, 0, 40),
+        Parent = UserInfoFrame
+    })
+    
+    local AvatarCorner = Create("UICorner", {
+        CornerRadius = UDim.new(1, 0),
+        Parent = UserAvatar
+    })
+    
+    local AvatarIcon = Create("TextLabel", {
+        Name = "AvatarIcon",
+        BackgroundTransparency = 1,
+        Size = UDim2.new(1, 0, 1, 0),
+        Font = Enum.Font.GothamBold,
+        Text = "👤",
+        TextColor3 = Color3.fromRGB(200, 200, 200),
+        TextSize = 18,
+        Parent = UserAvatar
+    })
+    
+    -- User Info Text
+    local UsernameLabel = Create("TextLabel", {
+        Name = "UsernameLabel",
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, 0, 0, 55),
+        Size = UDim2.new(1, 0, 0, 16),
+        Font = Enum.Font.GothamSemibold,
+        Text = "@" .. LocalPlayer.Name,
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        TextSize = 12,
+        TextXAlignment = Enum.TextXAlignment.Center,
+        Parent = UserInfoFrame
+    })
+    
+    local UserIdLabel = Create("TextLabel", {
+        Name = "UserIdLabel",
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, 0, 0, 70),
+        Size = UDim2.new(1, 0, 0, 12),
+        Font = Enum.Font.Gotham,
+        Text = "ID: " .. LocalPlayer.UserId,
+        TextColor3 = Color3.fromRGB(150, 150, 150),
+        TextSize = 10,
+        TextXAlignment = Enum.TextXAlignment.Center,
+        Parent = UserInfoFrame
+    })
+    
+    -- Tabs Container (DƯỚI User Info)
     local TabsContainer = Create("ScrollingFrame", {
         Name = "TabsContainer",
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 10, 0, 10),
-        Size = UDim2.new(1, -20, 1, -20),
+        Position = UDim2.new(0, 10, 0, 100), -- Xuống dưới User Info
+        Size = UDim2.new(1, -20, 1, -110), -- Chiều cao trừ đi User Info
         CanvasSize = UDim2.new(0, 0, 0, 0),
         ScrollBarThickness = 3,
         ScrollBarImageColor3 = Color3.fromRGB(80, 80, 80),
@@ -289,7 +328,7 @@ function NazuX:CreateWindow(options)
     SearchBox.Focused:Connect(function()
         Tween(SearchContainer, {
             BackgroundTransparency = 0.1,
-            Size = UDim2.new(0.4, 0, 0, 30)
+            Size = UDim2.new(0.45, 0, 0, 30)
         }, 0.3)
         SearchIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
     end)
@@ -297,7 +336,7 @@ function NazuX:CreateWindow(options)
     SearchBox.FocusLost:Connect(function()
         Tween(SearchContainer, {
             BackgroundTransparency = 0.2,
-            Size = UDim2.new(0.35, 0, 0, 30)
+            Size = UDim2.new(0.4, 0, 0, 30)
         }, 0.3)
         SearchIcon.TextColor3 = Color3.fromRGB(150, 150, 150)
     end)
