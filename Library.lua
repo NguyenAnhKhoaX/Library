@@ -116,8 +116,8 @@ function NazuX:CreateWindow(options)
     local ControlsFrame = Create("Frame", {
         Name = "ControlsFrame",
         BackgroundTransparency = 1,
-        Position = UDim2.new(1, -90, 0, 0),
-        Size = UDim2.new(0, 90, 1, 0),
+        Position = UDim2.new(1, -75, 0, 0),
+        Size = UDim2.new(0, 75, 1, 0),
         Parent = TopFrame
     })
     
@@ -128,9 +128,9 @@ function NazuX:CreateWindow(options)
         Position = UDim2.new(0, 0, 0.5, -8),
         Size = UDim2.new(0, 25, 0, 16),
         Font = Enum.Font.GothamBold,
-        Text = "-",
+        Text = "─",
         TextColor3 = Color3.fromRGB(255, 255, 255),
-        TextSize = 16,
+        TextSize = 14,
         AutoButtonColor = false,
         Parent = ControlsFrame
     })
@@ -139,7 +139,7 @@ function NazuX:CreateWindow(options)
     local MaximizeButton = Create("TextButton", {
         Name = "MaximizeButton",
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 30, 0.5, -8),
+        Position = UDim2.new(0, 25, 0.5, -8),
         Size = UDim2.new(0, 25, 0, 16),
         Font = Enum.Font.Gotham,
         Text = "□",
@@ -153,10 +153,10 @@ function NazuX:CreateWindow(options)
     local CloseButton = Create("TextButton", {
         Name = "CloseButton",
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 60, 0.5, -8),
+        Position = UDim2.new(0, 50, 0.5, -8),
         Size = UDim2.new(0, 25, 0, 16),
         Font = Enum.Font.GothamBold,
-        Text = "X",
+        Text = "×",
         TextColor3 = Color3.fromRGB(255, 255, 255),
         TextSize = 14,
         AutoButtonColor = false,
