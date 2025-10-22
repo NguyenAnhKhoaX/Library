@@ -1,4 +1,4 @@
--- NazuX Library - Enhanced with Search Bar & UI Controls
+-- NazuX Library - Fixed Layout
 local NazuX = {}
 NazuX.__index = NazuX
 
@@ -163,13 +163,13 @@ function NazuX:CreateWindow(options)
         Parent = ControlsFrame
     })
     
-    -- Search Bar (Between TitleBar and User Info)
+    -- Search Bar (Giữa TitleBar)
     local SearchContainer = Create("Frame", {
         Name = "SearchContainer",
         BackgroundColor3 = Color3.fromRGB(40, 40, 40),
         BackgroundTransparency = 0.2,
-        Position = UDim2.new(0, 15, 0, 45),
-        Size = UDim2.new(1, -30, 0, 35),
+        Position = UDim2.new(0.5, -150, 0, 40),
+        Size = UDim2.new(0, 300, 0, 35),
         Parent = MainFrame
     })
     
@@ -202,13 +202,13 @@ function NazuX:CreateWindow(options)
         Parent = SearchContainer
     })
     
-    -- User Info (Above Tabs)
+    -- User Info (Trên thanh Tab)
     local UserInfoFrame = Create("Frame", {
         Name = "UserInfoFrame",
         BackgroundColor3 = Color3.fromRGB(35, 35, 35),
         BackgroundTransparency = 0.2,
         BorderSizePixel = 0,
-        Position = UDim2.new(0, 15, 0, 90),
+        Position = UDim2.new(0, 15, 0, 85),
         Size = UDim2.new(0, 170, 0, 60),
         Parent = MainFrame
     })
@@ -261,14 +261,14 @@ function NazuX:CreateWindow(options)
         Parent = UserInfoFrame
     })
     
-    -- Tabs Container (Below User Info)
+    -- Tabs Container (Dưới User Info)
     local TabsContainer = Create("ScrollingFrame", {
         Name = "TabsContainer",
         BackgroundColor3 = Color3.fromRGB(25, 25, 25),
         BackgroundTransparency = 0.1,
         BorderSizePixel = 0,
-        Position = UDim2.new(0, 15, 0, 160),
-        Size = UDim2.new(0, 170, 1, -175),
+        Position = UDim2.new(0, 15, 0, 155),
+        Size = UDim2.new(0, 170, 1, -170),
         CanvasSize = UDim2.new(0, 0, 0, 0),
         ScrollBarThickness = 3,
         ScrollBarImageColor3 = Color3.fromRGB(80, 80, 80),
@@ -295,8 +295,8 @@ function NazuX:CreateWindow(options)
     local ContentArea = Create("Frame", {
         Name = "ContentArea",
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 200, 0, 45),
-        Size = UDim2.new(1, -210, 1, -50),
+        Position = UDim2.new(0, 200, 0, 85),
+        Size = UDim2.new(1, -210, 1, -90),
         Parent = MainFrame
     })
     
@@ -468,6 +468,96 @@ function NazuX:CreateWindow(options)
             end)
             
             return Button
+        end
+        
+        -- Toggle Function
+        function TabFunctions:AddToggle(ToggleConfig)
+            ToggleConfig = ToggleConfig or {}
+            local ToggleName = ToggleConfig.Name or "Toggle"
+            local Default = ToggleConfig.Default or false
+            local Callback = ToggleConfig.Callback or function() end
+            
+            local ToggleContainer = Create("Frame", {
+                Name = ToggleName .. "Container",
+                BackgroundColor3 = Color3.fromRGB(45, 45, 45),
+                BackgroundTransparency = 0.1,
+                BorderSizePixel = 0,
+                Size = UDim2.new(1, 0, 0, 40),
+                Parent = TabContent
+            })
+            
+            local ToggleCorner = Create("UICorner", {
+                CornerRadius = UDim.new(0, 6),
+                Parent = ToggleContainer
+            })
+            
+            local ToggleLabel = Create("TextLabel", {
+                Name = "ToggleLabel",
+                BackgroundTransparency = 1,
+                Position = UDim2.new(0, 10, 0, 0),
+                Size = UDim2.new(0.7, -10, 1, 0),
+                Font = Enum.Font.Gotham,
+                Text = ToggleName,
+                TextColor3 = Color3.fromRGB(255, 255, 255),
+                TextSize = 12,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                Parent = ToggleContainer
+            })
+            
+            local ToggleButton = Create("TextButton", {
+                Name = "ToggleButton",
+                BackgroundColor3 = Default and Color3.fromRGB(0, 170, 255) or Color3.fromRGB(80, 80, 80),
+                Position = UDim2.new(0.8, 0, 0.5, -10),
+                Size = UDim2.new(0, 40, 0, 20),
+                Font = Enum.Font.Gotham,
+                Text = "",
+                AutoButtonColor = false,
+                Parent = ToggleContainer
+            })
+            
+            local ToggleButtonCorner = Create("UICorner", {
+                CornerRadius = UDim.new(0, 10),
+                Parent = ToggleButton
+            })
+            
+            local ToggleState = Default
+            
+            local function UpdateToggle()
+                if ToggleState then
+                    Tween(ToggleButton, {BackgroundColor3 = Color3.fromRGB(0, 170, 255)}, 0.2)
+                else
+                    Tween(ToggleButton, {BackgroundColor3 = Color3.fromRGB(80, 80, 80)}, 0.2)
+                end
+                Callback(ToggleState)
+            end
+            
+            ToggleButton.MouseButton1Click:Connect(function()
+                ToggleState = not ToggleState
+                UpdateToggle()
+            end)
+            
+            -- Container Hover
+            ToggleContainer.MouseEnter:Connect(function()
+                Tween(ToggleContainer, {BackgroundColor3 = Color3.fromRGB(55, 55, 55)}, 0.2)
+            end)
+            
+            ToggleContainer.MouseLeave:Connect(function()
+                Tween(ToggleContainer, {BackgroundColor3 = Color3.fromRGB(45, 45, 45)}, 0.2)
+            end)
+            
+            UpdateToggle()
+            
+            local ToggleFunctions = {}
+            function ToggleFunctions:Set(Value)
+                ToggleState = Value
+                UpdateToggle()
+            end
+            
+            function ToggleFunctions:Get()
+                return ToggleState
+            end
+            
+            return ToggleFunctions
         end
         
         -- Auto-select first tab
