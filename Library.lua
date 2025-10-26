@@ -1,5 +1,5 @@
 -- NazuX Library
--- Created by [Your Name]
+-- Clean and Fixed Version
 
 local NazuX = {}
 NazuX.__index = NazuX
@@ -13,7 +13,6 @@ local HttpService = game:GetService("HttpService")
 
 -- Local Player
 local player = Players.LocalPlayer
-local mouse = player:GetMouse()
 
 -- Theme System
 local Themes = {
@@ -162,37 +161,15 @@ function NazuX:CreateWindow(options)
         Parent = game.CoreGui
     })
     
-    -- Loading Screen
-    local LoadingFrame = Create("Frame", {
-        Name = "LoadingFrame",
-        Size = UDim2.new(1, 0, 1, 0),
-        BackgroundColor3 = Themes[Window.Theme].Main,
-        BorderSizePixel = 0,
-        Parent = ScreenGui
-    })
-    
-    local LoadingLabel = Create("TextLabel", {
-        Name = "LoadingLabel",
-        Size = UDim2.new(0, 200, 0, 50),
-        Position = UDim2.new(0.5, -100, 0.5, -25),
-        BackgroundTransparency = 1,
-        Text = "NazuX UI - Loading...",
-        TextColor3 = Themes[Window.Theme].Text,
-        TextSize = 20,
-        Font = Enum.Font.Gotham,
-        Parent = LoadingFrame
-    })
-    
     -- Main Container
     local MainFrame = Create("Frame", {
         Name = "MainFrame",
         Size = UDim2.new(0, 600, 0, 400),
         Position = UDim2.new(0.5, -300, 0.5, -200),
         BackgroundColor3 = Themes[Window.Theme].Main,
-        BackgroundTransparency = 0.1,
+        BackgroundTransparency = 0.05,
         BorderSizePixel = 0,
-        Parent = ScreenGui,
-        Visible = false
+        Parent = ScreenGui
     })
     
     -- Corner
@@ -228,7 +205,7 @@ function NazuX:CreateWindow(options)
         Size = UDim2.new(0, 20, 0, 20),
         Position = UDim2.new(0, 5, 0.5, -10),
         BackgroundTransparency = 1,
-        Image = "rbxassetid://0", -- Add your logo asset id here
+        Image = "rbxasset://textures/ui/GuiImagePlaceholder.png",
         Parent = TitleBar
     })
     
@@ -312,7 +289,7 @@ function NazuX:CreateWindow(options)
     local UserInfo = Create("Frame", {
         Name = "UserInfo",
         Size = UDim2.new(0, 200, 0, 60),
-        Position = UDim2.new(1, -210, 1, 5),
+        Position = UDim2.new(1, -210, 0, 35),
         BackgroundColor3 = Themes[Window.Theme].Secondary,
         Parent = MainFrame
     })
@@ -379,7 +356,7 @@ function NazuX:CreateWindow(options)
         Parent = TabsContainer
     })
     
-    Create("UIListLayout", {
+    local UIListLayout = Create("UIListLayout", {
         Padding = UDim.new(0, 5),
         HorizontalAlignment = Enum.HorizontalAlignment.Center,
         Parent = TabsList
@@ -406,21 +383,20 @@ function NazuX:CreateWindow(options)
         Parent = ContentContainer
     })
     
-    -- Sections Container
-    local SectionsContainer = Create("ScrollingFrame", {
-        Name = "SectionsContainer",
+    -- Elements Container
+    local ElementsContainer = Create("ScrollingFrame", {
+        Name = "ElementsContainer",
         Size = UDim2.new(1, 0, 1, -40),
         Position = UDim2.new(0, 0, 0, 40),
         BackgroundTransparency = 1,
         CanvasSize = UDim2.new(0, 0, 0, 0),
         ScrollBarThickness = 3,
-        Visible = false,
         Parent = ContentContainer
     })
     
     Create("UIListLayout", {
         Padding = UDim.new(0, 10),
-        Parent = SectionsContainer
+        Parent = ElementsContainer
     })
     
     -- Functions
@@ -439,6 +415,13 @@ function NazuX:CreateWindow(options)
             Avatar.BackgroundColor3 = theme.Background
             Username.TextColor3 = theme.Text
             TabTitle.TextColor3 = theme.Text
+            
+            -- Update UIStroke
+            for _, child in pairs(MainFrame:GetChildren()) do
+                if child:IsA("UIStroke") then
+                    child.Color = theme.Accent
+                end
+            end
             
             -- Update all existing elements with new theme
             for _, tab in pairs(Window.Tabs) do
@@ -513,8 +496,16 @@ function NazuX:CreateWindow(options)
         Window.Minimized = not Window.Minimized
         if Window.Minimized then
             Tween(MainFrame, TweenInfo.new(0.3), {Size = UDim2.new(0, 600, 0, 30)})
+            ElementsContainer.Visible = false
+            TabsContainer.Visible = false
+            UserInfo.Visible = false
+            TabTitle.Visible = false
         else
             Tween(MainFrame, TweenInfo.new(0.3), {Size = UDim2.new(0, 600, 0, 400)})
+            ElementsContainer.Visible = true
+            TabsContainer.Visible = true
+            UserInfo.Visible = true
+            TabTitle.Visible = true
         end
     end)
     
@@ -527,34 +518,42 @@ function NazuX:CreateWindow(options)
             Window.Minimized = not Window.Minimized
             if Window.Minimized then
                 Tween(MainFrame, TweenInfo.new(0.3), {Size = UDim2.new(0, 600, 0, 30)})
+                ElementsContainer.Visible = false
+                TabsContainer.Visible = false
+                UserInfo.Visible = false
+                TabTitle.Visible = false
             else
                 Tween(MainFrame, TweenInfo.new(0.3), {Size = UDim2.new(0, 600, 0, 400)})
+                ElementsContainer.Visible = true
+                TabsContainer.Visible = true
+                UserInfo.Visible = true
+                TabTitle.Visible = true
             end
         end
     end)
     
     -- Load avatar
-    pcall(function()
-        local thumbType = Enum.ThumbnailType.HeadShot
-        local thumbSize = Enum.ThumbnailSize.Size420x420
-        local content = Players:GetUserThumbnailAsync(player.UserId, thumbType, thumbSize)
-        Avatar.Image = content
+    spawn(function()
+        pcall(function()
+            local thumbType = Enum.ThumbnailType.HeadShot
+            local thumbSize = Enum.ThumbnailSize.Size420x420
+            local content, isReady = Players:GetUserThumbnailAsync(player.UserId, thumbType, thumbSize)
+            if isReady then
+                Avatar.Image = content
+            end
+        end)
     end)
     
-    -- Simulate loading
-    delay(2, function()
-        Tween(LoadingFrame, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Wait()
-        LoadingFrame:Destroy()
-        MainFrame.Visible = true
-        Tween(MainFrame, TweenInfo.new(0.5), {BackgroundTransparency = 0})
+    -- Update tabs list size
+    UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        TabsList.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y)
     end)
     
     -- Tab Methods
     function Window:AddTab(name)
         local Tab = {
             Name = name,
-            Elements = {},
-            Sections = {}
+            Elements = {}
         }
         
         local TabButton = Create("TextButton", {
@@ -591,9 +590,6 @@ function NazuX:CreateWindow(options)
             Window:SwitchTab(Tab)
         end)
         
-        -- Update tabs list size
-        TabsList.CanvasSize = UDim2.new(0, 0, 0, (#TabsList:GetChildren() - 1) * 35)
-        
         table.insert(Window.Tabs, Tab)
         
         if #Window.Tabs == 1 then
@@ -614,10 +610,6 @@ function NazuX:CreateWindow(options)
                     return function(options, callback)
                         return Window:AddSlider(Tab, options, callback)
                     end
-                elseif index == "AddSection" then
-                    return function(name)
-                        return Window:AddSection(Tab, name)
-                    end
                 end
                 return rawget(self, index)
             end
@@ -628,7 +620,7 @@ function NazuX:CreateWindow(options)
     
     function Window:SwitchTab(tab)
         if Window.CurrentTab then
-            -- Hide current tab content
+            -- Hide current tab elements
             for _, element in pairs(Window.CurrentTab.Elements) do
                 if element.Frame then
                     element.Frame.Visible = false
@@ -645,7 +637,7 @@ function NazuX:CreateWindow(options)
         Window.CurrentTab = tab
         TabTitle.Text = tab.Name
         
-        -- Show new tab content
+        -- Show new tab elements
         for _, element in pairs(tab.Elements) do
             if element.Frame then
                 element.Frame.Visible = true
@@ -658,77 +650,6 @@ function NazuX:CreateWindow(options)
             newButton.Pill.Visible = true
             Tween(newButton.Pill, TweenInfo.new(0.2), {Size = UDim2.new(0, 3, 0, 20)})
         end
-        
-        -- Hide sections container
-        SectionsContainer.Visible = false
-        for _, child in pairs(SectionsContainer:GetChildren()) do
-            if child:IsA("Frame") then
-                child.Visible = false
-            end
-        end
-    end
-    
-    function Window:AddSection(tab, name)
-        local Section = {
-            Name = name,
-            Elements = {}
-        }
-        
-        local SectionFrame = Create("Frame", {
-            Name = name .. "Section",
-            Size = UDim2.new(1, -20, 0, 0),
-            BackgroundTransparency = 1,
-            Visible = false,
-            Parent = SectionsContainer
-        })
-        
-        local SectionTitle = Create("TextLabel", {
-            Name = "Title",
-            Size = UDim2.new(1, 0, 0, 25),
-            BackgroundTransparency = 1,
-            Text = name,
-            TextColor3 = Themes[Window.Theme].Text,
-            TextSize = 16,
-            Font = Enum.Font.Gotham,
-            TextXAlignment = Enum.TextXAlignment.Left,
-            Parent = SectionFrame
-        })
-        
-        local ElementsContainer = Create("Frame", {
-            Name = "Elements",
-            Size = UDim2.new(1, 0, 1, -30),
-            Position = UDim2.new(0, 0, 0, 30),
-            BackgroundTransparency = 1,
-            Parent = SectionFrame
-        })
-        
-        Create("UIListLayout", {
-            Padding = UDim.new(0, 5),
-            Parent = ElementsContainer
-        })
-        
-        table.insert(tab.Sections, Section)
-        
-        setmetatable(Section, {
-            __index = function(self, index)
-                if index == "AddButton" then
-                    return function(options, callback)
-                        return Window:AddButtonToSection(Section, options, callback)
-                    end
-                elseif index == "AddToggle" then
-                    return function(options, callback)
-                        return Window:AddToggleToSection(Section, options, callback)
-                    end
-                elseif index == "AddSlider" then
-                    return function(options, callback)
-                        return Window:AddSliderToSection(Section, options, callback)
-                    end
-                end
-                return rawget(self, index)
-            end
-        })
-        
-        return Section
     end
     
     -- Element Creation Methods
@@ -744,7 +665,8 @@ function NazuX:CreateWindow(options)
             Name = "Button_" .. options.Name,
             Size = UDim2.new(1, -20, 0, 30),
             BackgroundColor3 = Themes[Window.Theme].Secondary,
-            Parent = ContentContainer
+            Parent = ElementsContainer,
+            Visible = Window.CurrentTab == tab
         })
         
         Create("UICorner", {
@@ -784,6 +706,9 @@ function NazuX:CreateWindow(options)
         Button.Frame = ButtonFrame
         table.insert(tab.Elements, Button)
         
+        -- Update elements container size
+        ElementsContainer.CanvasSize = UDim2.new(0, 0, 0, #tab.Elements * 40)
+        
         return Button
     end
     
@@ -799,7 +724,8 @@ function NazuX:CreateWindow(options)
             Name = "Toggle_" .. options.Name,
             Size = UDim2.new(1, -20, 0, 30),
             BackgroundColor3 = Themes[Window.Theme].Secondary,
-            Parent = ContentContainer
+            Parent = ElementsContainer,
+            Visible = Window.CurrentTab == tab
         })
         
         Create("UICorner", {
@@ -867,6 +793,9 @@ function NazuX:CreateWindow(options)
         Toggle.Frame = ToggleFrame
         table.insert(tab.Elements, Toggle)
         
+        -- Update elements container size
+        ElementsContainer.CanvasSize = UDim2.new(0, 0, 0, #tab.Elements * 40)
+        
         return Toggle
     end
     
@@ -882,7 +811,8 @@ function NazuX:CreateWindow(options)
             Name = "Slider_" .. options.Name,
             Size = UDim2.new(1, -20, 0, 50),
             BackgroundColor3 = Themes[Window.Theme].Secondary,
-            Parent = ContentContainer
+            Parent = ElementsContainer,
+            Visible = Window.CurrentTab == tab
         })
         
         Create("UICorner", {
@@ -1008,28 +938,9 @@ function NazuX:CreateWindow(options)
         Slider.Frame = SliderFrame
         table.insert(tab.Elements, Slider)
         
-        return Slider
-    end
-    
-    -- Section element methods
-    function Window:AddButtonToSection(section, options, callback)
-        -- Similar to AddButton but adds to section
-        local Button = self:AddButton({Name = options.Name}, callback)
-        Button.Frame.Parent = section.ElementsContainer
-        return Button
-    end
-    
-    function Window:AddToggleToSection(section, options, callback)
-        -- Similar to AddToggle but adds to section
-        local Toggle = self:AddToggle({Name = options.Name, Default = options.Default}, callback)
-        Toggle.Frame.Parent = section.ElementsContainer
-        return Toggle
-    end
-    
-    function Window:AddSliderToSection(section, options, callback)
-        -- Similar to AddSlider but adds to section
-        local Slider = self:AddSlider({Name = options.Name, Min = options.Min, Max = options.Max, Default = options.Default}, callback)
-        Slider.Frame.Parent = section.ElementsContainer
+        -- Update elements container size
+        ElementsContainer.CanvasSize = UDim2.new(0, 0, 0, #tab.Elements * 60)
+        
         return Slider
     end
     
