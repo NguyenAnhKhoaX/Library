@@ -250,12 +250,12 @@ function NazuX:CreateWindow(options)
     local MainStroke = CreateStroke(1, Color3.fromRGB(60, 60, 60))
     MainStroke.Parent = NazuXLib.MainFrame
     
-    -- Drag handle (bottom area)
+    -- Drag handle (entire title bar)
     local DragHandle = Instance.new("Frame")
     DragHandle.Name = "DragHandle"
     DragHandle.BackgroundTransparency = 1
-    DragHandle.Size = UDim2.new(1, 0, 0, 10)
-    DragHandle.Position = UDim2.new(0, 0, 1, -10)
+    DragHandle.Size = UDim2.new(1, 0, 0, 35)
+    DragHandle.Position = UDim2.new(0, 0, 0, 0)
     DragHandle.Parent = NazuXLib.MainFrame
     
     MakeDraggable(NazuXLib.MainFrame, DragHandle)
@@ -280,7 +280,7 @@ function NazuX:CreateWindow(options)
     Logo.Image = "rbxassetid://0" -- Add your logo ID here
     Logo.Parent = TitleBar
     
-    -- Title
+    -- Title - FIXED: Better contrast for dark theme
     local Title = Instance.new("TextLabel")
     Title.Name = "Title"
     Title.BackgroundTransparency = 1
@@ -288,7 +288,7 @@ function NazuX:CreateWindow(options)
     Title.Position = UDim2.new(0, 35, 0, 0)
     Title.Font = Enum.Font.GothamBold
     Title.Text = WindowName
-    Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Title.TextColor3 = Color3.fromRGB(255, 255, 255) -- Always white for visibility
     Title.TextSize = 14
     Title.TextXAlignment = Enum.TextXAlignment.Center
     Title.Parent = TitleBar
@@ -474,7 +474,7 @@ function NazuX:CreateWindow(options)
     NazuXLib.CurrentTab = nil
     NazuXLib.CurrentTheme = NazuX.Themes[DefaultTheme]
     
-    -- Apply theme function
+    -- Apply theme function - FIXED: Better theme application
     function NazuXLib:ApplyTheme(themeName)
         local theme = NazuX.Themes[themeName]
         if theme then
@@ -486,8 +486,9 @@ function NazuX:CreateWindow(options)
             UserInfo.BackgroundColor3 = theme.Secondary
             TabContainer.BackgroundColor3 = theme.Secondary
             ContentContainer.BackgroundColor3 = theme.Main
+            MainContent.BackgroundColor3 = theme.Main
             
-            -- Update text colors
+            -- Update text colors - FIXED: Ensure text is always visible
             Title.TextColor3 = theme.Text
             Username.TextColor3 = theme.Text
             DisplayName.TextColor3 = theme.Text
@@ -495,7 +496,16 @@ function NazuX:CreateWindow(options)
             -- Update search bar
             SearchBar.BackgroundColor3 = theme.Main
             SearchBar.TextColor3 = theme.Text
-            SearchBar.PlaceholderColor3 = Color3.fromRGB(theme.Text.R * 0.7, theme.Text.G * 0.7, theme.Text.B * 0.7)
+            SearchBar.PlaceholderColor3 = Color3.fromRGB(
+                math.min(255, theme.Text.R * 255 * 0.7),
+                math.min(255, theme.Text.G * 255 * 0.7), 
+                math.min(255, theme.Text.B * 255 * 0.7)
+            )
+            
+            -- Update control buttons text color for better visibility
+            MinimizeBtn.TextColor3 = theme.Text
+            SquareBtn.TextColor3 = theme.Text
+            -- Close button stays red for visibility
         end
     end
     
@@ -556,7 +566,7 @@ function NazuX:CreateWindow(options)
         TabButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
         TabButton.BorderSizePixel = 0
         TabButton.Size = UDim2.new(1, -10, 0, 35)
-        TabButton.Position = UDim2.new(0, 5, 0, 5 + (#NazuXLib.Tabs * 40))
+        TabButton.Position = UDim2.new(0, 5, 0, 5 + ((#NazuXLib.Tabs) * 40))
         TabButton.Font = Enum.Font.Gotham
         TabButton.Text = tabName
         TabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -580,10 +590,13 @@ function NazuX:CreateWindow(options)
         PillCorner.Parent = Pill
         
         -- Tab Content
-        local TabContent = Instance.new("Frame")
+        local TabContent = Instance.new("ScrollingFrame")
         TabContent.Name = tabName .. "Content"
         TabContent.BackgroundTransparency = 1
         TabContent.Size = UDim2.new(1, 0, 1, 0)
+        TabContent.CanvasSize = UDim2.new(0, 0, 0, 0)
+        TabContent.ScrollBarThickness = 3
+        TabContent.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100)
         TabContent.Visible = false
         TabContent.Parent = ContentScrolling
         
@@ -592,6 +605,11 @@ function NazuX:CreateWindow(options)
         TabContentLayout.Padding = UDim.new(0, 10)
         TabContentLayout.SortOrder = Enum.SortOrder.LayoutOrder
         TabContentLayout.Parent = TabContent
+        
+        -- Update tab content size
+        TabContentLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+            TabContent.CanvasSize = UDim2.new(0, 0, 0, TabContentLayout.AbsoluteContentSize.Y + 10)
+        end)
         
         Tab.Content = TabContent
         Tab.Button = TabButton
@@ -619,6 +637,7 @@ function NazuX:CreateWindow(options)
         
         -- Select first tab
         if #NazuXLib.Tabs == 1 then
+            wait()
             TabButton.MouseButton1Click:Wait()
         end
         
@@ -628,16 +647,22 @@ function NazuX:CreateWindow(options)
             local btnName = options.Name or "Button"
             local callback = options.Callback or function() end
             
+            local ButtonFrame = Instance.new("Frame")
+            ButtonFrame.Name = btnName .. "Frame"
+            ButtonFrame.BackgroundTransparency = 1
+            ButtonFrame.Size = UDim2.new(1, 0, 0, 35)
+            ButtonFrame.Parent = TabContent
+            
             local Button = Instance.new("TextButton")
             Button.Name = btnName
             Button.BackgroundColor3 = NazuXLib.CurrentTheme.Accent
             Button.BorderSizePixel = 0
-            Button.Size = UDim2.new(1, -20, 0, 35)
+            Button.Size = UDim2.new(1, 0, 1, 0)
             Button.Font = Enum.Font.Gotham
             Button.Text = btnName
             Button.TextColor3 = Color3.fromRGB(255, 255, 255)
             Button.TextSize = 14
-            Button.Parent = TabContent
+            Button.Parent = ButtonFrame
             
             local ButtonCorner = RoundedCorner(6)
             ButtonCorner.Parent = Button
@@ -659,7 +684,7 @@ function NazuX:CreateWindow(options)
             local Toggle = Instance.new("Frame")
             Toggle.Name = toggleName
             Toggle.BackgroundTransparency = 1
-            Toggle.Size = UDim2.new(1, -20, 0, 30)
+            Toggle.Size = UDim2.new(1, 0, 0, 30)
             Toggle.Parent = TabContent
             
             local ToggleLabel = Instance.new("TextLabel")
@@ -726,7 +751,15 @@ function NazuX:CreateWindow(options)
             UpdateToggle()
             
             table.insert(Tab.Elements, Toggle)
-            return Toggle
+            return {
+                Set = function(value)
+                    isToggled = value
+                    UpdateToggle()
+                end,
+                Get = function()
+                    return isToggled
+                end
+            }
         end
         
         function Tab:AddSlider(options)
@@ -740,7 +773,7 @@ function NazuX:CreateWindow(options)
             local Slider = Instance.new("Frame")
             Slider.Name = sliderName
             Slider.BackgroundTransparency = 1
-            Slider.Size = UDim2.new(1, -20, 0, 50)
+            Slider.Size = UDim2.new(1, 0, 0, 50)
             Slider.Parent = TabContent
             
             local SliderLabel = Instance.new("TextLabel")
@@ -827,7 +860,14 @@ function NazuX:CreateWindow(options)
             UpdateSlider(default)
             
             table.insert(Tab.Elements, Slider)
-            return Slider
+            return {
+                Set = function(value)
+                    UpdateSlider(value)
+                end,
+                Get = function()
+                    return currentValue
+                end
+            }
         end
         
         function Tab:AddSection(sectionName)
@@ -836,13 +876,13 @@ function NazuX:CreateWindow(options)
             local SectionFrame = Instance.new("Frame")
             SectionFrame.Name = sectionName .. "Section"
             SectionFrame.BackgroundTransparency = 1
-            SectionFrame.Size = UDim2.new(1, -20, 0, 30)
+            SectionFrame.Size = UDim2.new(1, 0, 0, 40)
             SectionFrame.Parent = TabContent
             
             local SectionLabel = Instance.new("TextLabel")
             SectionLabel.Name = "Label"
             SectionLabel.BackgroundTransparency = 1
-            SectionLabel.Size = UDim2.new(1, 0, 1, 0)
+            SectionLabel.Size = UDim2.new(1, 0, 0, 20)
             SectionLabel.Font = Enum.Font.GothamBold
             SectionLabel.Text = sectionName
             SectionLabel.TextColor3 = NazuXLib.CurrentTheme.Text
@@ -877,6 +917,11 @@ function NazuX:CreateWindow(options)
         end
         
         return Tab
+    end
+    
+    -- Theme changer function
+    function NazuXLib:ChangeTheme(themeName)
+        self:ApplyTheme(themeName)
     end
     
     return NazuXLib
