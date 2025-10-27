@@ -1,4 +1,4 @@
--- NazuX Library - Fixed Dragging & Added Animations
+-- NazuX Library - Fixed Draggable Version
 local NazuX = {}
 NazuX.__index = NazuX
 
@@ -93,10 +93,14 @@ local function CreateStroke(thickness, color, transparency)
     return stroke
 end
 
--- FIXED Draggable function
+-- FIXED Draggable function với Active true
 local function MakeDraggable(frame, handle)
     local dragging = false
     local dragInput, dragStart, startPos
+
+    -- QUAN TRỌNG: Đặt Active true cho handle
+    handle.Active = true
+    handle.Draggable = true
 
     handle.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -110,9 +114,12 @@ local function MakeDraggable(frame, handle)
             })
             tween:Play()
             
-            input.Changed:Connect(function()
+            local connection
+            connection = input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
                     dragging = false
+                    connection:Disconnect()
+                    
                     -- Animation effect when ending drag
                     local tween2 = TweenService:Create(frame, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
                         BackgroundColor3 = Color3.fromRGB(32, 32, 32)
@@ -162,7 +169,7 @@ function NazuX:CreateWindow(options)
         NazuXLib.MainScreenGui.Parent = game.CoreGui
     end
 
-    -- Main Frame with entrance animation
+    -- Main Frame với entrance animation
     NazuXLib.MainFrame = Instance.new("Frame")
     NazuXLib.MainFrame.Name = "MainFrame"
     NazuXLib.MainFrame.BackgroundColor3 = Color3.fromRGB(32, 32, 32)
@@ -189,27 +196,31 @@ function NazuX:CreateWindow(options)
     local MainStroke = CreateStroke(2, Color3.fromRGB(60, 60, 60))
     MainStroke.Parent = NazuXLib.MainFrame
 
-    -- Title Bar - FIXED: Now properly draggable
+    -- Title Bar - FIXED: Đặt Active và Draggable true
     local TitleBar = Instance.new("Frame")
     TitleBar.Name = "TitleBar"
     TitleBar.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     TitleBar.BorderSizePixel = 0
     TitleBar.Size = UDim2.new(1, 0, 0, 35)
     TitleBar.Parent = NazuXLib.MainFrame
+    
+    -- QUAN TRỌNG: Đặt Active và Draggable true
+    TitleBar.Active = true
+    TitleBar.Draggable = true
 
     local TitleBarCorner = RoundedCorner(12)
     TitleBarCorner.Parent = TitleBar
 
-    -- Make entire title bar draggable
+    -- Make entire title bar draggable - FIXED
     MakeDraggable(NazuXLib.MainFrame, TitleBar)
 
-    -- Logo with animation
+    -- Logo với animation
     local Logo = Instance.new("ImageLabel")
     Logo.Name = "Logo"
     Logo.BackgroundTransparency = 1
     Logo.Size = UDim2.new(0, 20, 0, 20)
     Logo.Position = UDim2.new(0, 15, 0.5, -10)
-    Logo.Image = "rbxassetid://0"
+    Logo.Image = "rbxassetid://7072716642" -- Default Roblox icon
     Logo.ImageColor3 = Color3.fromRGB(0, 120, 215)
     Logo.Parent = TitleBar
 
@@ -225,7 +236,7 @@ function NazuX:CreateWindow(options)
         end
     end)
 
-    -- Title with glow effect
+    -- Title với glow effect
     local Title = Instance.new("TextLabel")
     Title.Name = "Title"
     Title.BackgroundTransparency = 1
@@ -239,7 +250,7 @@ function NazuX:CreateWindow(options)
     Title.TextStrokeColor3 = Color3.fromRGB(0, 120, 215)
     Title.Parent = TitleBar
 
-    -- Control Buttons with hover effects
+    -- Control Buttons với hover effects
     local ControlButtons = Instance.new("Frame")
     ControlButtons.Name = "ControlButtons"
     ControlButtons.BackgroundTransparency = 1
@@ -247,7 +258,7 @@ function NazuX:CreateWindow(options)
     ControlButtons.Position = UDim2.new(1, -80, 0, 0)
     ControlButtons.Parent = TitleBar
 
-    -- Minimize Button with animation
+    -- Minimize Button với animation
     local MinimizeBtn = Instance.new("TextButton")
     MinimizeBtn.Name = "MinimizeBtn"
     MinimizeBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
@@ -259,11 +270,12 @@ function NazuX:CreateWindow(options)
     MinimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     MinimizeBtn.TextSize = 16
     MinimizeBtn.Parent = ControlButtons
+    MinimizeBtn.AutoButtonColor = false
 
     local MinimizeCorner = RoundedCorner(6)
     MinimizeCorner.Parent = MinimizeBtn
 
-    -- Close Button with animation
+    -- Close Button với animation
     local CloseBtn = Instance.new("TextButton")
     CloseBtn.Name = "CloseBtn"
     CloseBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
@@ -275,6 +287,7 @@ function NazuX:CreateWindow(options)
     CloseBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
     CloseBtn.TextSize = 16
     CloseBtn.Parent = ControlButtons
+    CloseBtn.AutoButtonColor = false
 
     local CloseCorner = RoundedCorner(6)
     CloseCorner.Parent = CloseBtn
@@ -288,7 +301,8 @@ function NazuX:CreateWindow(options)
             local tween = TweenService:Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
                 BackgroundColor3 = hoverColor,
                 TextColor3 = textColor or originalTextColor,
-                Size = UDim2.new(0, 28, 0, 28)
+                Size = UDim2.new(0, 28, 0, 28),
+                Position = UDim2.new(button.Position.X.Scale, button.Position.X.Offset - 1.5, button.Position.Y.Scale, button.Position.Y.Offset - 1.5)
             })
             tween:Play()
         end)
@@ -297,7 +311,8 @@ function NazuX:CreateWindow(options)
             local tween = TweenService:Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
                 BackgroundColor3 = originalColor,
                 TextColor3 = originalTextColor,
-                Size = UDim2.new(0, 25, 0, 25)
+                Size = UDim2.new(0, 25, 0, 25),
+                Position = UDim2.new(button.Position.X.Scale, button.Position.X.Offset + 1.5, button.Position.Y.Scale, button.Position.Y.Offset + 1.5)
             })
             tween:Play()
         end)
@@ -306,7 +321,7 @@ function NazuX:CreateWindow(options)
     setupButtonHover(MinimizeBtn, Color3.fromRGB(80, 80, 80))
     setupButtonHover(CloseBtn, Color3.fromRGB(255, 60, 60), Color3.fromRGB(255, 255, 255))
 
-    -- User Info with animation
+    -- User Info với animation
     local UserInfo = Instance.new("Frame")
     UserInfo.Name = "UserInfo"
     UserInfo.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
@@ -318,7 +333,7 @@ function NazuX:CreateWindow(options)
     local UserInfoCorner = RoundedCorner(10)
     UserInfoCorner.Parent = UserInfo
 
-    -- Avatar with pulse animation
+    -- Avatar với pulse animation
     local Avatar = Instance.new("ImageLabel")
     Avatar.Name = "Avatar"
     Avatar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -349,7 +364,7 @@ function NazuX:CreateWindow(options)
         end
     end)
 
-    -- Username with typing animation
+    -- Username với typing animation
     local Username = Instance.new("TextLabel")
     Username.Name = "Username"
     Username.BackgroundTransparency = 1
@@ -367,7 +382,7 @@ function NazuX:CreateWindow(options)
         local text = LocalPlayer.Name
         for i = 1, #text do
             Username.Text = string.sub(text, 1, i)
-            wait(0.05)
+            wait(0.03)
         end
     end)
 
@@ -453,7 +468,7 @@ function NazuX:CreateWindow(options)
     NazuXLib.Tabs = {}
     NazuXLib.CurrentTab = nil
 
-    -- Control button functions with animations
+    -- Control button functions với animations
     MinimizeBtn.MouseButton1Click:Connect(function()
         local tween = TweenService:Create(NazuXLib.MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
             Size = UDim2.new(0, 0, 0, 0),
@@ -475,7 +490,7 @@ function NazuX:CreateWindow(options)
         NazuXLib.MainScreenGui:Destroy()
     end)
 
-    -- Minimize key with animation
+    -- Minimize key với animation
     UserInputService.InputBegan:Connect(function(input)
         if input.KeyCode == Enum.KeyCode.LeftControl then
             if NazuXLib.MainFrame.Visible then
@@ -497,13 +512,13 @@ function NazuX:CreateWindow(options)
         end
     end)
 
-    -- Create tab function with animations
+    -- Create tab function với animations
     function NazuXLib:CreateTab(tabName)
         local Tab = {}
         Tab.Name = tabName
         Tab.Elements = {}
 
-        -- Tab Button with hover effects
+        -- Tab Button với hover effects
         local TabButton = Instance.new("TextButton")
         TabButton.Name = tabName .. "Tab"
         TabButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
@@ -514,6 +529,7 @@ function NazuX:CreateWindow(options)
         TabButton.Text = tabName
         TabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
         TabButton.TextSize = 13
+        TabButton.AutoButtonColor = false
         TabButton.Parent = TabContainer
 
         local TabButtonCorner = RoundedCorner(8)
@@ -540,7 +556,7 @@ function NazuX:CreateWindow(options)
             end
         end)
 
-        -- Pill indicator with animation
+        -- Pill indicator với animation
         local Pill = Instance.new("Frame")
         Pill.Name = "Pill"
         Pill.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
@@ -571,9 +587,9 @@ function NazuX:CreateWindow(options)
         Tab.Button = TabButton
         Tab.Pill = Pill
 
-        -- Tab button click event with animations
+        -- Tab button click event với animations
         TabButton.MouseButton1Click:Connect(function()
-            -- Hide all tab contents with animation
+            -- Hide all tab contents với animation
             for _, otherTab in pairs(NazuXLib.Tabs) do
                 if otherTab ~= Tab then
                     otherTab.Content.Visible = false
@@ -617,7 +633,7 @@ function NazuX:CreateWindow(options)
         -- Add to tabs
         table.insert(NazuXLib.Tabs, Tab)
 
-        -- Select first tab with animation
+        -- Select first tab với animation
         if #NazuXLib.Tabs == 1 then
             wait(0.5) -- Wait for opening animation
             TabButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
@@ -638,7 +654,7 @@ function NazuX:CreateWindow(options)
             entranceTween:Play()
         end
 
-        -- Tab methods with enhanced animations
+        -- Tab methods với enhanced animations
         function Tab:AddButton(options)
             options = options or {}
             local btnName = options.Name or "Button"
@@ -659,6 +675,7 @@ function NazuX:CreateWindow(options)
             Button.Text = btnName
             Button.TextColor3 = Color3.fromRGB(255, 255, 255)
             Button.TextSize = 14
+            Button.AutoButtonColor = false
             Button.Parent = ButtonFrame
 
             local ButtonCorner = RoundedCorner(8)
@@ -741,6 +758,7 @@ function NazuX:CreateWindow(options)
             ToggleButton.Position = UDim2.new(1, -55, 0.5, -12.5)
             ToggleButton.Font = Enum.Font.Gotham
             ToggleButton.Text = ""
+            ToggleButton.AutoButtonColor = false
             ToggleButton.Parent = ToggleFrame
 
             local ToggleCorner = RoundedCorner(12)
@@ -868,7 +886,7 @@ function NazuX:CreateWindow(options)
         return Tab
     end
 
-    -- Notification function with animations
+    -- Notification function với animations
     function NazuXLib:Notify(title, content)
         local Notification = Instance.new("Frame")
         Notification.Name = "Notification"
@@ -933,13 +951,11 @@ function NazuX:CreateWindow(options)
     function NazuXLib:ChangeTheme(themeName)
         local theme = NazuX.Themes[themeName]
         if theme then
-            -- Apply theme to all elements with animation
+            -- Apply theme to all elements với animation
             local tween = TweenService:Create(NazuXLib.MainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
                 BackgroundColor3 = theme.Main
             })
             tween:Play()
-            
-            -- You can add more theme application here
         end
     end
 
