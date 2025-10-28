@@ -1,4 +1,4 @@
--- NazuX Library - Fixed Draggable Version
+-- NazuX Library - Full UI Draggable Version
 local NazuX = {}
 NazuX.__index = NazuX
 
@@ -93,16 +93,64 @@ local function CreateStroke(thickness, color, transparency)
     return stroke
 end
 
--- FIXED Draggable function với Active true
-local function MakeDraggable(frame, handle)
+-- FIXED: Full UI Draggable function
+local function MakeFullDraggable(frame)
     local dragging = false
     local dragInput, dragStart, startPos
 
-    -- QUAN TRỌNG: Đặt Active true cho handle
-    handle.Active = true
-    handle.Draggable = true
+    -- Tạo một frame vô hình phủ toàn bộ UI để kéo
+    local DragOverlay = Instance.new("Frame")
+    DragOverlay.Name = "DragOverlay"
+    DragOverlay.BackgroundTransparency = 1
+    DragOverlay.Size = UDim2.new(1, 0, 1, 0)
+    DragOverlay.Position = UDim2.new(0, 0, 0, 0)
+    DragOverlay.Active = true
+    DragOverlay.Draggable = true
+    DragOverlay.ZIndex = 10
+    DragOverlay.Parent = frame
 
-    handle.InputBegan:Connect(function(input)
+    -- Thêm drag handle ở dưới cùng để kéo từ bất kỳ đâu
+    local BottomDragHandle = Instance.new("Frame")
+    BottomDragHandle.Name = "BottomDragHandle"
+    BottomDragHandle.BackgroundTransparency = 1
+    BottomDragHandle.Size = UDim2.new(1, 0, 0, 15)
+    BottomDragHandle.Position = UDim2.new(0, 0, 1, -15)
+    BottomDragHandle.Active = true
+    BottomDragHandle.Draggable = true
+    BottomDragHandle.ZIndex = 10
+    BottomDragHandle.Parent = frame
+
+    local RightDragHandle = Instance.new("Frame")
+    RightDragHandle.Name = "RightDragHandle"
+    RightDragHandle.BackgroundTransparency = 1
+    RightDragHandle.Size = UDim2.new(0, 15, 1, 0)
+    RightDragHandle.Position = UDim2.new(1, -15, 0, 0)
+    RightDragHandle.Active = true
+    RightDragHandle.Draggable = true
+    RightDragHandle.ZIndex = 10
+    RightDragHandle.Parent = frame
+
+    local CornerDragHandle = Instance.new("Frame")
+    CornerDragHandle.Name = "CornerDragHandle"
+    CornerDragHandle.BackgroundTransparency = 1
+    CornerDragHandle.Size = UDim2.new(0, 20, 0, 20)
+    CornerDragHandle.Position = UDim2.new(1, -20, 1, -20)
+    CornerDragHandle.Active = true
+    CornerDragHandle.Draggable = true
+    CornerDragHandle.ZIndex = 10
+    CornerDragHandle.Parent = frame
+
+    local function update(input)
+        local delta = input.Position - dragStart
+        frame.Position = UDim2.new(
+            startPos.X.Scale, 
+            startPos.X.Offset + delta.X, 
+            startPos.Y.Scale, 
+            startPos.Y.Offset + delta.Y
+        )
+    end
+
+    local function dragStarted(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = true
             dragStart = input.Position
@@ -118,7 +166,9 @@ local function MakeDraggable(frame, handle)
             connection = input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
                     dragging = false
-                    connection:Disconnect()
+                    if connection then
+                        connection:Disconnect()
+                    end
                     
                     -- Animation effect when ending drag
                     local tween2 = TweenService:Create(frame, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
@@ -128,23 +178,24 @@ local function MakeDraggable(frame, handle)
                 end
             end)
         end
-    end)
+    end
 
-    handle.InputChanged:Connect(function(input)
+    local function dragChanged(input)
         if input.UserInputType == Enum.UserInputType.MouseMovement then
             dragInput = input
         end
-    end)
+    end
+
+    -- Kết nối sự kiện cho tất cả các drag handles
+    local handles = {DragOverlay, BottomDragHandle, RightDragHandle, CornerDragHandle}
+    for _, handle in pairs(handles) do
+        handle.InputBegan:Connect(dragStarted)
+        handle.InputChanged:Connect(dragChanged)
+    end
 
     UserInputService.InputChanged:Connect(function(input)
         if input == dragInput and dragging then
-            local delta = input.Position - dragStart
-            frame.Position = UDim2.new(
-                startPos.X.Scale, 
-                startPos.X.Offset + delta.X, 
-                startPos.Y.Scale, 
-                startPos.Y.Offset + delta.Y
-            )
+            update(input)
         end
     end)
 end
@@ -179,6 +230,10 @@ function NazuX:CreateWindow(options)
     NazuXLib.MainFrame.Parent = NazuXLib.MainScreenGui
     NazuXLib.MainFrame.ClipsDescendants = true
 
+    -- QUAN TRỌNG: Đặt Active và Draggable cho MainFrame
+    NazuXLib.MainFrame.Active = true
+    NazuXLib.MainFrame.Draggable = true
+
     -- Entrance animation
     NazuXLib.MainFrame.Size = UDim2.new(0, 0, 0, 0)
     NazuXLib.MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
@@ -196,7 +251,10 @@ function NazuX:CreateWindow(options)
     local MainStroke = CreateStroke(2, Color3.fromRGB(60, 60, 60))
     MainStroke.Parent = NazuXLib.MainFrame
 
-    -- Title Bar - FIXED: Đặt Active và Draggable true
+    -- FIXED: Gọi hàm MakeFullDraggable để toàn bộ UI có thể kéo được
+    MakeFullDraggable(NazuXLib.MainFrame)
+
+    -- Title Bar
     local TitleBar = Instance.new("Frame")
     TitleBar.Name = "TitleBar"
     TitleBar.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
@@ -211,16 +269,13 @@ function NazuX:CreateWindow(options)
     local TitleBarCorner = RoundedCorner(12)
     TitleBarCorner.Parent = TitleBar
 
-    -- Make entire title bar draggable - FIXED
-    MakeDraggable(NazuXLib.MainFrame, TitleBar)
-
     -- Logo với animation
     local Logo = Instance.new("ImageLabel")
     Logo.Name = "Logo"
     Logo.BackgroundTransparency = 1
     Logo.Size = UDim2.new(0, 20, 0, 20)
     Logo.Position = UDim2.new(0, 15, 0.5, -10)
-    Logo.Image = "rbxassetid://7072716642" -- Default Roblox icon
+    Logo.Image = "rbxassetid://7072716642"
     Logo.ImageColor3 = Color3.fromRGB(0, 120, 215)
     Logo.Parent = TitleBar
 
@@ -269,8 +324,8 @@ function NazuX:CreateWindow(options)
     MinimizeBtn.Text = "-"
     MinimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     MinimizeBtn.TextSize = 16
-    MinimizeBtn.Parent = ControlButtons
     MinimizeBtn.AutoButtonColor = false
+    MinimizeBtn.Parent = ControlButtons
 
     local MinimizeCorner = RoundedCorner(6)
     MinimizeCorner.Parent = MinimizeBtn
@@ -286,8 +341,8 @@ function NazuX:CreateWindow(options)
     CloseBtn.Text = "×"
     CloseBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
     CloseBtn.TextSize = 16
-    CloseBtn.Parent = ControlButtons
     CloseBtn.AutoButtonColor = false
+    CloseBtn.Parent = ControlButtons
 
     local CloseCorner = RoundedCorner(6)
     CloseCorner.Parent = CloseBtn
@@ -399,7 +454,7 @@ function NazuX:CreateWindow(options)
     DisplayName.TextXAlignment = Enum.TextXAlignment.Left
     DisplayName.Parent = UserInfo
 
-    -- Main Content Area
+    -- Main Content Area - CŨNG CÓ THỂ KÉO ĐƯỢC
     local MainContent = Instance.new("Frame")
     MainContent.Name = "MainContent"
     MainContent.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
@@ -407,6 +462,8 @@ function NazuX:CreateWindow(options)
     MainContent.Size = UDim2.new(1, -20, 1, -140)
     MainContent.Position = UDim2.new(0, 10, 0, 125)
     MainContent.Parent = NazuXLib.MainFrame
+    MainContent.Active = true
+    MainContent.Draggable = true
 
     local MainContentCorner = RoundedCorner(10)
     MainContentCorner.Parent = MainContent
@@ -418,6 +475,8 @@ function NazuX:CreateWindow(options)
     TabContainer.BorderSizePixel = 0
     TabContainer.Size = UDim2.new(0, 150, 1, 0)
     TabContainer.Parent = MainContent
+    TabContainer.Active = true
+    TabContainer.Draggable = true
 
     local TabContainerCorner = RoundedCorner(10)
     TabContainerCorner.Parent = TabContainer
@@ -437,6 +496,8 @@ function NazuX:CreateWindow(options)
     ContentContainer.Size = UDim2.new(1, -160, 1, -10)
     ContentContainer.Position = UDim2.new(0, 155, 0, 5)
     ContentContainer.Parent = MainContent
+    ContentContainer.Active = true
+    ContentContainer.Draggable = true
 
     local ContentContainerCorner = RoundedCorner(8)
     ContentContainerCorner.Parent = ContentContainer
@@ -452,6 +513,8 @@ function NazuX:CreateWindow(options)
     ContentScrolling.ScrollBarThickness = 4
     ContentScrolling.ScrollBarImageColor3 = Color3.fromRGB(0, 120, 215)
     ContentScrolling.Parent = ContentContainer
+    ContentScrolling.Active = true
+    ContentScrolling.Draggable = true
 
     local ContentLayout = Instance.new("UIListLayout")
     ContentLayout.Name = "ContentLayout"
@@ -635,7 +698,7 @@ function NazuX:CreateWindow(options)
 
         -- Select first tab với animation
         if #NazuXLib.Tabs == 1 then
-            wait(0.5) -- Wait for opening animation
+            wait(0.5)
             TabButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
             TabContent.Visible = true
             Pill.Visible = true
@@ -951,7 +1014,6 @@ function NazuX:CreateWindow(options)
     function NazuXLib:ChangeTheme(themeName)
         local theme = NazuX.Themes[themeName]
         if theme then
-            -- Apply theme to all elements với animation
             local tween = TweenService:Create(NazuXLib.MainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
                 BackgroundColor3 = theme.Main
             })
@@ -962,7 +1024,7 @@ function NazuX:CreateWindow(options)
     -- Initial notification
     spawn(function()
         wait(1)
-        NazuXLib:Notify("Welcome", "NazuX UI Loaded Successfully! 🎉")
+        NazuXLib:Notify("Welcome", "NazuX UI Loaded Successfully! 🎉\nYou can drag from ANYWHERE on the UI!")
     end)
 
     return NazuXLib
