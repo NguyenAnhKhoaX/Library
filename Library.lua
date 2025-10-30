@@ -1,7 +1,7 @@
 --[[
     NazuX Library
     Modern Roblox UI Library with Windows 11 style
-    With descriptions and left-aligned title
+    With optimized search bar and left-aligned title
 ]]
 
 local NazuX = {}
@@ -111,34 +111,35 @@ function NazuX:CreateWindow(options)
         Parent = TitleBar
     })
     
-    -- Window title (LEFT-ALIGNED now)
+    -- Window title (LEFT-ALIGNED)
     local TitleLabel = Create("TextLabel", {
         Name = "TitleLabel",
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 40, 0, 0), -- Di chuyển sang trái
-        Size = UDim2.new(0, 200, 1, 0),
+        Position = UDim2.new(0, 40, 0, 0),
+        Size = UDim2.new(0, 150, 1, 0), -- Giới hạn chiều rộng
         Font = Enum.Font.Gotham,
         Text = window.Title,
         TextColor3 = Themes[window.Theme].Text,
         TextSize = 16,
-        TextXAlignment = Enum.TextXAlignment.Left, -- Căn trái
+        TextXAlignment = Enum.TextXAlignment.Left,
+        TextTruncate = Enum.TextTruncate.AtEnd, -- Tự động cắt nếu dài
         Parent = TitleBar
     })
     
-    -- Search bar in title bar (center)
+    -- Search bar in title bar (SHORTER - optimized size)
     local SearchBox = Create("TextBox", {
         Name = "SearchBox",
         BackgroundColor3 = Themes[window.Theme].Background,
         BackgroundTransparency = 0.2,
         BorderSizePixel = 0,
-        Position = UDim2.new(0.5, -150, 0.5, -15),
-        Size = UDim2.new(0, 300, 0, 30),
+        Position = UDim2.new(0, 200, 0.5, -12), -- Vị trí mới
+        Size = UDim2.new(0, 180, 0, 24), -- NHỎ HƠN: 180 thay vì 300
         Font = Enum.Font.Gotham,
         PlaceholderColor3 = Color3.fromRGB(200, 200, 200),
-        PlaceholderText = "Search...",
+        PlaceholderText = "Tìm kiếm...",
         Text = "",
         TextColor3 = Themes[window.Theme].Text,
-        TextSize = 14,
+        TextSize = 12, -- Nhỏ hơn
         TextXAlignment = Enum.TextXAlignment.Left,
         Parent = TitleBar
     })
@@ -149,7 +150,18 @@ function NazuX:CreateWindow(options)
     })
     
     Create("UIPadding", {
-        PaddingLeft = UDim.new(0, 10),
+        PaddingLeft = UDim.new(0, 8), -- Padding nhỏ hơn
+        Parent = SearchBox
+    })
+    
+    -- Search icon
+    local SearchIcon = Create("ImageLabel", {
+        Name = "SearchIcon",
+        BackgroundTransparency = 1,
+        Position = UDim2.new(1, -20, 0.5, -8),
+        Size = UDim2.new(0, 16, 0, 16),
+        Image = "rbxassetid://0", -- Search icon
+        ImageColor3 = Color3.fromRGB(150, 150, 150),
         Parent = SearchBox
     })
     
@@ -322,6 +334,39 @@ function NazuX:CreateWindow(options)
         Parent = ContentScrolling
     })
     
+    -- Search functionality
+    local function PerformSearch(searchText)
+        searchText = string.lower(searchText)
+        
+        for _, tab in pairs(window.Tabs) do
+            for _, element in pairs(tab.Buttons) do
+                local elementName = element:FindFirstChild("Button") and element.Button.Text or 
+                                  element:FindFirstChild("ToggleLabel") and element.ToggleLabel.Text or
+                                  element:FindFirstChild("SliderLabel") and element.SliderLabel.Text or
+                                  element:FindFirstChild("SectionLabel") and element.SectionLabel.Text or ""
+                
+                if string.find(string.lower(elementName), searchText) then
+                    element.Visible = true
+                else
+                    element.Visible = false
+                end
+            end
+        end
+    end
+    
+    SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
+        if SearchBox.Text == "" then
+            -- Show all elements when search is cleared
+            for _, tab in pairs(window.Tabs) do
+                for _, element in pairs(tab.Buttons) do
+                    element.Visible = true
+                end
+            end
+        else
+            PerformSearch(SearchBox.Text)
+        end
+    end)
+    
     -- Store references
     window.MainFrame = MainFrame
     window.ScreenGui = ScreenGui
@@ -329,6 +374,7 @@ function NazuX:CreateWindow(options)
     window.ContentScrolling = ContentScrolling
     window.CurrentTabTitle = CurrentTabTitle
     window.Themes = Themes
+    window.SearchBox = SearchBox
     
     return window
 end
@@ -423,7 +469,7 @@ function NazuX:CreateButton(tab, options)
         BackgroundColor3 = self.Themes[self.Theme].Secondary,
         BackgroundTransparency = 0.8,
         BorderSizePixel = 0,
-        Size = UDim2.new(1, 0, 0, options.Description and 60 or 40), -- Chiều cao linh hoạt
+        Size = UDim2.new(1, 0, 0, options.Description and 60 or 40),
         LayoutOrder = #tab.Buttons + 1,
         Parent = tab.Content
     })
@@ -491,259 +537,6 @@ function NazuX:CreateButton(tab, options)
     table.insert(tab.Buttons, ButtonFrame)
     
     return button
-end
-
--- Toggle element với description
-function NazuX:CreateToggle(tab, options)
-    local toggle = {}
-    options = options or {}
-    toggle.Value = options.Default or false
-    
-    local ToggleFrame = Create("Frame", {
-        Name = "ToggleFrame",
-        BackgroundColor3 = self.Themes[self.Theme].Secondary,
-        BackgroundTransparency = 0.8,
-        BorderSizePixel = 0,
-        Size = UDim2.new(1, 0, 0, options.Description and 60 or 40),
-        LayoutOrder = #tab.Buttons + 1,
-        Parent = tab.Content
-    })
-    
-    Create("UICorner", {
-        CornerRadius = UDim.new(0, 6),
-        Parent = ToggleFrame
-    })
-    
-    local ToggleLabel = Create("TextLabel", {
-        Name = "ToggleLabel",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 10, 0, 0),
-        Size = UDim2.new(0.7, -10, options.Description and 0.6 or 1, 0),
-        Font = Enum.Font.Gotham,
-        Text = options.Name or "Toggle",
-        TextColor3 = self.Themes[self.Theme].Text,
-        TextSize = 14,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        Parent = ToggleFrame
-    })
-    
-    -- Thêm description nếu có
-    if options.Description then
-        local Description = Create("TextLabel", {
-            Name = "Description",
-            BackgroundTransparency = 1,
-            Position = UDim2.new(0, 10, 0.6, 0),
-            Size = UDim2.new(1, -20, 0.4, -5),
-            Font = Enum.Font.Gotham,
-            Text = options.Description,
-            TextColor3 = self.Themes[self.Theme].Text,
-            TextTransparency = 0.6,
-            TextSize = 12,
-            TextWrapped = true,
-            TextXAlignment = Enum.TextXAlignment.Left,
-            Parent = ToggleFrame
-        })
-    end
-    
-    local ToggleButton = Create("TextButton", {
-        Name = "ToggleButton",
-        BackgroundColor3 = Color3.fromRGB(80, 80, 80),
-        BorderSizePixel = 0,
-        Position = UDim2.new(1, -50, options.Description and 0.3 or 0.5, -10),
-        Size = UDim2.new(0, 40, 0, 20),
-        Font = Enum.Font.Gotham,
-        Text = "",
-        Parent = ToggleFrame
-    })
-    
-    Create("UICorner", {
-        CornerRadius = UDim.new(1, 0),
-        Parent = ToggleButton
-    })
-    
-    local ToggleKnob = Create("Frame", {
-        Name = "ToggleKnob",
-        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-        BorderSizePixel = 0,
-        Position = UDim2.new(0, 2, 0.5, -8),
-        Size = UDim2.new(0, 16, 0, 16),
-        Parent = ToggleButton
-    })
-    
-    Create("UICorner", {
-        CornerRadius = UDim.new(1, 0),
-        Parent = ToggleKnob
-    })
-    
-    local function updateToggle()
-        if toggle.Value then
-            Tween(ToggleButton, TweenInfo.new(0.2), {BackgroundColor3 = self.Themes[self.Theme].Primary})
-            Tween(ToggleKnob, TweenInfo.new(0.2), {Position = UDim2.new(0, 22, 0.5, -8)})
-        else
-            Tween(ToggleButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(80, 80, 80)})
-            Tween(ToggleKnob, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -8)})
-        end
-    end
-    
-    ToggleButton.MouseButton1Click:Connect(function()
-        toggle.Value = not toggle.Value
-        updateToggle()
-        if options.Callback then
-            options.Callback(toggle.Value)
-        end
-    end)
-    
-    updateToggle()
-    
-    tab.Content.CanvasSize = UDim2.new(0, 0, 0, (#tab.Buttons + 1) * (options.Description and 65 or 50))
-    
-    table.insert(tab.Buttons, ToggleFrame)
-    
-    return toggle
-end
-
--- Slider element với description
-function NazuX:CreateSlider(tab, options)
-    local slider = {}
-    options = options or {}
-    slider.Value = options.Default or options.Min or 0
-    slider.Min = options.Min or 0
-    slider.Max = options.Max or 100
-    
-    local SliderFrame = Create("Frame", {
-        Name = "SliderFrame",
-        BackgroundColor3 = self.Themes[self.Theme].Secondary,
-        BackgroundTransparency = 0.8,
-        BorderSizePixel = 0,
-        Size = UDim2.new(1, 0, 0, options.Description and 80 or 60),
-        LayoutOrder = #tab.Buttons + 1,
-        Parent = tab.Content
-    })
-    
-    Create("UICorner", {
-        CornerRadius = UDim.new(0, 6),
-        Parent = SliderFrame
-    })
-    
-    local SliderLabel = Create("TextLabel", {
-        Name = "SliderLabel",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 10, 0, 5),
-        Size = UDim2.new(1, -20, 0, 20),
-        Font = Enum.Font.Gotham,
-        Text = options.Name or "Slider",
-        TextColor3 = self.Themes[self.Theme].Text,
-        TextSize = 14,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        Parent = SliderFrame
-    })
-    
-    -- Thêm description nếu có
-    if options.Description then
-        local Description = Create("TextLabel", {
-            Name = "Description",
-            BackgroundTransparency = 1,
-            Position = UDim2.new(0, 10, 0, 25),
-            Size = UDim2.new(1, -20, 0, 15),
-            Font = Enum.Font.Gotham,
-            Text = options.Description,
-            TextColor3 = self.Themes[self.Theme].Text,
-            TextTransparency = 0.6,
-            TextSize = 11,
-            TextWrapped = true,
-            TextXAlignment = Enum.TextXAlignment.Left,
-            Parent = SliderFrame
-        })
-    end
-    
-    local ValueLabel = Create("TextLabel", {
-        Name = "ValueLabel",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 10, 0, 5),
-        Size = UDim2.new(1, -20, 0, 20),
-        Font = Enum.Font.Gotham,
-        Text = tostring(slider.Value),
-        TextColor3 = self.Themes[self.Theme].Text,
-        TextSize = 14,
-        TextXAlignment = Enum.TextXAlignment.Right,
-        Parent = SliderFrame
-    })
-    
-    local sliderYPosition = options.Description and 45 or 35
-    local SliderTrack = Create("Frame", {
-        Name = "SliderTrack",
-        BackgroundColor3 = Color3.fromRGB(80, 80, 80),
-        BorderSizePixel = 0,
-        Position = UDim2.new(0, 10, 0, sliderYPosition),
-        Size = UDim2.new(1, -20, 0, 5),
-        Parent = SliderFrame
-    })
-    
-    Create("UICorner", {
-        CornerRadius = UDim.new(1, 0),
-        Parent = SliderTrack
-    })
-    
-    local SliderFill = Create("Frame", {
-        Name = "SliderFill",
-        BackgroundColor3 = self.Themes[self.Theme].Primary,
-        BorderSizePixel = 0,
-        Size = UDim2.new((slider.Value - slider.Min) / (slider.Max - slider.Min), 0, 1, 0),
-        Parent = SliderTrack
-    })
-    
-    Create("UICorner", {
-        CornerRadius = UDim.new(1, 0),
-        Parent = SliderFill
-    })
-    
-    local SliderButton = Create("TextButton", {
-        Name = "SliderButton",
-        BackgroundTransparency = 1,
-        Size = UDim2.new(1, 0, 1, 0),
-        Text = "",
-        Parent = SliderTrack
-    })
-    
-    local dragging = false
-    
-    local function updateSlider(value)
-        value = math.clamp(value, slider.Min, slider.Max)
-        slider.Value = value
-        ValueLabel.Text = tostring(math.floor(value))
-        SliderFill.Size = UDim2.new((value - slider.Min) / (slider.Max - slider.Min), 0, 1, 0)
-        
-        if options.Callback then
-            options.Callback(value)
-        end
-    end
-    
-    SliderButton.MouseButton1Down:Connect(function()
-        dragging = true
-    end)
-    
-    UserInputService.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = false
-        end
-    end)
-    
-    UserInputService.InputChanged:Connect(function(input)
-        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-            local mousePos = UserInputService:GetMouseLocation()
-            local trackPos = SliderTrack.AbsolutePosition
-            local trackSize = SliderTrack.AbsoluteSize
-            local relativeX = (mousePos.X - trackPos.X) / trackSize.X
-            local value = slider.Min + (relativeX * (slider.Max - slider.Min))
-            updateSlider(value)
-        end
-    end)
-    
-    tab.Content.CanvasSize = UDim2.new(0, 0, 0, (#tab.Buttons + 1) * (options.Description and 85 or 65))
-    
-    table.insert(tab.Buttons, SliderFrame)
-    
-    return slider
 end
 
 -- Các function khác giữ nguyên...
