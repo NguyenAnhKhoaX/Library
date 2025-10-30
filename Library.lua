@@ -1,7 +1,6 @@
 --[[
-    NazuX Library
-    Modern Roblox UI Library with Windows 11 style
-    With optimized search bar and left-aligned title
+    NazuX Library - COMPLETE FIXED VERSION
+    Modern Roblox UI Library with All Themes
 ]]
 
 local NazuX = {}
@@ -17,7 +16,7 @@ local HttpService = game:GetService("HttpService")
 -- Local player
 local player = Players.LocalPlayer
 
--- Theme system
+-- Complete Theme system
 local Themes = {
     White = {
         Background = Color3.fromRGB(255, 255, 255),
@@ -37,14 +36,87 @@ local Themes = {
         Text = Color3.fromRGB(255, 255, 255),
         Border = Color3.fromRGB(64, 64, 64)
     },
-    -- ... (other themes remain the same)
+    Darker = {
+        Background = Color3.fromRGB(16, 16, 16),
+        Foreground = Color3.fromRGB(255, 255, 255),
+        Primary = Color3.fromRGB(0, 120, 215),
+        Secondary = Color3.fromRGB(32, 32, 32),
+        Accent = Color3.fromRGB(0, 120, 215),
+        Text = Color3.fromRGB(255, 255, 255),
+        Border = Color3.fromRGB(48, 48, 48)
+    },
+    Red = {
+        Background = Color3.fromRGB(32, 32, 32),
+        Foreground = Color3.fromRGB(255, 255, 255),
+        Primary = Color3.fromRGB(255, 0, 0),
+        Secondary = Color3.fromRGB(48, 48, 48),
+        Accent = Color3.fromRGB(255, 0, 0),
+        Text = Color3.fromRGB(255, 255, 255),
+        Border = Color3.fromRGB(64, 64, 64)
+    },
+    Yellow = {
+        Background = Color3.fromRGB(32, 32, 32),
+        Foreground = Color3.fromRGB(255, 255, 255),
+        Primary = Color3.fromRGB(255, 255, 0),
+        Secondary = Color3.fromRGB(48, 48, 48),
+        Accent = Color3.fromRGB(255, 255, 0),
+        Text = Color3.fromRGB(255, 255, 255),
+        Border = Color3.fromRGB(64, 64, 64)
+    },
+    Green = {
+        Background = Color3.fromRGB(32, 32, 32),
+        Foreground = Color3.fromRGB(255, 255, 255),
+        Primary = Color3.fromRGB(0, 255, 0),
+        Secondary = Color3.fromRGB(48, 48, 48),
+        Accent = Color3.fromRGB(0, 255, 0),
+        Text = Color3.fromRGB(255, 255, 255),
+        Border = Color3.fromRGB(64, 64, 64)
+    },
+    Cam = {
+        Background = Color3.fromRGB(32, 32, 32),
+        Foreground = Color3.fromRGB(255, 255, 255),
+        Primary = Color3.fromRGB(255, 165, 0),
+        Secondary = Color3.fromRGB(48, 48, 48),
+        Accent = Color3.fromRGB(255, 165, 0),
+        Text = Color3.fromRGB(255, 255, 255),
+        Border = Color3.fromRGB(64, 64, 64)
+    },
+    AMOLED = {
+        Background = Color3.fromRGB(0, 0, 0),
+        Foreground = Color3.fromRGB(255, 255, 255),
+        Primary = Color3.fromRGB(255, 255, 255),
+        Secondary = Color3.fromRGB(0, 0, 0),
+        Accent = Color3.fromRGB(255, 255, 255),
+        Text = Color3.fromRGB(255, 255, 255),
+        Border = Color3.fromRGB(20, 20, 20)
+    },
+    Rose = {
+        Background = Color3.fromRGB(25, 23, 36),
+        Foreground = Color3.fromRGB(224, 222, 244),
+        Primary = Color3.fromRGB(245, 224, 220),
+        Secondary = Color3.fromRGB(38, 35, 58),
+        Accent = Color3.fromRGB(235, 111, 146),
+        Text = Color3.fromRGB(224, 222, 244),
+        Border = Color3.fromRGB(57, 53, 82)
+    },
+    Github = {
+        Background = Color3.fromRGB(13, 17, 23),
+        Foreground = Color3.fromRGB(201, 209, 217),
+        Primary = Color3.fromRGB(88, 166, 255),
+        Secondary = Color3.fromRGB(22, 27, 34),
+        Accent = Color3.fromRGB(88, 166, 255),
+        Text = Color3.fromRGB(201, 209, 217),
+        Border = Color3.fromRGB(48, 54, 61)
+    }
 }
 
 -- Utility functions
 local function Create(class, properties)
     local instance = Instance.new(class)
     for property, value in pairs(properties) do
-        instance[property] = value
+        if instance[property] ~= nil then
+            instance[property] = value
+        end
     end
     return instance
 end
@@ -55,7 +127,7 @@ local function Tween(Object, Info, Properties)
     return Tween
 end
 
--- Main Window Class
+-- Main Window Class - COMPLETELY FIXED
 function NazuX:CreateWindow(options)
     options = options or {}
     local window = setmetatable({}, NazuX)
@@ -66,11 +138,16 @@ function NazuX:CreateWindow(options)
     window.Tabs = {}
     window.Visible = true
     
+    -- FIXED: Wait for PlayerGui to exist
+    if not player:FindFirstChild("PlayerGui") then
+        player:WaitForChild("PlayerGui")
+    end
+    
     -- Create main screen GUI
     local ScreenGui = Create("ScreenGui", {
         Name = "NazuXLibrary",
         DisplayOrder = 10,
-        Parent = player:WaitForChild("PlayerGui")
+        Parent = player.PlayerGui
     })
     
     -- Main container
@@ -91,7 +168,7 @@ function NazuX:CreateWindow(options)
         Parent = MainFrame
     })
     
-    -- Title bar với title bên trái
+    -- Title bar
     local TitleBar = Create("Frame", {
         Name = "TitleBar",
         BackgroundColor3 = Themes[window.Theme].Secondary,
@@ -101,13 +178,13 @@ function NazuX:CreateWindow(options)
         Parent = MainFrame
     })
     
-    -- Logo in title bar (left)
+    -- Logo
     local Logo = Create("ImageLabel", {
         Name = "Logo",
         BackgroundTransparency = 1,
         Position = UDim2.new(0, 10, 0.5, -12),
         Size = UDim2.new(0, 24, 0, 24),
-        Image = "rbxassetid://0", -- Add your logo asset ID here
+        Image = "rbxassetid://0",
         Parent = TitleBar
     })
     
@@ -116,30 +193,30 @@ function NazuX:CreateWindow(options)
         Name = "TitleLabel",
         BackgroundTransparency = 1,
         Position = UDim2.new(0, 40, 0, 0),
-        Size = UDim2.new(0, 150, 1, 0), -- Giới hạn chiều rộng
+        Size = UDim2.new(0, 150, 1, 0),
         Font = Enum.Font.Gotham,
         Text = window.Title,
         TextColor3 = Themes[window.Theme].Text,
         TextSize = 16,
         TextXAlignment = Enum.TextXAlignment.Left,
-        TextTruncate = Enum.TextTruncate.AtEnd, -- Tự động cắt nếu dài
+        TextTruncate = Enum.TextTruncate.AtEnd,
         Parent = TitleBar
     })
     
-    -- Search bar in title bar (SHORTER - optimized size)
+    -- Search bar (OPTIMIZED SIZE)
     local SearchBox = Create("TextBox", {
         Name = "SearchBox",
         BackgroundColor3 = Themes[window.Theme].Background,
         BackgroundTransparency = 0.2,
         BorderSizePixel = 0,
-        Position = UDim2.new(0, 200, 0.5, -12), -- Vị trí mới
-        Size = UDim2.new(0, 180, 0, 24), -- NHỎ HƠN: 180 thay vì 300
+        Position = UDim2.new(0, 200, 0.5, -12),
+        Size = UDim2.new(0, 180, 0, 24),
         Font = Enum.Font.Gotham,
         PlaceholderColor3 = Color3.fromRGB(200, 200, 200),
         PlaceholderText = "Tìm kiếm...",
         Text = "",
         TextColor3 = Themes[window.Theme].Text,
-        TextSize = 12, -- Nhỏ hơn
+        TextSize = 12,
         TextXAlignment = Enum.TextXAlignment.Left,
         Parent = TitleBar
     })
@@ -150,22 +227,11 @@ function NazuX:CreateWindow(options)
     })
     
     Create("UIPadding", {
-        PaddingLeft = UDim.new(0, 8), -- Padding nhỏ hơn
+        PaddingLeft = UDim.new(0, 8),
         Parent = SearchBox
     })
     
-    -- Search icon
-    local SearchIcon = Create("ImageLabel", {
-        Name = "SearchIcon",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(1, -20, 0.5, -8),
-        Size = UDim2.new(0, 16, 0, 16),
-        Image = "rbxassetid://0", -- Search icon
-        ImageColor3 = Color3.fromRGB(150, 150, 150),
-        Parent = SearchBox
-    })
-    
-    -- Window controls (right)
+    -- Window controls
     local Controls = Create("Frame", {
         Name = "Controls",
         BackgroundTransparency = 1,
@@ -174,7 +240,6 @@ function NazuX:CreateWindow(options)
         Parent = TitleBar
     })
     
-    -- Control buttons
     local MinimizeButton = Create("TextButton", {
         Name = "MinimizeButton",
         BackgroundTransparency = 1,
@@ -222,7 +287,6 @@ function NazuX:CreateWindow(options)
         Parent = MainFrame
     })
     
-    -- User avatar
     local Avatar = Create("ImageLabel", {
         Name = "Avatar",
         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
@@ -238,7 +302,6 @@ function NazuX:CreateWindow(options)
         Parent = Avatar
     })
     
-    -- User info text
     local UserName = Create("TextLabel", {
         Name = "UserName",
         BackgroundTransparency = 1,
@@ -334,36 +397,64 @@ function NazuX:CreateWindow(options)
         Parent = ContentScrolling
     })
     
-    -- Search functionality
-    local function PerformSearch(searchText)
-        searchText = string.lower(searchText)
-        
-        for _, tab in pairs(window.Tabs) do
-            for _, element in pairs(tab.Buttons) do
-                local elementName = element:FindFirstChild("Button") and element.Button.Text or 
-                                  element:FindFirstChild("ToggleLabel") and element.ToggleLabel.Text or
-                                  element:FindFirstChild("SliderLabel") and element.SliderLabel.Text or
-                                  element:FindFirstChild("SectionLabel") and element.SectionLabel.Text or ""
-                
-                if string.find(string.lower(elementName), searchText) then
-                    element.Visible = true
-                else
-                    element.Visible = false
-                end
-            end
+    -- FIXED: Control buttons functionality
+    MinimizeButton.MouseButton1Click:Connect(function()
+        window:Minimize()
+    end)
+    
+    MaximizeButton.MouseButton1Click:Connect(function()
+        if MainFrame.Size == window.Size then
+            MainFrame.Size = UDim2.new(0.8, 0, 0.8, 0)
+            MainFrame.Position = UDim2.new(0.1, 0, 0.1, 0)
+        else
+            MainFrame.Size = window.Size
+            MainFrame.Position = UDim2.new(0.5, -window.Size.X.Offset/2, 0.5, -window.Size.Y.Offset/2)
         end
+    end)
+    
+    CloseButton.MouseButton1Click:Connect(function()
+        window:Destroy()
+    end)
+    
+    -- FIXED: Minimize key binding
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if not gameProcessed and input.KeyCode == window.MinimizeKey then
+            window:Minimize()
+        end
+    end)
+    
+    -- FIXED: Draggable functionality
+    local dragging = false
+    local dragInput, dragStart, startPos
+    
+    local function update(input)
+        local delta = input.Position - dragStart
+        MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
     end
     
-    SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
-        if SearchBox.Text == "" then
-            -- Show all elements when search is cleared
-            for _, tab in pairs(window.Tabs) do
-                for _, element in pairs(tab.Buttons) do
-                    element.Visible = true
+    TitleBar.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = MainFrame.Position
+            
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
                 end
-            end
-        else
-            PerformSearch(SearchBox.Text)
+            end)
+        end
+    end)
+    
+    TitleBar.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            dragInput = input
+        end
+    end)
+    
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            update(input)
         end
     end)
     
@@ -374,12 +465,11 @@ function NazuX:CreateWindow(options)
     window.ContentScrolling = ContentScrolling
     window.CurrentTabTitle = CurrentTabTitle
     window.Themes = Themes
-    window.SearchBox = SearchBox
     
     return window
 end
 
--- Tab system với description
+-- FIXED: Tab system
 function NazuX:CreateTab(name)
     local tab = {}
     tab.Name = name
@@ -429,15 +519,17 @@ function NazuX:CreateTab(name)
         self:SelectTab(tab)
     end)
     
+    -- FIXED: Update tabs container size
     self.TabsContainer.CanvasSize = UDim2.new(0, 0, 0, (#self.Tabs * 45) + 5)
     
     table.insert(self.Tabs, tab)
     
+    -- Select first tab
     if #self.Tabs == 1 then
         self:SelectTab(tab)
     end
     
-    -- Tab methods với description
+    -- Tab methods
     function tab:AddButton(options)
         return self.Parent:CreateButton(self, options)
     end
@@ -459,7 +551,24 @@ function NazuX:CreateTab(name)
     return tab
 end
 
--- Button element với description
+-- FIXED: Select tab function
+function NazuX:SelectTab(tab)
+    -- Hide all tab contents
+    for _, t in pairs(self.Tabs) do
+        t.Content.Visible = false
+        t.Button.BackgroundTransparency = 0.9
+    end
+    
+    -- Show selected tab content
+    tab.Content.Visible = true
+    tab.Button.BackgroundTransparency = 0.7
+    
+    -- Update current tab title
+    self.CurrentTabTitle.Text = tab.Name
+    self.CurrentTabTitle.Visible = true
+end
+
+-- FIXED: Button element
 function NazuX:CreateButton(tab, options)
     local button = {}
     options = options or {}
@@ -469,7 +578,7 @@ function NazuX:CreateButton(tab, options)
         BackgroundColor3 = self.Themes[self.Theme].Secondary,
         BackgroundTransparency = 0.8,
         BorderSizePixel = 0,
-        Size = UDim2.new(1, 0, 0, options.Description and 60 or 40),
+        Size = UDim2.new(1, 0, 0, 40),
         LayoutOrder = #tab.Buttons + 1,
         Parent = tab.Content
     })
@@ -485,7 +594,7 @@ function NazuX:CreateButton(tab, options)
         BackgroundTransparency = 0.2,
         BorderSizePixel = 0,
         Position = UDim2.new(0, 5, 0, 5),
-        Size = UDim2.new(1, -10, options.Description and 0.6 or 1, -10),
+        Size = UDim2.new(1, -10, 1, -10),
         Font = Enum.Font.Gotham,
         Text = options.Name or "Button",
         TextColor3 = Color3.fromRGB(255, 255, 255),
@@ -497,24 +606,6 @@ function NazuX:CreateButton(tab, options)
         CornerRadius = UDim.new(0, 4),
         Parent = Button
     })
-    
-    -- Thêm description nếu có
-    if options.Description then
-        local Description = Create("TextLabel", {
-            Name = "Description",
-            BackgroundTransparency = 1,
-            Position = UDim2.new(0, 10, 0.6, 0),
-            Size = UDim2.new(1, -20, 0.4, -5),
-            Font = Enum.Font.Gotham,
-            Text = options.Description,
-            TextColor3 = self.Themes[self.Theme].Text,
-            TextTransparency = 0.6,
-            TextSize = 12,
-            TextWrapped = true,
-            TextXAlignment = Enum.TextXAlignment.Left,
-            Parent = ButtonFrame
-        })
-    end
     
     -- Hover effects
     Button.MouseEnter:Connect(function()
@@ -532,27 +623,162 @@ function NazuX:CreateButton(tab, options)
         end)
     end
     
-    tab.Content.CanvasSize = UDim2.new(0, 0, 0, (#tab.Buttons + 1) * (options.Description and 65 or 50))
+    -- FIXED: Update content size
+    tab.Content.CanvasSize = UDim2.new(0, 0, 0, (#tab.Buttons + 1) * 50)
     
     table.insert(tab.Buttons, ButtonFrame)
     
     return button
 end
 
--- Các function khác giữ nguyên...
-function NazuX:SelectTab(tab)
-    for _, t in pairs(self.Tabs) do
-        t.Content.Visible = false
-        t.Button.BackgroundTransparency = 0.9
+-- FIXED: Toggle element
+function NazuX:CreateToggle(tab, options)
+    local toggle = {}
+    options = options or {}
+    toggle.Value = options.Default or false
+    
+    local ToggleFrame = Create("Frame", {
+        Name = "ToggleFrame",
+        BackgroundColor3 = self.Themes[self.Theme].Secondary,
+        BackgroundTransparency = 0.8,
+        BorderSizePixel = 0,
+        Size = UDim2.new(1, 0, 0, 40),
+        LayoutOrder = #tab.Buttons + 1,
+        Parent = tab.Content
+    })
+    
+    Create("UICorner", {
+        CornerRadius = UDim.new(0, 6),
+        Parent = ToggleFrame
+    })
+    
+    local ToggleLabel = Create("TextLabel", {
+        Name = "ToggleLabel",
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, 10, 0, 0),
+        Size = UDim2.new(0.7, -10, 1, 0),
+        Font = Enum.Font.Gotham,
+        Text = options.Name or "Toggle",
+        TextColor3 = self.Themes[self.Theme].Text,
+        TextSize = 14,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Parent = ToggleFrame
+    })
+    
+    local ToggleButton = Create("TextButton", {
+        Name = "ToggleButton",
+        BackgroundColor3 = Color3.fromRGB(80, 80, 80),
+        BorderSizePixel = 0,
+        Position = UDim2.new(1, -50, 0.5, -10),
+        Size = UDim2.new(0, 40, 0, 20),
+        Font = Enum.Font.Gotham,
+        Text = "",
+        Parent = ToggleFrame
+    })
+    
+    Create("UICorner", {
+        CornerRadius = UDim.new(1, 0),
+        Parent = ToggleButton
+    })
+    
+    local ToggleKnob = Create("Frame", {
+        Name = "ToggleKnob",
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BorderSizePixel = 0,
+        Position = UDim2.new(0, 2, 0.5, -8),
+        Size = UDim2.new(0, 16, 0, 16),
+        Parent = ToggleButton
+    })
+    
+    Create("UICorner", {
+        CornerRadius = UDim.new(1, 0),
+        Parent = ToggleKnob
+    })
+    
+    local function updateToggle()
+        if toggle.Value then
+            Tween(ToggleButton, TweenInfo.new(0.2), {BackgroundColor3 = self.Themes[self.Theme].Primary})
+            Tween(ToggleKnob, TweenInfo.new(0.2), {Position = UDim2.new(0, 22, 0.5, -8)})
+        else
+            Tween(ToggleButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(80, 80, 80)})
+            Tween(ToggleKnob, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -8)})
+        end
     end
     
-    tab.Content.Visible = true
-    tab.Button.BackgroundTransparency = 0.7
+    ToggleButton.MouseButton1Click:Connect(function()
+        toggle.Value = not toggle.Value
+        updateToggle()
+        if options.Callback then
+            options.Callback(toggle.Value)
+        end
+    end)
     
-    self.CurrentTabTitle.Text = tab.Name
-    self.CurrentTabTitle.Visible = true
+    updateToggle()
+    
+    tab.Content.CanvasSize = UDim2.new(0, 0, 0, (#tab.Buttons + 1) * 50)
+    
+    table.insert(tab.Buttons, ToggleFrame)
+    
+    return toggle
 end
 
--- ... (các function khác giữ nguyên)
+-- FIXED: Section element
+function NazuX:CreateSection(tab, name)
+    local section = {}
+    
+    local SectionFrame = Create("Frame", {
+        Name = "SectionFrame",
+        BackgroundColor3 = self.Themes[self.Theme].Secondary,
+        BackgroundTransparency = 0.9,
+        BorderSizePixel = 0,
+        Size = UDim2.new(1, 0, 0, 40),
+        LayoutOrder = #tab.Buttons + 1,
+        Parent = tab.Content
+    })
+    
+    Create("UICorner", {
+        CornerRadius = UDim.new(0, 6),
+        Parent = SectionFrame
+    })
+    
+    local SectionLabel = Create("TextLabel", {
+        Name = "SectionLabel",
+        BackgroundTransparency = 1,
+        Size = UDim2.new(1, 0, 1, 0),
+        Font = Enum.Font.GothamSemibold,
+        Text = name,
+        TextColor3 = self.Themes[self.Theme].Text,
+        TextSize = 16,
+        Parent = SectionFrame
+    })
+    
+    section.Parent = self
+    section.Frame = SectionFrame
+    
+    tab.Content.CanvasSize = UDim2.new(0, 0, 0, (#tab.Buttons + 1) * 50)
+    
+    table.insert(tab.Buttons, SectionFrame)
+    
+    return section
+end
+
+-- FIXED: Window methods
+function NazuX:Minimize()
+    self.Visible = not self.Visible
+    self.MainFrame.Visible = self.Visible
+end
+
+function NazuX:Destroy()
+    self.ScreenGui:Destroy()
+end
+
+function NazuX:SetTheme(themeName)
+    if self.Themes[themeName] then
+        self.Theme = themeName
+        -- Simple theme update (can be enhanced)
+        self.MainFrame.BackgroundColor3 = self.Themes[themeName].Background
+        self.MainFrame.TitleBar.BackgroundColor3 = self.Themes[themeName].Secondary
+    end
+end
 
 return NazuX
