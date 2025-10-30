@@ -1,7 +1,7 @@
 --[[
     NazuX Library
     Modern Roblox UI Library with Windows 11 style
-    Created with transparency, smooth animations, and multiple themes
+    With smooth animations, effects, and draggable UI
 ]]
 
 local NazuX = {}
@@ -126,6 +126,67 @@ local function Tween(Object, Info, Properties)
     return Tween
 end
 
+-- Ripple effect function
+local function CreateRippleEffect(button)
+    local ripple = Create("Frame", {
+        Name = "Ripple",
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BackgroundTransparency = 0.8,
+        Size = UDim2.new(0, 0, 0, 0),
+        Position = UDim2.new(0.5, 0, 0.5, 0),
+        Parent = button,
+        ZIndex = 10
+    })
+    
+    Create("UICorner", {
+        CornerRadius = UDim.new(1, 0),
+        Parent = ripple
+    })
+    
+    return ripple
+end
+
+-- Draggable function
+local function MakeDraggable(frame, handle)
+    local dragging = false
+    local dragInput, dragStart, startPos
+
+    local function update(input)
+        local delta = input.Position - dragStart
+        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+
+    handle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = frame.Position
+
+            -- Add drag effect
+            Tween(handle, TweenInfo.new(0.1), {BackgroundTransparency = 0.7})
+            
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                    Tween(handle, TweenInfo.new(0.1), {BackgroundTransparency = 0.1})
+                end
+            end)
+        end
+    end)
+
+    handle.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            dragInput = input
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            update(input)
+        end
+    end)
+end
+
 -- Main Window Class
 function NazuX:CreateWindow(options)
     options = options or {}
@@ -144,59 +205,7 @@ function NazuX:CreateWindow(options)
         Parent = player:WaitForChild("PlayerGui")
     })
     
-    -- Loading screen
-    local LoadingFrame = Create("Frame", {
-        Name = "LoadingFrame",
-        BackgroundColor3 = Color3.fromRGB(20, 20, 20),
-        Size = UDim2.new(1, 0, 1, 0),
-        Position = UDim2.new(0, 0, 0, 0),
-        BackgroundTransparency = 0,
-        Parent = ScreenGui
-    })
-    
-    local LoadingLabel = Create("TextLabel", {
-        Name = "LoadingLabel",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0.5, -100, 0.5, -20),
-        Size = UDim2.new(0, 200, 0, 40),
-        Font = Enum.Font.Gotham,
-        Text = "Loading NazuX...",
-        TextColor3 = Color3.fromRGB(255, 255, 255),
-        TextSize = 20,
-        Parent = LoadingFrame
-    })
-    
-    local LoadingBar = Create("Frame", {
-        Name = "LoadingBar",
-        BackgroundColor3 = Color3.fromRGB(60, 60, 60),
-        BorderSizePixel = 0,
-        Position = UDim2.new(0.5, -100, 0.5, 30),
-        Size = UDim2.new(0, 200, 0, 4),
-        Parent = LoadingFrame
-    })
-    
-    local LoadingBarFill = Create("Frame", {
-        Name = "LoadingBarFill",
-        BackgroundColor3 = Color3.fromRGB(0, 120, 215),
-        BorderSizePixel = 0,
-        Size = UDim2.new(0, 0, 1, 0),
-        Parent = LoadingBar
-    })
-    
-    -- Simulate loading
-    spawn(function()
-        for i = 1, 100 do
-            LoadingBarFill.Size = UDim2.new(0, (i * 2), 1, 0)
-            LoadingLabel.Text = "Loading NazuX... " .. i .. "%"
-            wait(0.02)
-        end
-        wait(0.5)
-        Tween(LoadingFrame, TweenInfo.new(0.5), {BackgroundTransparency = 1})
-        wait(0.5)
-        LoadingFrame:Destroy()
-    end)
-    
-    -- Main container
+    -- Main container with entrance animation
     local MainFrame = Create("Frame", {
         Name = "MainFrame",
         BackgroundColor3 = Themes[window.Theme].Background,
@@ -204,7 +213,7 @@ function NazuX:CreateWindow(options)
         BorderColor3 = Themes[window.Theme].Border,
         BorderSizePixel = 1,
         Position = UDim2.new(0.5, -window.Size.X.Offset/2, 0.5, -window.Size.Y.Offset/2),
-        Size = window.Size,
+        Size = UDim2.new(0, 0, 0, 0),
         ClipsDescendants = true,
         Parent = ScreenGui
     })
@@ -215,7 +224,7 @@ function NazuX:CreateWindow(options)
         Parent = MainFrame
     })
     
-    -- Drop shadow
+    -- Drop shadow with animation
     local Shadow = Create("ImageLabel", {
         Name = "Shadow",
         BackgroundTransparency = 1,
@@ -223,13 +232,13 @@ function NazuX:CreateWindow(options)
         Size = UDim2.new(1, 30, 1, 30),
         Image = "rbxassetid://1316045217",
         ImageColor3 = Color3.fromRGB(0, 0, 0),
-        ImageTransparency = 0.5,
+        ImageTransparency = 0.8,
         ScaleType = Enum.ScaleType.Slice,
         SliceCenter = Rect.new(10, 10, 118, 118),
         Parent = MainFrame
     })
     
-    -- Title bar
+    -- Title bar (draggable area)
     local TitleBar = Create("Frame", {
         Name = "TitleBar",
         BackgroundColor3 = Themes[window.Theme].Secondary,
@@ -250,7 +259,7 @@ function NazuX:CreateWindow(options)
         Parent = MainFrame
     })
     
-    -- User avatar (left, rounded)
+    -- User avatar (left, rounded) with hover effect
     local Avatar = Create("ImageLabel", {
         Name = "Avatar",
         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
@@ -263,6 +272,20 @@ function NazuX:CreateWindow(options)
     
     Create("UICorner", {
         CornerRadius = UDim.new(1, 0),
+        Parent = Avatar
+    })
+    
+    -- Avatar glow effect
+    local AvatarGlow = Create("ImageLabel", {
+        Name = "AvatarGlow",
+        BackgroundTransparency = 1,
+        Size = UDim2.new(1, 10, 1, 10),
+        Position = UDim2.new(0, -5, 0, -5),
+        Image = "rbxassetid://8992230671",
+        ImageColor3 = Themes[window.Theme].Primary,
+        ImageTransparency = 1,
+        ScaleType = Enum.ScaleType.Slice,
+        SliceCenter = Rect.new(23, 23, 277, 277),
         Parent = Avatar
     })
     
@@ -295,7 +318,7 @@ function NazuX:CreateWindow(options)
         Parent = UserInfo
     })
     
-    -- Search bar in title bar
+    -- Search bar in title bar with focus effects
     local SearchBox = Create("TextBox", {
         Name = "SearchBox",
         BackgroundColor3 = Themes[window.Theme].Background,
@@ -323,7 +346,15 @@ function NazuX:CreateWindow(options)
         Parent = SearchBox
     })
     
-    -- Logo in title bar (left)
+    -- Search box focus effects
+    local SearchBoxStroke = Create("UIStroke", {
+        Name = "SearchBoxStroke",
+        Color = Themes[window.Theme].Primary,
+        Thickness = 0,
+        Parent = SearchBox
+    })
+    
+    -- Logo in title bar (left) with hover effect
     local Logo = Create("ImageLabel", {
         Name = "Logo",
         BackgroundTransparency = 1,
@@ -333,7 +364,7 @@ function NazuX:CreateWindow(options)
         Parent = TitleBar
     })
     
-    -- Window title (centered)
+    -- Window title (centered) with glow effect
     local TitleLabel = Create("TextLabel", {
         Name = "TitleLabel",
         BackgroundTransparency = 1,
@@ -346,7 +377,7 @@ function NazuX:CreateWindow(options)
         Parent = TitleBar
     })
     
-    -- Window controls (right)
+    -- Window controls (right) with hover effects
     local Controls = Create("Frame", {
         Name = "Controls",
         BackgroundTransparency = 1,
@@ -355,7 +386,7 @@ function NazuX:CreateWindow(options)
         Parent = TitleBar
     })
     
-    -- Minimize button
+    -- Minimize button with effects
     local MinimizeButton = Create("TextButton", {
         Name = "MinimizeButton",
         BackgroundTransparency = 1,
@@ -368,7 +399,7 @@ function NazuX:CreateWindow(options)
         Parent = Controls
     })
     
-    -- Maximize button
+    -- Maximize button with effects
     local MaximizeButton = Create("TextButton", {
         Name = "MaximizeButton",
         BackgroundTransparency = 1,
@@ -381,7 +412,7 @@ function NazuX:CreateWindow(options)
         Parent = Controls
     })
     
-    -- Close button
+    -- Close button with effects
     local CloseButton = Create("TextButton", {
         Name = "CloseButton",
         BackgroundTransparency = 1,
@@ -464,42 +495,30 @@ function NazuX:CreateWindow(options)
         Parent = ContentScrolling
     })
     
-    -- Draggable functionality
-    local dragging
-    local dragInput
-    local dragStart
-    local startPos
+    -- Make window draggable
+    MakeDraggable(MainFrame, TitleBar)
     
-    local function update(input)
-        local delta = input.Position - dragStart
-        MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    -- Add hover effects to controls
+    local function AddButtonEffects(button, isClose)
+        button.MouseEnter:Connect(function()
+            if isClose then
+                button.BackgroundColor3 = Color3.fromRGB(232, 17, 35)
+            else
+                button.BackgroundColor3 = Themes[window.Theme].Secondary
+            end
+            button.BackgroundTransparency = 0
+            Tween(button, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(255, 255, 255)})
+        end)
+        
+        button.MouseLeave:Connect(function()
+            button.BackgroundTransparency = 1
+            Tween(button, TweenInfo.new(0.2), {TextColor3 = Themes[window.Theme].Text})
+        end)
     end
     
-    TitleBar.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = true
-            dragStart = input.Position
-            startPos = MainFrame.Position
-            
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
-                end
-            end)
-        end
-    end)
-    
-    TitleBar.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement then
-            dragInput = input
-        end
-    end)
-    
-    UserInputService.InputChanged:Connect(function(input)
-        if input == dragInput and dragging then
-            update(input)
-        end
-    end)
+    AddButtonEffects(MinimizeButton, false)
+    AddButtonEffects(MaximizeButton, false)
+    AddButtonEffects(CloseButton, true)
     
     -- Window controls functionality
     MinimizeButton.MouseButton1Click:Connect(function()
@@ -527,6 +546,14 @@ function NazuX:CreateWindow(options)
         end
     end)
     
+    -- Entrance animation
+    spawn(function()
+        Tween(MainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+            Size = window.Size
+        })
+        Tween(Shadow, TweenInfo.new(0.5), {ImageTransparency = 0.5})
+    end)
+    
     -- Store references
     window.MainFrame = MainFrame
     window.ScreenGui = ScreenGui
@@ -544,7 +571,7 @@ function NazuX:CreateTab(name)
     tab.Name = name
     tab.Buttons = {}
     
-    -- Tab button
+    -- Tab button with effects
     local TabButton = Create("TextButton", {
         Name = name .. "Tab",
         BackgroundColor3 = self.Themes[self.Theme].Secondary,
@@ -562,6 +589,25 @@ function NazuX:CreateTab(name)
         CornerRadius = UDim.new(0, 6),
         Parent = TabButton
     })
+    
+    -- Tab button hover effects
+    TabButton.MouseEnter:Connect(function()
+        if TabButton.BackgroundTransparency ~= 0.7 then
+            Tween(TabButton, TweenInfo.new(0.2), {
+                BackgroundTransparency = 0.8,
+                TextColor3 = self.Themes[self.Theme].Primary
+            })
+        end
+    end)
+    
+    TabButton.MouseLeave:Connect(function()
+        if TabButton.BackgroundTransparency ~= 0.7 then
+            Tween(TabButton, TweenInfo.new(0.2), {
+                BackgroundTransparency = 0.9,
+                TextColor3 = self.Themes[self.Theme].Text
+            })
+        end
+    end)
     
     -- Content frame for this tab
     local TabContent = Create("ScrollingFrame", {
@@ -600,19 +646,19 @@ function NazuX:CreateTab(name)
     
     -- Tab methods
     function tab:AddButton(options)
-        return self:CreateButton(options)
+        return self.Parent:CreateButton(self, options)
     end
     
     function tab:AddToggle(options)
-        return self:CreateToggle(options)
+        return self.Parent:CreateToggle(self, options)
     end
     
     function tab:AddSlider(options)
-        return self:CreateSlider(options)
+        return self.Parent:CreateSlider(self, options)
     end
     
     function tab:AddSection(name)
-        return self:CreateSection(name)
+        return self.Parent:CreateSection(self, name)
     end
     
     -- Store reference to parent window
@@ -625,20 +671,35 @@ function NazuX:SelectTab(tab)
     -- Hide all tab contents
     for _, t in pairs(self.Tabs) do
         t.Content.Visible = false
-        t.Button.BackgroundTransparency = 0.9
+        Tween(t.Button, TweenInfo.new(0.2), {
+            BackgroundTransparency = 0.9,
+            TextColor3 = self.Themes[self.Theme].Text
+        })
     end
     
-    -- Show selected tab content
+    -- Show selected tab content with animation
     tab.Content.Visible = true
-    tab.Button.BackgroundTransparency = 0.7
+    Tween(tab.Button, TweenInfo.new(0.2), {
+        BackgroundTransparency = 0.7,
+        TextColor3 = self.Themes[self.Theme].Primary
+    })
     
-    -- Update current tab title
-    self.CurrentTabTitle.Text = tab.Name
+    -- Update current tab title with animation
+    self.CurrentTabTitle.Text = ""
     self.CurrentTabTitle.Visible = true
+    
+    -- Typewriter effect for tab title
+    spawn(function()
+        local text = tab.Name
+        for i = 1, #text do
+            self.CurrentTabTitle.Text = string.sub(text, 1, i)
+            wait(0.03)
+        end
+    end)
 end
 
--- Button element
-function NazuX:CreateButton(options)
+-- Button element with effects
+function NazuX:CreateButton(tab, options)
     local button = {}
     options = options or {}
     
@@ -648,8 +709,8 @@ function NazuX:CreateButton(options)
         BackgroundTransparency = 0.8,
         BorderSizePixel = 0,
         Size = UDim2.new(1, 0, 0, 40),
-        LayoutOrder = #self.Buttons + 1,
-        Parent = self.Content
+        LayoutOrder = #tab.Buttons + 1,
+        Parent = tab.Content
     })
     
     Create("UICorner", {
@@ -676,32 +737,55 @@ function NazuX:CreateButton(options)
         Parent = Button
     })
     
+    -- Ripple effect
+    Button.MouseButton1Click:Connect(function()
+        local ripple = CreateRippleEffect(Button)
+        Tween(ripple, TweenInfo.new(0.5), {
+            Size = UDim2.new(1, 0, 1, 0),
+            Position = UDim2.new(0.5, -Button.AbsoluteSize.X/2, 0.5, -Button.AbsoluteSize.Y/2),
+            BackgroundTransparency = 1
+        })
+        wait(0.5)
+        ripple:Destroy()
+    end)
+    
     -- Hover effects
     Button.MouseEnter:Connect(function()
-        Tween(Button, TweenInfo.new(0.2), {BackgroundTransparency = 0})
+        Tween(Button, TweenInfo.new(0.2), {
+            BackgroundTransparency = 0,
+            Size = UDim2.new(1, -8, 1, -8),
+            Position = UDim2.new(0, 4, 0, 4)
+        })
     end)
     
     Button.MouseLeave:Connect(function()
-        Tween(Button, TweenInfo.new(0.2), {BackgroundTransparency = 0.2})
+        Tween(Button, TweenInfo.new(0.2), {
+            BackgroundTransparency = 0.2,
+            Size = UDim2.new(1, -10, 1, -10),
+            Position = UDim2.new(0, 5, 0, 5)
+        })
     end)
     
-    -- Click callback
+    -- Click callback with animation
     if options.Callback then
         Button.MouseButton1Click:Connect(function()
+            -- Scale animation on click
+            Tween(Button, TweenInfo.new(0.1), {Size = UDim2.new(1, -15, 1, -15)})
+            Tween(Button, TweenInfo.new(0.1), {Size = UDim2.new(1, -10, 1, -10)})
             options.Callback()
         end)
     end
     
     -- Update content size
-    self.Content.CanvasSize = UDim2.new(0, 0, 0, (#self.Buttons + 1) * 50)
+    tab.Content.CanvasSize = UDim2.new(0, 0, 0, (#tab.Buttons + 1) * 50)
     
-    table.insert(self.Buttons, ButtonFrame)
+    table.insert(tab.Buttons, ButtonFrame)
     
     return button
 end
 
--- Toggle element
-function NazuX:CreateToggle(options)
+-- Toggle element with effects
+function NazuX:CreateToggle(tab, options)
     local toggle = {}
     options = options or {}
     toggle.Value = options.Default or false
@@ -712,8 +796,8 @@ function NazuX:CreateToggle(options)
         BackgroundTransparency = 0.8,
         BorderSizePixel = 0,
         Size = UDim2.new(1, 0, 0, 40),
-        LayoutOrder = #self.Buttons + 1,
-        Parent = self.Content
+        LayoutOrder = #tab.Buttons + 1,
+        Parent = tab.Content
     })
     
     Create("UICorner", {
@@ -766,7 +850,7 @@ function NazuX:CreateToggle(options)
     
     local function updateToggle()
         if toggle.Value then
-            Tween(ToggleButton, TweenInfo.new(0.2), {BackgroundColor3 = self.Themes[self.Parent.Theme].Primary})
+            Tween(ToggleButton, TweenInfo.new(0.2), {BackgroundColor3 = self.Themes[self.Theme].Primary})
             Tween(ToggleKnob, TweenInfo.new(0.2), {Position = UDim2.new(0, 22, 0.5, -8)})
         else
             Tween(ToggleButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(80, 80, 80)})
@@ -774,6 +858,7 @@ function NazuX:CreateToggle(options)
         end
     end
     
+    -- Toggle click with animation
     ToggleButton.MouseButton1Click:Connect(function()
         toggle.Value = not toggle.Value
         updateToggle()
@@ -782,18 +867,27 @@ function NazuX:CreateToggle(options)
         end
     end)
     
+    -- Hover effects
+    ToggleButton.MouseEnter:Connect(function()
+        Tween(ToggleButton, TweenInfo.new(0.2), {Size = UDim2.new(0, 42, 0, 22)})
+    end)
+    
+    ToggleButton.MouseLeave:Connect(function()
+        Tween(ToggleButton, TweenInfo.new(0.2), {Size = UDim2.new(0, 40, 0, 20)})
+    end)
+    
     updateToggle()
     
     -- Update content size
-    self.Content.CanvasSize = UDim2.new(0, 0, 0, (#self.Buttons + 1) * 50)
+    tab.Content.CanvasSize = UDim2.new(0, 0, 0, (#tab.Buttons + 1) * 50)
     
-    table.insert(self.Buttons, ToggleFrame)
+    table.insert(tab.Buttons, ToggleFrame)
     
     return toggle
 end
 
--- Slider element
-function NazuX:CreateSlider(options)
+-- Slider element with effects
+function NazuX:CreateSlider(tab, options)
     local slider = {}
     options = options or {}
     slider.Value = options.Default or options.Min or 0
@@ -806,8 +900,8 @@ function NazuX:CreateSlider(options)
         BackgroundTransparency = 0.8,
         BorderSizePixel = 0,
         Size = UDim2.new(1, 0, 0, 60),
-        LayoutOrder = #self.Buttons + 1,
-        Parent = self.Content
+        LayoutOrder = #tab.Buttons + 1,
+        Parent = tab.Content
     })
     
     Create("UICorner", {
@@ -882,7 +976,9 @@ function NazuX:CreateSlider(options)
         value = math.clamp(value, slider.Min, slider.Max)
         slider.Value = value
         ValueLabel.Text = tostring(math.floor(value))
-        SliderFill.Size = UDim2.new((value - slider.Min) / (slider.Max - slider.Min), 0, 1, 0)
+        Tween(SliderFill, TweenInfo.new(0.1), {
+            Size = UDim2.new((value - slider.Min) / (slider.Max - slider.Min), 0, 1, 0)
+        })
         
         if options.Callback then
             options.Callback(value)
@@ -891,11 +987,13 @@ function NazuX:CreateSlider(options)
     
     SliderButton.MouseButton1Down:Connect(function()
         dragging = true
+        Tween(SliderTrack, TweenInfo.new(0.1), {Size = UDim2.new(1, -20, 0, 7)})
     end)
     
     UserInputService.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = false
+            Tween(SliderTrack, TweenInfo.new(0.1), {Size = UDim2.new(1, -20, 0, 5)})
         end
     end)
     
@@ -911,15 +1009,15 @@ function NazuX:CreateSlider(options)
     end)
     
     -- Update content size
-    self.Content.CanvasSize = UDim2.new(0, 0, 0, (#self.Buttons + 1) * 65)
+    tab.Content.CanvasSize = UDim2.new(0, 0, 0, (#tab.Buttons + 1) * 65)
     
-    table.insert(self.Buttons, SliderFrame)
+    table.insert(tab.Buttons, SliderFrame)
     
     return slider
 end
 
--- Section element
-function NazuX:CreateSection(name)
+-- Section element with effects
+function NazuX:CreateSection(tab, name)
     local section = {}
     
     local SectionFrame = Create("Frame", {
@@ -928,8 +1026,8 @@ function NazuX:CreateSection(name)
         BackgroundTransparency = 0.9,
         BorderSizePixel = 0,
         Size = UDim2.new(1, 0, 0, 40),
-        LayoutOrder = #self.Buttons + 1,
-        Parent = self.Content
+        LayoutOrder = #tab.Buttons + 1,
+        Parent = tab.Content
     })
     
     Create("UICorner", {
@@ -950,29 +1048,29 @@ function NazuX:CreateSection(name)
     
     -- Section methods
     function section:AddButton(options)
-        return self.Parent:CreateButton(options)
+        return self.Parent:CreateButton(tab, options)
     end
     
     function section:AddToggle(options)
-        return self.Parent:CreateToggle(options)
+        return self.Parent:CreateToggle(tab, options)
     end
     
     function section:AddSlider(options)
-        return self.Parent:CreateSlider(options)
+        return self.Parent:CreateSlider(tab, options)
     end
     
     section.Parent = self
     section.Frame = SectionFrame
     
     -- Update content size
-    self.Content.CanvasSize = UDim2.new(0, 0, 0, (#self.Buttons + 1) * 50)
+    tab.Content.CanvasSize = UDim2.new(0, 0, 0, (#tab.Buttons + 1) * 50)
     
-    table.insert(self.Buttons, SectionFrame)
+    table.insert(tab.Buttons, SectionFrame)
     
     return section
 end
 
--- Notification system
+-- Notification system with effects
 function NazuX:Notify(title, content, duration)
     duration = duration or 5
     
@@ -1034,8 +1132,9 @@ function NazuX:Notify(title, content, duration)
     })
     
     -- Animate in
-    Notification.Position = UDim2.new(1, 10, 1, 10)
-    Tween(Notification, TweenInfo.new(0.3), {Position = UDim2.new(1, -310, 1, -150)})
+    Tween(Notification, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+        Position = UDim2.new(1, -310, 1, -150)
+    })
     
     -- Auto remove after duration
     delay(duration, function()
@@ -1056,51 +1155,57 @@ end
 function NazuX:UpdateTheme()
     local theme = Themes[self.Theme]
     
-    -- Update main colors
-    self.MainFrame.BackgroundColor3 = theme.Background
-    self.MainFrame.BorderColor3 = theme.Border
+    -- Update main colors with animation
+    Tween(self.MainFrame, TweenInfo.new(0.3), {
+        BackgroundColor3 = theme.Background,
+        BorderColor3 = theme.Border
+    })
     
     -- Update title bar
-    self.MainFrame.TitleBar.BackgroundColor3 = theme.Secondary
-    self.MainFrame.TitleBar.TitleLabel.TextColor3 = theme.Text
-    self.MainFrame.TitleBar.Controls.MinimizeButton.TextColor3 = theme.Text
-    self.MainFrame.TitleBar.Controls.MaximizeButton.TextColor3 = theme.Text
-    self.MainFrame.TitleBar.Controls.CloseButton.TextColor3 = theme.Text
+    Tween(self.MainFrame.TitleBar, TweenInfo.new(0.3), {BackgroundColor3 = theme.Secondary})
+    Tween(self.MainFrame.TitleBar.TitleLabel, TweenInfo.new(0.3), {TextColor3 = theme.Text})
     
     -- Update user info
-    self.MainFrame.UserInfo.BackgroundColor3 = theme.Secondary
-    self.MainFrame.UserInfo.UserName.TextColor3 = theme.Text
-    self.MainFrame.UserInfo.DisplayName.TextColor3 = theme.Text
+    Tween(self.MainFrame.UserInfo, TweenInfo.new(0.3), {BackgroundColor3 = theme.Secondary})
+    Tween(self.MainFrame.UserInfo.UserName, TweenInfo.new(0.3), {TextColor3 = theme.Text})
+    Tween(self.MainFrame.UserInfo.DisplayName, TweenInfo.new(0.3), {TextColor3 = theme.Text})
     
     -- Update search box
-    self.MainFrame.TitleBar.SearchBox.BackgroundColor3 = theme.Background
-    self.MainFrame.TitleBar.SearchBox.TextColor3 = theme.Text
+    Tween(self.MainFrame.TitleBar.SearchBox, TweenInfo.new(0.3), {
+        BackgroundColor3 = theme.Background,
+        TextColor3 = theme.Text
+    })
     
     -- Update tabs
-    self.MainFrame.TabsContainer.BackgroundColor3 = theme.Secondary
+    Tween(self.MainFrame.TabsContainer, TweenInfo.new(0.3), {BackgroundColor3 = theme.Secondary})
     self.MainFrame.TabsContainer.ScrollBarImageColor3 = theme.Primary
     
     -- Update content
-    self.MainFrame.ContentContainer.CurrentTabTitle.TextColor3 = theme.Text
+    Tween(self.MainFrame.ContentContainer.CurrentTabTitle, TweenInfo.new(0.3), {TextColor3 = theme.Text})
     self.MainFrame.ContentContainer.ContentScrolling.ScrollBarImageColor3 = theme.Primary
 end
 
 -- Window methods
 function NazuX:Minimize()
     self.Visible = not self.Visible
-    self.MainFrame.Visible = self.Visible
+    if self.Visible then
+        Tween(self.MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+            Size = self.Size
+        })
+    else
+        Tween(self.MainFrame, TweenInfo.new(0.3), {
+            Size = UDim2.new(0, 0, 0, 0)
+        })
+    end
 end
 
 function NazuX:Destroy()
+    Tween(self.MainFrame, TweenInfo.new(0.3), {
+        Size = UDim2.new(0, 0, 0, 0),
+        BackgroundTransparency = 1
+    })
+    wait(0.3)
     self.ScreenGui:Destroy()
-end
-
--- Make tab methods available
-for methodName, method in pairs(NazuX) do
-    if string.sub(methodName, 1, 1) ~= "_" and type(method) == "function" then
-        local tabMeta = getmetatable(NazuX) or {}
-        tabMeta[methodName] = method
-    end
 end
 
 return NazuX
