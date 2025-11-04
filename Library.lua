@@ -1,29 +1,31 @@
--- NazuX UI Library - Black & White Theme
+-- NazuX UI Library - Transparent Theme - No Round Corners
 -- Created for Roblox Lua
 
 local NazuX = {}
 NazuX.__index = NazuX
 
--- Colors
-local COLORS = {
-    Background = Color3.new(0, 0, 0),
-    Secondary = Color3.new(0.1, 0.1, 0.1),
-    Text = Color3.new(1, 1, 1),
-    ToggleOff = Color3.new(0.2, 0.2, 0.2),
-    ToggleOn = Color3.new(1, 1, 1),
-    Hover = Color3.new(0.3, 0.3, 0.3),
-    Press = Color3.new(0.4, 0.4, 0.4)
-}
-
--- Tween Service
+-- Services
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 
--- Animation Presets
-local TWEEN_INFO = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+-- Colors (Transparent Theme)
+local COLORS = {
+    Background = Color3.new(0, 0, 0),
+    Secondary = Color3.new(0.1, 0.1, 0.1),
+    Text = Color3.new(1, 1, 1),
+    ToggleOff = Color3.new(0.3, 0.3, 0.3),
+    ToggleOn = Color3.new(1, 1, 1),
+    Hover = Color3.new(0.2, 0.2, 0.2),
+    Press = Color3.new(0.4, 0.4, 0.4),
+    Accent = Color3.new(0.15, 0.15, 0.15)
+}
 
-function NazuX:CreateWindow(title, subtitle)
+-- Animation Presets
+local TWEEN_INFO = TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+local TWEEN_INFO_SMOOTH = TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+
+function NazuX:CreateWindow(title, subtitle, size)
     local Window = {}
     
     -- Main Container
@@ -34,9 +36,10 @@ function NazuX:CreateWindow(title, subtitle)
     
     local MainFrame = Instance.new("Frame")
     MainFrame.Name = "MainFrame"
-    MainFrame.Size = UDim2.new(0, 500, 0, 400)
+    MainFrame.Size = size or UDim2.new(0, 500, 0, 400)
     MainFrame.Position = UDim2.new(0.5, -250, 0.5, -200)
     MainFrame.BackgroundColor3 = COLORS.Background
+    MainFrame.BackgroundTransparency = 0.2
     MainFrame.BorderSizePixel = 0
     MainFrame.Parent = ScreenGui
     
@@ -45,6 +48,7 @@ function NazuX:CreateWindow(title, subtitle)
     TitleBar.Name = "TitleBar"
     TitleBar.Size = UDim2.new(1, 0, 0, 40)
     TitleBar.BackgroundColor3 = COLORS.Secondary
+    TitleBar.BackgroundTransparency = 0.3
     TitleBar.BorderSizePixel = 0
     TitleBar.Parent = MainFrame
     
@@ -64,10 +68,11 @@ function NazuX:CreateWindow(title, subtitle)
     local SubtitleLabel = Instance.new("TextLabel")
     SubtitleLabel.Name = "SubtitleLabel"
     SubtitleLabel.Size = UDim2.new(0, 200, 1, 0)
-    SubtitleLabel.Position = UDim2.new(0, 10, 0, 0)
+    SubtitleLabel.Position = UDim2.new(0, 10, 0, 20)
     SubtitleLabel.BackgroundTransparency = 1
     SubtitleLabel.Text = subtitle or "Library"
     SubtitleLabel.TextColor3 = COLORS.Text
+    TitleLabel.TextTransparency = 0.7
     SubtitleLabel.TextSize = 12
     SubtitleLabel.TextXAlignment = Enum.TextXAlignment.Left
     SubtitleLabel.TextTransparency = 0.5
@@ -80,11 +85,12 @@ function NazuX:CreateWindow(title, subtitle)
     SearchBox.Size = UDim2.new(0, 200, 0, 30)
     SearchBox.Position = UDim2.new(0.5, -100, 0, 5)
     SearchBox.BackgroundColor3 = COLORS.Background
+    SearchBox.BackgroundTransparency = 0.5
     SearchBox.BorderSizePixel = 0
     SearchBox.Text = "Search..."
     SearchBox.TextColor3 = COLORS.Text
     SearchBox.TextSize = 14
-    SearchBox.PlaceholderColor3 = Color3.new(0.5, 0.5, 0.5)
+    SearchBox.PlaceholderColor3 = Color3.new(0.7, 0.7, 0.7)
     SearchBox.Font = Enum.Font.Gotham
     SearchBox.Parent = TitleBar
     
@@ -135,6 +141,7 @@ function NazuX:CreateWindow(title, subtitle)
     TabContainer.Size = UDim2.new(0, 120, 1, -40)
     TabContainer.Position = UDim2.new(0, 0, 0, 40)
     TabContainer.BackgroundColor3 = COLORS.Secondary
+    TabContainer.BackgroundTransparency = 0.3
     TabContainer.BorderSizePixel = 0
     TabContainer.Parent = MainFrame
     
@@ -155,6 +162,7 @@ function NazuX:CreateWindow(title, subtitle)
     ContentContainer.Size = UDim2.new(1, -120, 1, -40)
     ContentContainer.Position = UDim2.new(0, 120, 0, 40)
     ContentContainer.BackgroundColor3 = COLORS.Background
+    ContentContainer.BackgroundTransparency = 0.2
     ContentContainer.BorderSizePixel = 0
     ContentContainer.Parent = MainFrame
     
@@ -203,35 +211,72 @@ function NazuX:CreateWindow(title, subtitle)
         end
     end)
     
-    -- Control Button Functions
+    -- Control Button Functions with Effects
+    MinimizeButton.MouseEnter:Connect(function()
+        TweenService:Create(MinimizeButton, TWEEN_INFO, {BackgroundColor3 = COLORS.Hover, BackgroundTransparency = 0}):Play()
+    end)
+    
+    MinimizeButton.MouseLeave:Connect(function()
+        TweenService:Create(MinimizeButton, TWEEN_INFO, {BackgroundTransparency = 1}):Play()
+    end)
+    
     MinimizeButton.MouseButton1Click:Connect(function()
+        TweenService:Create(MinimizeButton, TWEEN_INFO, {BackgroundColor3 = COLORS.Press, BackgroundTransparency = 0}):Play()
+        wait(0.1)
+        TweenService:Create(MinimizeButton, TWEEN_INFO, {BackgroundTransparency = 1}):Play()
+        
         IsMinimized = not IsMinimized
         if IsMinimized then
-            TweenService:Create(MainFrame, TWEEN_INFO, {Size = UDim2.new(0, 500, 0, 40)}):Play()
+            TweenService:Create(MainFrame, TWEEN_INFO_SMOOTH, {Size = UDim2.new(0, 500, 0, 40)}):Play()
         else
-            TweenService:Create(MainFrame, TWEEN_INFO, {Size = OriginalSize}):Play()
+            TweenService:Create(MainFrame, TWEEN_INFO_SMOOTH, {Size = OriginalSize}):Play()
         end
     end)
     
+    MaximizeButton.MouseEnter:Connect(function()
+        TweenService:Create(MaximizeButton, TWEEN_INFO, {BackgroundColor3 = COLORS.Hover, BackgroundTransparency = 0}):Play()
+    end)
+    
+    MaximizeButton.MouseLeave:Connect(function()
+        TweenService:Create(MaximizeButton, TWEEN_INFO, {BackgroundTransparency = 1}):Play()
+    end)
+    
     MaximizeButton.MouseButton1Click:Connect(function()
+        TweenService:Create(MaximizeButton, TWEEN_INFO, {BackgroundColor3 = COLORS.Press, BackgroundTransparency = 0}):Play()
+        wait(0.1)
+        TweenService:Create(MaximizeButton, TWEEN_INFO, {BackgroundTransparency = 1}):Play()
+        
         IsMaximized = not IsMaximized
         if IsMaximized then
             OriginalSize = MainFrame.Size
             OriginalPosition = MainFrame.Position
-            TweenService:Create(MainFrame, TWEEN_INFO, {
-                Size = UDim2.new(1, 0, 1, 0),
-                Position = UDim2.new(0, 0, 0, 0)
+            TweenService:Create(MainFrame, TWEEN_INFO_SMOOTH, {
+                Size = UDim2.new(1, -20, 1, -20),
+                Position = UDim2.new(0, 10, 0, 10)
             }):Play()
         else
-            TweenService:Create(MainFrame, TWEEN_INFO, {
+            TweenService:Create(MainFrame, TWEEN_INFO_SMOOTH, {
                 Size = OriginalSize,
                 Position = OriginalPosition
             }):Play()
         end
     end)
     
+    CloseButton.MouseEnter:Connect(function()
+        TweenService:Create(CloseButton, TWEEN_INFO, {BackgroundColor3 = Color3.new(1, 0, 0), BackgroundTransparency = 0}):Play()
+    end)
+    
+    CloseButton.MouseLeave:Connect(function()
+        TweenService:Create(CloseButton, TWEEN_INFO, {BackgroundTransparency = 1}):Play()
+    end)
+    
     CloseButton.MouseButton1Click:Connect(function()
-        TweenService:Create(MainFrame, TWEEN_INFO, {Size = UDim2.new(0, 0, 0, 0)}):Play()
+        TweenService:Create(CloseButton, TWEEN_INFO, {BackgroundColor3 = Color3.new(0.8, 0, 0), BackgroundTransparency = 0}):Play()
+        wait(0.1)
+        TweenService:Create(MainFrame, TWEEN_INFO_SMOOTH, {
+            Size = UDim2.new(0, 0, 0, 0),
+            Position = UDim2.new(0.5, 0, 0.5, 0)
+        }):Play()
         wait(0.2)
         ScreenGui:Destroy()
     end)
@@ -245,26 +290,57 @@ function NazuX:CreateWindow(title, subtitle)
     
     -- Button hover effects
     local function SetupButtonHover(button)
+        local originalTransparency = button.BackgroundTransparency
+        
         button.MouseEnter:Connect(function()
-            if not IsMinimized then
-                TweenService:Create(button, TWEEN_INFO, {BackgroundColor3 = COLORS.Hover}):Play()
-            end
+            TweenService:Create(button, TWEEN_INFO, {
+                BackgroundColor3 = COLORS.Hover,
+                BackgroundTransparency = originalTransparency - 0.1
+            }):Play()
         end)
         
         button.MouseLeave:Connect(function()
-            if not IsMinimized then
-                TweenService:Create(button, TWEEN_INFO, {BackgroundColor3 = COLORS.Background}):Play()
-            end
+            TweenService:Create(button, TWEEN_INFO, {
+                BackgroundColor3 = COLORS.Secondary,
+                BackgroundTransparency = originalTransparency
+            }):Play()
         end)
         
         button.MouseButton1Down:Connect(function()
-            TweenService:Create(button, TWEEN_INFO, {BackgroundColor3 = COLORS.Press}):Play()
+            TweenService:Create(button, TWEEN_INFO, {
+                BackgroundColor3 = COLORS.Press,
+                BackgroundTransparency = originalTransparency - 0.2
+            }):Play()
         end)
         
         button.MouseButton1Up:Connect(function()
-            TweenService:Create(button, TWEEN_INFO, {BackgroundColor3 = COLORS.Hover}):Play()
+            TweenService:Create(button, TWEEN_INFO, {
+                BackgroundColor3 = COLORS.Hover,
+                BackgroundTransparency = originalTransparency - 0.1
+            }):Play()
         end)
     end
+    
+    -- Search box effects
+    SearchBox.Focused:Connect(function()
+        TweenService:Create(SearchBox, TWEEN_INFO, {
+            BackgroundTransparency = 0.3,
+            Size = UDim2.new(0, 250, 0, 30)
+        }):Play()
+        if SearchBox.Text == "Search..." then
+            SearchBox.Text = ""
+        end
+    end)
+    
+    SearchBox.FocusLost:Connect(function()
+        TweenService:Create(SearchBox, TWEEN_INFO, {
+            BackgroundTransparency = 0.5,
+            Size = UDim2.new(0, 200, 0, 30)
+        }):Play()
+        if SearchBox.Text == "" then
+            SearchBox.Text = "Search..."
+        end
+    end)
     
     -- Window Methods
     function Window:CreateTab(name)
@@ -274,6 +350,7 @@ function NazuX:CreateWindow(title, subtitle)
         TabButton.Name = "TabButton"
         TabButton.Size = UDim2.new(1, 0, 0, 40)
         TabButton.BackgroundColor3 = COLORS.Secondary
+        TabButton.BackgroundTransparency = 0.3
         TabButton.BorderSizePixel = 0
         TabButton.Text = name
         TabButton.TextColor3 = COLORS.Text
@@ -294,20 +371,33 @@ function NazuX:CreateWindow(title, subtitle)
         ContentList.Padding = UDim.new(0, 5)
         ContentList.Parent = TabContent
         
+        -- Tab button effects
+        TabButton.MouseEnter:Connect(function()
+            if TabButton ~= CurrentTab.Button then
+                TweenService:Create(TabButton, TWEEN_INFO, {BackgroundTransparency = 0.2}):Play()
+            end
+        end)
+        
+        TabButton.MouseLeave:Connect(function()
+            if TabButton ~= CurrentTab.Button then
+                TweenService:Create(TabButton, TWEEN_INFO, {BackgroundTransparency = 0.3}):Play()
+            end
+        end)
+        
         TabButton.MouseButton1Click:Connect(function()
             if CurrentTab then
-                CurrentTab.Button.BackgroundColor3 = COLORS.Secondary
+                TweenService:Create(CurrentTab.Button, TWEEN_INFO, {BackgroundTransparency = 0.3}):Play()
                 CurrentTab.Content.Visible = false
             end
             
             CurrentTab = Tab
-            TabButton.BackgroundColor3 = COLORS.Background
+            TweenService:Create(TabButton, TWEEN_INFO, {BackgroundTransparency = 0}):Play()
             TabContent.Visible = true
             
             -- Auto-select first tab if none selected
             if not Window.FirstTabSelected then
                 Window.FirstTabSelected = true
-                TabButton.BackgroundColor3 = COLORS.Background
+                TweenService:Create(TabButton, TWEEN_INFO, {BackgroundTransparency = 0}):Play()
                 TabContent.Visible = true
                 CurrentTab = Tab
             end
@@ -320,7 +410,7 @@ function NazuX:CreateWindow(title, subtitle)
         
         -- Auto-select first tab
         if #Tabs == 1 then
-            TabButton.BackgroundColor3 = COLORS.Background
+            TweenService:Create(TabButton, TWEEN_INFO, {BackgroundTransparency = 0}):Play()
             TabContent.Visible = true
             CurrentTab = Tab
             Window.FirstTabSelected = true
@@ -334,6 +424,7 @@ function NazuX:CreateWindow(title, subtitle)
             SectionFrame.Size = UDim2.new(1, -20, 0, 40)
             SectionFrame.Position = UDim2.new(0, 10, 0, 0)
             SectionFrame.BackgroundColor3 = COLORS.Secondary
+            SectionFrame.BackgroundTransparency = 0.3
             SectionFrame.BorderSizePixel = 0
             SectionFrame.Parent = TabContent
             
@@ -356,6 +447,7 @@ function NazuX:CreateWindow(title, subtitle)
                 ButtonFrame.Size = UDim2.new(1, -20, 0, 40)
                 ButtonFrame.Position = UDim2.new(0, 10, 0, 0)
                 ButtonFrame.BackgroundColor3 = COLORS.Secondary
+                ButtonFrame.BackgroundTransparency = 0.3
                 ButtonFrame.BorderSizePixel = 0
                 ButtonFrame.Text = ""
                 ButtonFrame.Parent = TabContent
@@ -377,7 +469,7 @@ function NazuX:CreateWindow(title, subtitle)
                 IconLabel.Size = UDim2.new(0, 30, 1, 0)
                 IconLabel.Position = UDim2.new(1, -40, 0, 0)
                 IconLabel.BackgroundTransparency = 1
-                IconLabel.Text = "⚡"
+                IconLabel.Text = "🔒"
                 IconLabel.TextColor3 = COLORS.Text
                 IconLabel.TextSize = 16
                 IconLabel.Font = Enum.Font.Gotham
@@ -386,6 +478,15 @@ function NazuX:CreateWindow(title, subtitle)
                 SetupButtonHover(ButtonFrame)
                 
                 ButtonFrame.MouseButton1Click:Connect(function()
+                    TweenService:Create(ButtonFrame, TWEEN_INFO, {
+                        BackgroundColor3 = COLORS.Press,
+                        BackgroundTransparency = 0.1
+                    }):Play()
+                    wait(0.1)
+                    TweenService:Create(ButtonFrame, TWEEN_INFO, {
+                        BackgroundColor3 = COLORS.Hover,
+                        BackgroundTransparency = 0.2
+                    }):Play()
                     callback()
                 end)
                 
@@ -411,6 +512,7 @@ function NazuX:CreateWindow(title, subtitle)
                 ToggleFrame.Size = UDim2.new(1, -20, 0, 40)
                 ToggleFrame.Position = UDim2.new(0, 10, 0, 0)
                 ToggleFrame.BackgroundColor3 = COLORS.Secondary
+                ToggleFrame.BackgroundTransparency = 0.3
                 ToggleFrame.BorderSizePixel = 0
                 ToggleFrame.Text = ""
                 ToggleFrame.Parent = TabContent
@@ -434,11 +536,6 @@ function NazuX:CreateWindow(title, subtitle)
                 ToggleCircle.BackgroundColor3 = value and COLORS.ToggleOn or COLORS.ToggleOff
                 ToggleCircle.BorderSizePixel = 0
                 ToggleCircle.Parent = ToggleFrame
-                
-                -- Make circle round
-                local UICorner = Instance.new("UICorner")
-                UICorner.CornerRadius = UDim.new(1, 0)
-                UICorner.Parent = ToggleCircle
                 
                 SetupButtonHover(ToggleFrame)
                 
@@ -477,6 +574,7 @@ function NazuX:CreateWindow(title, subtitle)
                 SliderFrame.Size = UDim2.new(1, -20, 0, 60)
                 SliderFrame.Position = UDim2.new(0, 10, 0, 0)
                 SliderFrame.BackgroundColor3 = COLORS.Secondary
+                SliderFrame.BackgroundTransparency = 0.3
                 SliderFrame.BorderSizePixel = 0
                 SliderFrame.Parent = TabContent
                 
@@ -508,6 +606,7 @@ function NazuX:CreateWindow(title, subtitle)
                 Track.Size = UDim2.new(1, -20, 0, 4)
                 Track.Position = UDim2.new(0, 10, 0, 35)
                 Track.BackgroundColor3 = COLORS.Background
+                Track.BackgroundTransparency = 0.5
                 Track.BorderSizePixel = 0
                 Track.Parent = SliderFrame
                 
@@ -526,7 +625,7 @@ function NazuX:CreateWindow(title, subtitle)
                     
                     value = math.floor((config.Min or 0) + relativeX * ((config.Max or 100) - (config.Min or 0)))
                     ValueLabel.Text = tostring(value)
-                    Fill.Size = UDim2.new(relativeX, 0, 1, 0)
+                    TweenService:Create(Fill, TWEEN_INFO, {Size = UDim2.new(relativeX, 0, 1, 0)}):Play()
                     
                     callback(value)
                 end
@@ -563,7 +662,7 @@ function NazuX:CreateWindow(title, subtitle)
                     value = math.clamp(newValue, config.Min or 0, config.Max or 100)
                     ValueLabel.Text = tostring(value)
                     local relativeX = (value - (config.Min or 0)) / ((config.Max or 100) - (config.Min or 0))
-                    Fill.Size = UDim2.new(relativeX, 0, 1, 0)
+                    TweenService:Create(Fill, TWEEN_INFO, {Size = UDim2.new(relativeX, 0, 1, 0)}):Play()
                 end
                 
                 return Slider
@@ -581,6 +680,7 @@ function NazuX:CreateWindow(title, subtitle)
                 DropdownFrame.Size = UDim2.new(1, -20, 0, 40)
                 DropdownFrame.Position = UDim2.new(0, 10, 0, 0)
                 DropdownFrame.BackgroundColor3 = COLORS.Secondary
+                DropdownFrame.BackgroundTransparency = 0.3
                 DropdownFrame.BorderSizePixel = 0
                 DropdownFrame.Text = ""
                 DropdownFrame.Parent = TabContent
@@ -621,9 +721,10 @@ function NazuX:CreateWindow(title, subtitle)
                 
                 local OptionsFrame = Instance.new("Frame")
                 OptionsFrame.Name = "OptionsFrame"
-                OptionsFrame.Size = UDim2.new(1, -20, 0, 0)
-                OptionsFrame.Position = UDim2.new(0, 10, 0, 45)
+                OptionsFrame.Size = UDim2.new(1, 0, 0, 0)
+                OptionsFrame.Position = UDim2.new(0, 0, 0, 45)
                 OptionsFrame.BackgroundColor3 = COLORS.Background
+                OptionsFrame.BackgroundTransparency = 0.3
                 OptionsFrame.BorderSizePixel = 0
                 OptionsFrame.Visible = false
                 OptionsFrame.Parent = DropdownFrame
@@ -646,6 +747,7 @@ function NazuX:CreateWindow(title, subtitle)
                         OptionButton.Size = UDim2.new(1, 0, 0, 30)
                         OptionButton.Position = UDim2.new(0, 0, 0, (i-1)*30)
                         OptionButton.BackgroundColor3 = COLORS.Secondary
+                        OptionButton.BackgroundTransparency = 0.3
                         OptionButton.BorderSizePixel = 0
                         OptionButton.Text = option
                         OptionButton.TextColor3 = COLORS.Text
@@ -661,6 +763,7 @@ function NazuX:CreateWindow(title, subtitle)
                             isOpen = false
                             OptionsFrame.Visible = false
                             TweenService:Create(ArrowLabel, TWEEN_INFO, {Rotation = 0}):Play()
+                            TweenService:Create(OptionsFrame, TWEEN_INFO, {Size = UDim2.new(1, 0, 0, 0)}):Play()
                             callback(value)
                         end)
                     end
@@ -672,6 +775,11 @@ function NazuX:CreateWindow(title, subtitle)
                     isOpen = not isOpen
                     OptionsFrame.Visible = isOpen
                     TweenService:Create(ArrowLabel, TWEEN_INFO, {Rotation = isOpen and 180 or 0}):Play()
+                    if isOpen then
+                        TweenService:Create(OptionsFrame, TWEEN_INFO, {Size = UDim2.new(1, 0, 0, #options * 30)}):Play()
+                    else
+                        TweenService:Create(OptionsFrame, TWEEN_INFO, {Size = UDim2.new(1, 0, 0, 0)}):Play()
+                    end
                     updateOptions()
                 end)
                 
