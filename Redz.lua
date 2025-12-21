@@ -27,70 +27,96 @@ local p=o:GetMouse()
 
 local q=(gethui or function()return g.CoreGui end)()
 
-local r={
-Darker={
-Colors={
-Background=ColorSequence.new{
-ColorSequenceKeypoint.new(0.00,Color3.fromRGB(25,25,25)),
-ColorSequenceKeypoint.new(0.50,Color3.fromRGB(32.5,32.5,32.5)),
-ColorSequenceKeypoint.new(1.00,Color3.fromRGB(25,25,25))
-},
-Primary=Color3.fromRGB(240, 240, 240),
-OnPrimary=Color3.fromRGB(227, 227, 227),
-ScrollBar=Color3.fromRGB(1,76,105),
-Stroke=Color3.fromRGB(255,255,255),
-
-Error=Color3.fromRGB(255,102,102),
-Icons=Color3.fromRGB(232,233,235),
-
-JoinButton=Color3.fromRGB(176, 176, 176),
-Link=Color3.fromRGB(128, 128, 128),
-
-Dialog={
-Background=Color3.fromRGB(117, 117, 117)
-},
-Buttons={
-Holding=Color3.fromRGB(34,34,34),
-Default=Color3.fromRGB(28,28,30)
-},
-Border={
-Holding=Color3.fromRGB(0,0,0),
-Default=Color3.fromRGB(38,38,38),
-},
-Text={
-Default=Color3.fromRGB(255,255,255),
-Dark=Color3.fromRGB(200,200,200),
-Darker=Color3.fromRGB(175,175,175),
-},
-Slider={
-SliderBar=Color3.fromRGB(219, 217, 217),
-SliderNumber=Color3.fromRGB(232,233,235),
-},
-Dropdown={
-Holder=Color3.fromRGB(30,30,30),
-}
-},
-Icons={
-Error="rbxassetid://10709752996",
-Button="rbxassetid://10709791437",
-Close="rbxassetid://10747384394",
-TextBox="rbxassetid://15637081879",
-Search="rbxassetid://10734943674",
-Keybind="rbxassetid://10734982144",
-Dropdown={
-Open="rbxassetid://10709791523",
-Close="rbxassetid://10709790948"
-}
-},
-Font={
-Normal=Enum.Font.BuilderSans,
-Medium=Enum.Font.BuilderSansMedium,
-Bold=Enum.Font.BuilderSansBold,
-ExtraBold=Enum.Font.BuilderSansExtraBold,
-SliderValue=Enum.Font.FredokaOne
-},
-BackgroundTransparency=0.03
-}
+local r = {
+    Light = {
+        Colors = {
+            -- NỀN SÁNG/TRẮNG
+            Background = ColorSequence.new{
+                ColorSequenceKeypoint.new(0.00, Color3.fromRGB(245, 245, 245)),  -- Trắng xám nhẹ
+                ColorSequenceKeypoint.new(0.50, Color3.fromRGB(250, 250, 250)),  -- Gần trắng
+                ColorSequenceKeypoint.new(1.00, Color3.fromRGB(245, 245, 245))
+            },
+            
+            -- MÀU CHÍNH (tối hơn để nổi trên nền sáng)
+            Primary = Color3.fromRGB(0, 100, 255),       -- Xanh dương đậm
+            OnPrimary = Color3.fromRGB(240, 240, 240),   -- Chữ trắng trên nút màu chính
+            
+            -- THANH CUỘN
+            ScrollBar = Color3.fromRGB(180, 180, 180),   -- Xám trung bình
+            
+            -- VIỀN
+            Stroke = Color3.fromRGB(220, 220, 220),      -- Xám nhạt
+            
+            -- MÀU LỖI
+            Error = Color3.fromRGB(220, 50, 50),         -- Đỏ đậm
+            
+            -- BIỂU TƯỢNG
+            Icons = Color3.fromRGB(50, 50, 50),          -- Xám đen cho icons
+            
+            -- NÚT
+            JoinButton = Color3.fromRGB(30, 150, 70),    -- Xanh lá đậm
+            Link = Color3.fromRGB(0, 120, 215),          -- Xanh link đậm
+            
+            -- HỘP THOẠI
+            Dialog = {
+                Background = Color3.fromRGB(255, 255, 255)  -- Trắng pure
+            },
+            
+            -- NÚT BẤM
+            Buttons = {
+                Holding = Color3.fromRGB(230, 230, 230),    -- Xám rất nhạt khi hover
+                Default = Color3.fromRGB(240, 240, 240)     -- Xám nhạt
+            },
+            
+            -- VIỀN
+            Border = {
+                Holding = Color3.fromRGB(200, 200, 200),    -- Xám khi hover
+                Default = Color3.fromRGB(210, 210, 210)     -- Xám nhạt
+            },
+            
+            -- CHỮ (TỐI HOÀN TOÀN)
+            Text = {
+                Default = Color3.fromRGB(30, 30, 30),       -- Xám đen đậm
+                Dark = Color3.fromRGB(60, 60, 60),          -- Xám đen
+                Darker = Color3.fromRGB(90, 90, 90)         -- Xám
+            },
+            
+            -- SLIDER
+            Slider = {
+                SliderBar = Color3.fromRGB(0, 100, 255),    -- Xanh dương đậm
+                SliderNumber = Color3.fromRGB(30, 30, 30)   -- Xám đen
+            },
+            
+            -- DROPDOWN
+            Dropdown = {
+                Holder = Color3.fromRGB(250, 250, 250)      -- Gần trắng
+            }
+        },
+        
+        -- Icons (dùng icons tối)
+        Icons = {
+            Error = "rbxassetid://10709752996",
+            Button = "rbxassetid://10709791437",
+            Close = "rbxassetid://10747384394",
+            TextBox = "rbxassetid://15637081879",
+            Search = "rbxassetid://10734943674",
+            Keybind = "rbxassetid://10734982144",
+            Dropdown = {
+                Open = "rbxassetid://10709791523",
+                Close = "rbxassetid://10709790948"
+            }
+        },
+        
+        Font = {
+            Normal = Enum.Font.BuilderSans,
+            Medium = Enum.Font.BuilderSansMedium,
+            Bold = Enum.Font.BuilderSansBold,
+            ExtraBold = Enum.Font.BuilderSansExtraBold,
+            SliderValue = Enum.Font.FredokaOne
+        },
+        
+        BackgroundTransparency = 0.05  -- Trong suốt nhẹ
+    }
 }
 
 for s,t in r do
@@ -104,7 +130,7 @@ Version="v2.0.1",
 GitHubOwner="tlredz"
 },
 Default={
-Theme="Darker",
+Theme="Light",
 UISize=UDim2.fromOffset(550,380),
 TabSize=160
 },
