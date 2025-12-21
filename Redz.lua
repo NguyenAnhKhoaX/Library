@@ -47,7 +47,7 @@ JoinButton=Color3.fromRGB(176, 176, 176),
 Link=Color3.fromRGB(128, 128, 128),
 
 Dialog={
-Background=Color3.fromRGB(28,28,28)
+Background=Color3.fromRGB(117, 117, 117)
 },
 Buttons={
 Holding=Color3.fromRGB(34,34,34),
