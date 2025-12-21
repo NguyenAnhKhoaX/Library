@@ -53,49 +53,48 @@ local p=o:GetMouse()
 local q=(gethui or function()return g.CoreGui end)()
 
 local r={
-    BlackWhite={  -- ĐỔI TÊN Ở ĐÂY
+    Monochrome={
         Colors={
             Background=ColorSequence.new{
-                ColorSequenceKeypoint.new(0.00,Color3.fromRGB(0,0,0)),  -- Đen hoàn toàn
-                ColorSequenceKeypoint.new(0.50,Color3.fromRGB(127,127,127)),
-                ColorSequenceKeypoint.new(1.00,Color3.fromRGB(0,0,0))
+                ColorSequenceKeypoint.new(0.00,Color3.fromRGB(10,10,10)),     -- Đen
+                ColorSequenceKeypoint.new(0.50,Color3.fromRGB(40,40,40)),     -- Xám đậm
+                ColorSequenceKeypoint.new(1.00,Color3.fromRGB(10,10,10))
             },
-            Primary=Color3.fromRGB(255,255,255),  -- Trắng
-            OnPrimary=Color3.fromRGB(200,200,200),  -- Xám sáng
-            ScrollBar=Color3.fromRGB(150,150,150),  -- Xám
-            Stroke=Color3.fromRGB(100,100,100),  -- Xám đậm
+            Primary=Color3.fromRGB(255,255,255),          -- TRẮNG (thay cho xanh)
+            OnPrimary=Color3.fromRGB(200,200,200),        -- Xám sáng
+            ScrollBar=Color3.fromRGB(150,150,150),        -- Xám
+            Stroke=Color3.fromRGB(80,80,80),              -- Xám đậm
 
-            Error=Color3.fromRGB(255,255,255),  -- Trắng
-            Icons=Color3.fromRGB(255,255,255),  -- Trắng
+            Error=Color3.fromRGB(255,255,255),            -- Trắng
+            Icons=Color3.fromRGB(255,255,255),            -- Trắng
 
-            JoinButton=Color3.fromRGB(200,200,200),  -- Xám
-            Link=Color3.fromRGB(255,255,255),  -- Trắng
+            JoinButton=Color3.fromRGB(180,180,180),       -- Xám
+            Link=Color3.fromRGB(255,255,255),             -- Trắng
 
             Dialog={
-                Background=Color3.fromRGB(20,20,20)  -- Đen đậm
+                Background=Color3.fromRGB(20,20,20)       -- Đen
             },
             Buttons={
-                Holding=Color3.fromRGB(50,50,50),  -- Xám đậm
-                Default=Color3.fromRGB(30,30,30)   -- Xám rất đậm
+                Holding=Color3.fromRGB(60,60,60),         -- Xám đậm
+                Default=Color3.fromRGB(40,40,40)          -- Xám rất đậm
             },
             Border={
-                Holding=Color3.fromRGB(100,100,100),  -- Xám
-                Default=Color3.fromRGB(60,60,60),     -- Xám đậm
+                Holding=Color3.fromRGB(100,100,100),      -- Xám
+                Default=Color3.fromRGB(70,70,70),         -- Xám đậm
             },
             Text={
-                Default=Color3.fromRGB(255,255,255),  -- Trắng
-                Dark=Color3.fromRGB(200,200,200),     -- Xám sáng
-                Darker=Color3.fromRGB(150,150,150),   -- Xám
+                Default=Color3.fromRGB(255,255,255),      -- Trắng
+                Dark=Color3.fromRGB(200,200,200),         -- Xám sáng
+                Darker=Color3.fromRGB(150,150,150),       -- Xám
             },
             Slider={
-                SliderBar=Color3.fromRGB(255,255,255),  -- Trắng
-                SliderNumber=Color3.fromRGB(255,255,255),  -- Trắng
+                SliderBar=Color3.fromRGB(255,255,255),    -- Trắng
+                SliderNumber=Color3.fromRGB(255,255,255), -- Trắng
             },
             Dropdown={
-                Holder=Color3.fromRGB(40,40,40),  -- Xám đậm
+                Holder=Color3.fromRGB(50,50,50),          -- Xám đậm
             }
         },
-        -- ... (phần Icons và Font giữ nguyên) ...
         Icons={
             Error="rbxassetid://10709752996",
             Button="rbxassetid://10709791437",
