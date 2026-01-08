@@ -5229,9 +5229,9 @@ local v828 = {
                     vu743,
                 })
 
-                local vu744 = vu728
+                local vu744 = vu729
                 local vu745 = vu727
-                local vu746 = vu729
+                local vu746 = vu728
                 local v747 = vu726
                 local v748 = {}
 
@@ -5369,15 +5369,15 @@ local v828 = {
                 local function vu765()
                     vu741.BackgroundColor3 = Color3.fromHSV(vu745, 1, 1)
                     vu753.Position = UDim2.new(0, - 1, vu745, - 6)
-                    vu740.Position = UDim2.new(vu744, 0, 1 - vu746, 0)
-                    vu743.BackgroundColor3 = Color3.fromHSV(vu745, vu744, vu746)
-                    vu755.Input.Text = '#' .. Color3.fromHSV(vu745, vu744, vu746):ToHex()
+                    vu740.Position = UDim2.new(vu746, 0, 1 - vu744, 0)
+                    vu743.BackgroundColor3 = Color3.fromHSV(vu745, vu746, vu744)
+                    vu755.Input.Text = '#' .. Color3.fromHSV(vu745, vu746, vu744):ToHex()
                     vu756.Input.Text = vu739().R
                     vu757.Input.Text = vu739().G
                     vu758.Input.Text = vu739().B
 
                     if pu718.Transparency then
-                        vu761.BackgroundColor3 = Color3.fromHSV(vu745, vu744, vu746)
+                        vu761.BackgroundColor3 = Color3.fromHSV(vu745, vu746, vu744)
                         vu743.BackgroundTransparency = vu730
                         vu760.Position = UDim2.new(0, - 1, 1 - vu730, - 6)
 
@@ -5394,8 +5394,8 @@ local v828 = {
                         if v767 and typeof(v768) == 'Color3' then
                             local v769, v770, v771 = Color3.toHSV(v768)
 
-                            vu746 = v771
-                            vu744 = v770
+                            vu744 = v771
+                            vu746 = v770
                             vu745 = v769
                         end
                     end
@@ -5410,8 +5410,8 @@ local v828 = {
                         if v774 and (typeof(v775) == 'Color3' and tonumber(vu756.Input.Text) <= 255) then
                             local v776, v777, v778 = Color3.toHSV(v775)
 
-                            vu746 = v778
-                            vu744 = v777
+                            vu744 = v778
+                            vu746 = v777
                             vu745 = v776
                         end
                     end
@@ -5426,8 +5426,8 @@ local v828 = {
                         if v781 and (typeof(v782) == 'Color3' and tonumber(vu757.Input.Text) <= 255) then
                             local v783, v784, v785 = Color3.toHSV(v782)
 
-                            vu746 = v785
-                            vu744 = v784
+                            vu744 = v785
+                            vu746 = v784
                             vu745 = v783
                         end
                     end
@@ -5442,8 +5442,8 @@ local v828 = {
                         if v788 and (typeof(v789) == 'Color3' and tonumber(vu758.Input.Text) <= 255) then
                             local v790, v791, v792 = Color3.toHSV(v789)
 
-                            vu746 = v792
-                            vu744 = v791
+                            vu744 = v792
+                            vu746 = v791
                             vu745 = v790
                         end
                     end
@@ -5477,8 +5477,8 @@ local v828 = {
                             local v800 = v799 + vu741.AbsoluteSize.Y
                             local v801 = math.clamp(vu7.Y, v799, v800)
 
-                            vu744 = (v798 - v796) / (v797 - v796)
-                            vu746 = 1 - (v801 - v799) / (v800 - v799)
+                            vu746 = (v798 - v796) / (v797 - v796)
+                            vu744 = 1 - (v801 - v799) / (v800 - v799)
 
                             vu765()
                             vu9:Wait()
@@ -5519,8 +5519,8 @@ local v828 = {
                 v747:Button('Done', function()
                     vu723:SetValue({
                         vu745,
-                        vu744,
-                        vu746
+                        vu746,
+                        vu744
                     }, vu730)
                 end)
                 v747:Button('Cancel')
@@ -6326,7 +6326,7 @@ function vu842.CreateWindow(_, p966)
         v969.ClipsDescendants = true
         v969.Position = UDim2.new(0.081166774, 0, 0.0841463208, 0)
         v969.Size = UDim2.new(0, 50, 0, 50)
-        v969.Image = 'rbxassetid://87038715291154'
+        v969.Image = 'http://www.roblox.com/asset/?id=87038715291154'
         (function(p971, pu972)
             local vu973 = nil
             local vu974 = nil
